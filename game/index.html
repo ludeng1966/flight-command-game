@@ -31,8 +31,10 @@
 <form id="api-credentials" autocomplete="off">
 <p id="api-credentials-summary" class="setting-hint">正在读取连接配置…</p>
 <label for="api-qwen-key">Qwen API Key<input id="api-qwen-key" type="password" autocomplete="new-password" spellcheck="false" maxlength="4096" placeholder="填写自己的百炼 API Key"></label>
+<p class="setting-hint api-key-help"><a href="https://bailian.console.aliyun.com/cn-beijing/model/settings/api-key" target="_blank" rel="noopener noreferrer">申请 Qwen API Key ↗</a> · 创建密钥的地域须与下方选择一致。</p>
 <label for="api-qwen-region">Qwen 地域<select id="api-qwen-region"><option value="beijing">中国内地 · 北京</option><option value="singapore">国际 · 新加坡</option></select></label>
 <label for="api-inworld-key">Inworld API Key<input id="api-inworld-key" type="password" autocomplete="new-password" spellcheck="false" maxlength="4096" placeholder="粘贴 Portal 的 Base64 凭据"></label>
+<p class="setting-hint api-key-help"><a href="https://platform.inworld.ai/" target="_blank" rel="noopener noreferrer">申请 Inworld API Key ↗</a> · 登录后进入自己的工作区 → Settings → API Keys，复制完整 Base64 凭据。</p>
 <details id="api-advanced"><summary>模型与音色（可选）</summary>
 <label for="api-qwen-model">Qwen 模型<input id="api-qwen-model" type="text" maxlength="100" value="qwen3.7-flash" spellcheck="false"></label>
 <label for="api-voice-commander">指挥员 voice ID<input id="api-voice-commander" type="text" maxlength="256" placeholder="Dennis（公共音色）" spellcheck="false"></label>
