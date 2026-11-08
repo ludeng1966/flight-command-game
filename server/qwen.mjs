@@ -12,6 +12,7 @@ import {parseAttackTaskContext} from '../sim/attack-task.js';
 import {ATTACK_TASK_RULES,verifyAttackTaskInterpretation} from './attack-rules.mjs';
 import {RADIO_STYLES,normalizeRadioInstruction} from '../sim/radio.js';
 import {pilotReading} from './pilot-handbook.mjs';
+import {parseDecisionTiming} from './navigation-planning.mjs';
 
 export class ApiError extends Error {
   constructor(status,message){super(message);this.status=status;}
@@ -37,6 +38,8 @@ export function validateContext(c) {
     let weapons,attackTask;try{weapons=parseWeaponsContext(u.weapons,c.simTimeSec);attackTask=parseAttackTaskContext(u.attackTask,c.simTimeSec);}catch{throw new ApiError(400,'武器或攻击任务上下文无效');}
     return {id:u.id,callsign:u.callsign,number:i+1,aliases:u.aliases,radioNumber:u.radioNumber,position:u.position,headingDeg:u.headingDeg,
       speedMps:u.speedMps,targetAltitudeM:u.targetAltitudeM,targetSpeedMps:u.targetSpeedMps,maxG:u.maxG,
+      ...(u.navigationEnvelope?{navigationEnvelope:parseNavigationEnvelope(u.navigationEnvelope)}:{}),
+      ...(Array.isArray(u.velocity)&&u.velocity.length===3&&u.velocity.every(finite)?{velocity:u.velocity}:{}),
       alive:u.alive,task:['heading','waypoints','orbit','formation'].includes(u.task)?u.task:'unknown',
       controlAuthority:u.controlAuthority&&['tower','commander'].includes(u.controlAuthority.owner)?{owner:u.controlAuthority.owner,phase:['owned','ready','transferring'].includes(u.controlAuthority.phase)?u.controlAuthority.phase:'owned',target:['tower','commander'].includes(u.controlAuthority.target)?u.controlAuthority.target:null,mode:c.executionMode==='relaxed'?'auto':'manual'}:null,
       grounded:u.grounded===true,surfacePhase:typeof u.surfacePhase==='string'&&u.surfacePhase.length<40?u.surfacePhase:'airborne',
@@ -58,7 +61,14 @@ export function validateContext(c) {
   if(c.executionMode!==undefined&&!['strict','relaxed'].includes(c.executionMode))throw new ApiError(400,'执行模式无效');
   const airports=Array.isArray(c.airports)?c.airports.filter(a=>a&&typeof a.id==='string'&&a.id.length<80&&typeof a.name==='string'&&a.name.length<80&&Array.isArray(a.runways)&&a.runways.length<=8&&a.runways.every(r=>typeof r==='string'&&/^\d{2}[LRC]?$/.test(r))).slice(0,8).map(a=>({id:a.id,name:a.name,runways:a.runways})):[];
   let airportTraffic;try{airportTraffic=parseAirportTraffic(c.airportTraffic,c.simTimeSec,units.map(u=>u.id));}catch(error){throw new ApiError(400,error.message);}
-  return {simTimeSec:c.simTimeSec,revision:c.revision,selectedUnitId:c.selectedUnitId,mapPoint:c.mapPoint,bullseye:c.bullseye?{name:c.bullseye.name,position:[...c.bullseye.position]}:null,radioStyle:c.radioStyle||'pla',unitSystem:normalizeUnits(c.unitSystem),executionMode:c.executionMode??'strict',capabilities:CAPABILITIES,airports,units,airportTraffic};
+  let decisionTiming;try{decisionTiming=parseDecisionTiming(c.decisionTiming,units);}catch(error){throw new ApiError(400,error.message);}
+  return {simTimeSec:c.simTimeSec,revision:c.revision,selectedUnitId:c.selectedUnitId,mapPoint:c.mapPoint,bullseye:c.bullseye?{name:c.bullseye.name,position:[...c.bullseye.position]}:null,radioStyle:c.radioStyle||'pla',unitSystem:normalizeUnits(c.unitSystem),executionMode:c.executionMode??'strict',capabilities:CAPABILITIES,airports,units,airportTraffic,...(decisionTiming?{decisionTiming}:{})};
+}
+
+function parseNavigationEnvelope(e){
+  const keys=['structuralMaxG','configurationMaxG','availableG','sustainableG','ceilingM','safeLevelSpeedMps'];
+  if(!e||keys.some(k=>!Number.isFinite(e[k])||e[k]<0)||e.minimumTurnRadiusM!==null&&(!Number.isFinite(e.minimumTurnRadiusM)||e.minimumTurnRadiusM<0))throw new ApiError(400,'本机机动包线无效');
+  return Object.fromEntries([...keys,'minimumTurnRadiusM'].map(k=>[k,e[k]]));
 }
 
 export function createQwenClient(config,fetchImpl=fetch) {

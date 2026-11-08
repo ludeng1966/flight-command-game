@@ -17,6 +17,7 @@ import {unitPolicy} from '../sim/units.js';
 import {ATC_INTENTS,atcTaskFor} from '../sim/atc-command.js';
 import {englishResultReadback} from '../sim/result-language.js';
 import {validateExecutionObservation,validatePilotAdjustment} from '../sim/pilot-execution.js';
+import {navigationSchema,navigationOutput,AI_NAVIGATION_RULES} from './navigation-planning.mjs';
 
 const receivedCommand=input=>{try{return receivedCommanderMessage(input);}catch(error){throw new ApiError(400,error.message);}};
 
@@ -50,15 +51,17 @@ export class PilotAssistant{
         messages[0].content+='\n所有特定要求都先由你理解和判断，不限于减推力。你可以自主选择合理速度、高度、推力方案、既有动作的组合与航路安排；用已有参数/动作完整表达已理解的要求，不要把能通过规划完成的要求当作新功能拒绝。已通过参数/动作表达的要求不重复放进constraints导致误报不支持；未能落实的硬性要求必须保留，不能静默丢掉。确实听不懂时status=needs_clarification或unknown、orders=[]，summary必须点名哪一项未理解并说明本次不执行什么；不能只泛泛回答“无法解析”。无法执行的说明使用航空通联措辞“指令不明、无法执行、请重发、请求重新指示”，不用“听不懂”等聊天措辞。不要把任何不熟悉的词机械替换为默认起飞/巡航。';
         messages[0].content+='\n指挥员播报中的近似数值就是本次接令数值。decodedFlightParameters是程序从同一段通话解码并换算为SI的明确参数，应直接复制到对应字段，不要重新换算或另行取整。按通话规划，不恢复玩家原始换算值。未在通话提及的细节可以结合实况合理规划，不能把玩家未播报的约束或意图补进来。';
         messages[0].content+='\n界面不再提供高度和速度滑块。空中巡航、待命和独立导航中，未指定的高度与速度由你依据任务、当前飞行状态、地形余量和飞机能力自主选取，并写入已有任务的altitudeM/speedMps；不要求玩家补填这些常规飞行参数，也不把context中的旧目标当成玩家硬性命令。明确保持当前高度/速度时应保持；明确指定数值必须遵守。已有三维航路各点高度、编队相对位置及机场进近限制属于原任务约束，不得为了自主选择而拉平航路或改写许可。';
-        let response,interpretation;
+        let response,interpretation,pilotNavigationPlans=[],latencyPredictionSec=0;
+        if(context.decisionTiming)messages[0].content+=AI_NAVIGATION_RULES;
         messages[0].content+='\n'+ATTACK_TASK_RULES;
         messages[0].content+='\n“攻击前方目标”“攻击搜索发现的目标”等已给出任务目标描述，足以接收attack：targetRef保留描述，targetId可为null，由攻击执行阶段先搜索发现。当前没有目标编号、回波或导弹尚未准备都是执行状态，不是指令不明，不得因此要求玩家先锁定或给出编号。只有明确友机、真正矛盾或没有可用武器等实质问题才拒绝；不能沿用旧参考文件中“攻击必须已有目标编号”的限制。';
         messages[0].content+='\nattack已经接入持续自主执行链。玩家只说攻击任务时，只输出attack并保留明确的目标targetId/targetRef、武器weapon、数量quantity或飞行数值，未明确的字段保持null。不要展开成radar_mode、lock_target、select_weapon、launch_weapon或自行编造发射命令。搜索、跟踪、选择型号、导引头准备、攻击机动和何时发射由后续攻击飞行员逐步自主判断。不能因为尚未锁定或玩家没有选择导弹而让玩家补设置。';
         messages[0].content+='\n雷达搜索search和持续跟踪track_target是持续传感器任务，只需targetId/targetRef，可均为null。不要在这两项的parameters中补填mode、headingDeg、altitudeM、speedMps、rangeM或其他硬件设置，append=false；开机/模式选择/截获由后续雷达飞行员自主判断。确实需要并获准改变飞行状态时，另外表达为已有飞行任务，不能把飞行参数混入雷达任务。';
         for(let attempt=0;attempt<2;attempt++){
-          response=await runtime.complete('pilot',messages,bindCommanderNumbers(militarySchemaFor(context),commanderMessage),{maxTokens:6000,signal});this.calls++;signal?.throwIfAborted();
+          response=await runtime.complete('pilot',messages,navigationSchema(bindCommanderNumbers(militarySchemaFor(context),commanderMessage),context),{maxTokens:6000,signal});this.calls++;signal?.throwIfAborted();
           try{
-            interpretation=groundCooperation(validateMilitaryInterpretation(normalizeMilitaryInterpretation(response.value,{instruction:instruction}),context),context,instruction);
+            const navigation=navigationOutput(response.value,context);
+            interpretation=groundCooperation(validateMilitaryInterpretation(normalizeMilitaryInterpretation(navigation.interpretation,{instruction:instruction}),context),context,instruction);
             verifyAttackTaskInterpretation(interpretation,instruction,context);
             if(attempt===0&&/攻击|\battack\b/i.test(instruction)&&interpretation.status==='needs_clarification'&&!/友机|禁止|未挂载|没有可用.*(?:武器|导弹)|弹量不足/.test(interpretation.summary))throw Error('攻击任务可以先搜索：请把指挥员给出的目标描述保留为targetRef并接收attack，未知目标编号不是拒绝任务的理由。重新判断，不要求玩家先锁定或选弹。');
             verifyCommanderHeading(interpretation,commanderMessage);
@@ -72,6 +75,7 @@ export class PilotAssistant{
               try{radarMissionTaskFor(order,context);}catch{throw Error('请修正雷达任务表达：search/track_target只填目标targetId/targetRef，其他参数保持null或false；必要的独立飞行要求另列任务，并保留指挥员明确的要求。');}
             }
             if(interpretation.status==='understood'&&/(如果.+(?:则|就|立即|，|,)|当.+时|遭到.+时|\bif\b.+\bthen\b)/i.test(instruction)&&!interpretation.orders.some(o=>o.timing==='on_condition'))throw Error('指挥员通话中的触发条件必须保留');
+            pilotNavigationPlans=navigation.validate(compileMilitaryInterpretation(interpretation,context).plan);latencyPredictionSec=navigation.latencyPredictionSec??0;
             break;
           }catch(error){if(attempt)throw error;messages.push({role:'assistant',content:JSON.stringify(response.value)},{role:'user',content:'规划未通过协议核对：'+error.message+'。unitIds只能使用'+context.units.map(u=>u.id).join('、')+'。保留原始目标和条件，只修正结构和引用，重新输出完整JSON。'});}
         }
@@ -79,7 +83,7 @@ export class PilotAssistant{
         const pilotRequirements=[];
         for(const order of interpretation.orders)if(order.intent==='takeoff'&&['reduced_thrust','derated','flex','dry','military_power','full_thrust','afterburner'].includes(order.parameters.mode)&&order.parameters.constraints){pilotRequirements.push({unitIds:order.unitIds,requirements:order.parameters.constraints});order.parameters.constraints=null;}
         const {plan,execution}=compileMilitaryInterpretation(interpretation,context);
-        return {requestId:input.requestId,revision:context.revision,simTimeSec:context.simTimeSec,interpretation,plan,execution,pilotRequirements,receivedFrom:'commander',commanderMessageId:commanderMessage.id,plannedBy:this.model,timing:response.timing,knowledgeUsed:reading.files};
+        return {requestId:input.requestId,revision:context.revision,simTimeSec:context.simTimeSec,interpretation,plan,execution,pilotRequirements,pilotNavigationPlans,latencyPredictionSec,receivedFrom:'commander',commanderMessageId:commanderMessage.id,plannedBy:this.model,timing:response.timing,knowledgeUsed:reading.files};
       }catch(error){if(error.name==='AbortError'||error instanceof ApiError)throw error;throw new ApiError(502,error.message);}
       finally{signal?.removeEventListener('abort',cancel);await runtime.stop();if(this.runtime===runtime)this.runtime=null;this.status='sleeping';}
     });
