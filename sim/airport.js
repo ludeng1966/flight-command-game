@@ -1,10 +1,10 @@
-import {G,clamp,density,aeroAt,thrustAt,dryFraction,dragAt,atmosphere} from './flight.js';
+import {G,clamp,density,aeroAt,thrustAt,dryFraction,dragAt,atmosphere,hasAfterburner} from './flight.js';
 import {controlEnergy,energyEnvelope} from './energy.js';
 import {airportModeSupported,airportModeLabel} from './airport-language.js';
 import {airportWeather,runwayWeatherLimits,brakingDeceleration,windComponents,atisInformation} from './airport-weather.js';
 import {AirportTrafficController,initializeAtc,separationSeconds,AIRPORT_STATIONS} from './airport-atc.js';
 import {evaluateDeparturePlan} from './departure-plan.js';
-import {takeoffPerformance,landingPerformance} from './airport-performance.js';
+import {takeoffPerformance,landingPerformance,rotationSpeed} from './airport-performance.js';
 import {prepareGroundTraffic,groundSpeedLimit,taxiEdgeKey} from './airport-ground.js';
 import {updateAirportSections} from './airport-section.js';
 import {applyAtcDecision} from './atc-decisions.js';
@@ -255,7 +255,7 @@ export class AirportOperations{
         const speed=u.speed,airSpeed=Math.max(0,speed+windComponents(a.weather,r.headingDeg).headwindMps),thrust=thrustAt(u.profile,a.elevation,Math.max(1,airSpeed),afterburner)*dryFraction(u.profile,throttle),drag=dragAt(u.profile,a.elevation,airSpeed,.2);
         const rolling=(a.weather.runwayCondition==='wet'?.025:.02)*u.profile.mass*G;
         u.speed=Math.max(0,speed+(thrust-drag-rolling)/u.profile.mass*dt);s.heading=r.headingDeg*Math.PI/180;u.throttle=throttle;u.afterburner=afterburner;
-        const rotation=Math.max(u.profile.airportRotationSpeed??105,energyEnvelope(u.profile,a.elevation,Math.max(60,u.speed)).safeSpeed(1)*1.45);
+        const rotation=rotationSpeed(u,a.elevation,u.speed);
         if(airSpeed>=rotation){s.phase='climb';s.grounded=false;u.flightState='normal';u.speed=airSpeed;u.velocity=[Math.sin(s.heading)*airSpeed,Math.cos(s.heading)*airSpeed,0];u.cl=u.profile.mass*G/(.5*density(a.elevation)*(u.profile.densityScale??1)*airSpeed*airSpeed*u.profile.area);u.guidance={bank:0,n:1};u.energy=undefined;u.headingTarget=s.heading;u.holdAltitude=s.climbAltitude;u.targetSpeed=power?.climbSpeedMps??Math.max(150,rotation+25);u.control={bank:0,cl:u.cl*1.2,maxG:3,throttle,afterburner};if(power)power.routeInstalled=false;this.traffic.complete(u,'takeoff',world);s.departureProcedure=runwayProcedure(a,r).sid;this.log(u,'抬轮离地，爬升',world.time);return false;}
         const remaining=r.direction===1?r.x1-u.position[0]:u.position[0]-r.x0;if(remaining<150){s.phase='rejected';this.log(u,'未达抬轮速度，中断起飞',world.time);}
       }

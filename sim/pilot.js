@@ -21,7 +21,8 @@ function pathAim(u,w,V,envelope){
   for(let j=1;j<nodes.length-1&&along<V*30;j++){
     const a=nodes[j-1],b=nodes[j],c=nodes[j+1],la=Math.hypot(...b.map((v,k)=>v-a[k])),lb=Math.hypot(...c.map((v,k)=>v-b[k]));along+=la;
     if(Math.abs(b[2]-lastHeight)>150){futureEnvelope=energyEnvelope(u.profile,b[2],V);lastHeight=b[2];}
-    const normalG=Math.max(1.3,Math.min(2.6,futureEnvelope.sustainableMaxG*.9)),curvature=curvatureAt(a,b,c);
+    const bankG=u.profile.controlLimits?.bankRad?1/Math.cos(u.profile.controlLimits.bankRad):Infinity;
+    const normalG=Math.max(u.profile.category==='transport'?1.02:1.3,Math.min(2.6,futureEnvelope.sustainableMaxG*.9,bankG*.97)),curvature=curvatureAt(a,b,c);
     if(curvature>.00001){const turnSpeed=Math.sqrt(G*Math.sqrt(normalG*normalG-1)/curvature);limit=Math.min(limit,Math.sqrt(turnSpeed*turnSpeed+2*1.2*along));}
     if(along<V*Math.max(2,(u.profile.engine?.responseSeconds??1)+1)){
       u.navigationLoadPreview=Math.max(u.navigationLoadPreview,Math.min(envelope.budgetG,Math.hypot(1,V*V*curvature/G)));
@@ -75,7 +76,7 @@ export function updatePilot(u,dt=.1) {
     u.waypoints.shift();u.navLegs?.shift();u.navCursor=0;u.previousWaypoint=[...w];
     u.gateEntered=null;u.completedWaypoints=(u.completedWaypoints??0)+1;u.holdAltitude=w[2];
     if(!u.waypoints.length){
-      const holdG=Math.max(1.15,Math.min(2.5,q*p.area*a.clMax*.82/(p.mass*G))),R=Math.max(2500,V*V/(G*Math.sqrt(holdG*holdG-1)));
+      const holdG=Math.max(1.05,Math.min(p.controlLimits?.bankRad?1/Math.cos(p.controlLimits.bankRad):2.5,q*p.area*a.clMax*.82/(p.mass*G))),R=Math.max(2500,V*V/(G*Math.sqrt(holdG*holdG-1)));
       const heading=Math.atan2(u.velocity[0],u.velocity[1]);u.orbit=[u.position[0]+Math.cos(heading)*R,u.position[1]-Math.sin(heading)*R];
     }
     u.navigationKey=JSON.stringify([u.waypoints,u.targetSpeed]);
@@ -94,7 +95,7 @@ export function updatePilot(u,dt=.1) {
     const gamma=clamp((u.holdAltitude-u.position[2])/5500,-.2,.2);u.targetAltitude=u.holdAltitude;
     desired=[Math.sin(u.headingTarget)*Math.cos(gamma),Math.cos(u.headingTarget)*Math.cos(gamma),Math.sin(gamma)];distance=V*22;
   }else{
-    const available=Math.max(1.15,Math.min(2.5,q*p.area*a.clMax*.82/(p.mass*G)));
+    const available=Math.max(p.category==='transport'?1.05:1.15,Math.min(p.controlLimits?.bankRad?1/Math.cos(p.controlLimits.bankRad):2.5,q*p.area*a.clMax*.82/(p.mass*G)));
     const R=Math.max(2500,V*V/(G*Math.sqrt(available*available-1))),center=u.safetyOrbit??u.orbit;
     const dx=u.position[0]-center[0],dy=u.position[1]-center[1];
     const heading=Math.atan2(dx,dy)+Math.PI/2+Math.atan((Math.hypot(dx,dy)-R)/R*2);
