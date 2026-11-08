@@ -2,8 +2,8 @@
   {
     "id": "f16",
     "sourceTriangles": 19154,
-    "triangles": 5621,
-    "bytes": 181258,
+    "triangles": 5610,
+    "bytes": 177941,
     "sourceSize": [
       14.30662,
       5.10835,
@@ -17,14 +17,14 @@
     "actualSize": [
       9.449,
       5.09,
-      15.0269
+      15.0255
     ]
   },
   {
     "id": "su27",
     "sourceTriangles": 9453,
-    "triangles": 4226,
-    "bytes": 124884,
+    "triangles": 4224,
+    "bytes": 123790,
     "sourceSize": [
       22.07678,
       6.30525,
@@ -44,8 +44,8 @@
   {
     "id": "b7478",
     "sourceTriangles": 32394,
-    "triangles": 8060,
-    "bytes": 278108,
+    "triangles": 8040,
+    "bytes": 281135,
     "sourceSize": [
       76.55279999999999,
       20.016801,
@@ -58,15 +58,15 @@
     },
     "actualSize": [
       68.3438,
-      19.3884,
+      19.4,
       76.25
     ]
   },
   {
     "id": "a320",
     "sourceTriangles": 67820,
-    "triangles": 13960,
-    "bytes": 579677,
+    "triangles": 13857,
+    "bytes": 587911,
     "sourceSize": [
       37.6058,
       12.24455,
@@ -79,8 +79,8 @@
     },
     "actualSize": [
       34.097,
-      11.7493,
-      37.4883
+      11.7514,
+      37.3831
     ]
   }
 ]

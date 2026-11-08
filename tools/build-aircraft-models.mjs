@@ -58,8 +58,9 @@ for(const spec of specs){
   // 原缝翼、襟翼留有动画接缝，静态策略模型用原顶点的闭合凸包合并每侧翼面。
   if(spec.id==='a320'||spec.id==='b7478')parts=closeStaticWings(parts,spec);
   const raw=bounds(parts),scales=[spec.length/raw.size[0],spec.height/raw.size[1],spec.span/raw.size[2]],center=[(raw.min[0]+raw.max[0])/2,0,(raw.min[2]+raw.max[2])/2];
-  // FlightGear source: +X nose, +Y up. Game: -Z nose, +Y up, +X right.
-  for(const part of parts)part.vertices=part.vertices.map(v=>[(v[2]-center[2])*scales[2],v[1]*scales[1],-(v[0]-center[0])*scales[0]]);
+  // These AC3D sources: -X nose, +Y up, -Z right (cockpit ahead of rudder/nozzle).
+  // Game: -Z nose, +Y up, +X right. Preserve handedness and polygon winding.
+  for(const part of parts)part.vertices=part.vertices.map(v=>[-(v[2]-center[2])*scales[2],v[1]*scales[1],(v[0]-center[0])*scales[0]]);
   const groups=new Map();let input=0;
   for(const part of parts){
     const byMaterial=new Map();for(const face of part.faces){const material=/glass/i.test(part.materials[face.mat]?.name??'')?'glass':part.material;if(!byMaterial.has(material))byMaterial.set(material,[]);byMaterial.get(material).push(face);}

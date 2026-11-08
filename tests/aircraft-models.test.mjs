@@ -19,6 +19,23 @@ test('四套公开外形保持米制比例，减面后机长翼展误差低于0.
   assert.equal(AIRCRAFT_MODELS.j11.asset,AIRCRAFT_MODELS.su27.asset);
 });
 
+test('实际座舱朝 -Z、垂尾位于 +Z，喷焰留在机尾一侧',async()=>{
+  for(const [id,spec]of Object.entries(AIRCRAFT_MODELS)){
+    const data=JSON.parse(await fs.readFile(new URL('../assets/aircraft/'+spec.asset+'.json',import.meta.url)));
+    // Inspect physical landmarks, not the forward metadata: a reversed mesh can still claim -Z.
+    const body=data.groups.filter(g=>!g.gear).flatMap(g=>Array.from({length:g.positions.length/3},(_,i)=>g.positions.slice(i*3,i*3+3)));
+    const glass=data.groups.filter(g=>g.material==='glass').flatMap(g=>g.positions.filter((_,i)=>i%3===2));
+    const mean=values=>values.reduce((sum,value)=>sum+value,0)/values.length;
+    assert(glass.length>0);assert(mean(glass)<-spec.lengthM*.05,id+' cockpit ahead');
+    const top=Math.max(...body.map(p=>p[1])),bottom=Math.min(...body.map(p=>p[1]));
+    const tail=body.filter(p=>p[1]>top-(top-bottom)*.2);
+    assert(mean(tail.map(p=>p[2]))>spec.lengthM*.15,id+' vertical tail behind');
+    const model=buildAircraft('#fff',id);
+    for(const jet of model.userData.flame.children)assert(jet.position.z>0,id+' exhaust behind');
+    disposeAircraft(model);
+  }
+});
+
 test('地图与缩略图共享几何但不共享材质，销毁缩略图不会销毁缓存',()=>{
   const first=buildAircraft('#5bff8a','f16'),second=buildAircraft('#6fe3ff','f16');
   const geometries=root=>{const out=[];root.traverse(o=>{if(o.userData.sharedGeometry)out.push(o.geometry);});return out;};
