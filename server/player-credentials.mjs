@@ -46,10 +46,10 @@ export function createPlayerCredentials(base,makeRuntime,{now=Date.now,maxSessio
   const sessions=new Map();
   function prune(){for(const [key,entry]of sessions)if(entry.expiresAt<=now()){entry.runtime.dispose();sessions.delete(key);}}
   const timer=setInterval(prune,60000);timer.unref();
-  function get(req){
+  function get(req,allowExpired=false){
     prune();const token=cookie(req);if(!token)return null;
     const entry=/^[A-Za-z0-9_-]{43}$/.test(token)?sessions.get(digest(token)):null;
-    if(!entry)throw new ApiError(401,'玩家密钥会话已失效，请在设置 → API 接入中重新填写或恢复本机配置');
+    if(!entry&&!allowExpired)throw new ApiError(401,'玩家密钥会话已失效，请在设置 → API 接入中重新填写或恢复本机配置');
     return entry;
   }
   function setCookie(res,value,maxAge=ttl/1000){res.setHeader('Set-Cookie',`${PLAYER_COOKIE}=${value}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}`);}
@@ -57,7 +57,7 @@ export function createPlayerCredentials(base,makeRuntime,{now=Date.now,maxSessio
     status(req){const entry=get(req);return entry?summary(entry.config,'player',entry.expiresAt):summary(base,'local');},
     runtime(req){return get(req)?.runtime;},
     update(req,res,input){
-      const previous=get(req),config=playerConfig(base,input,previous?.config);
+      const previous=get(req,true),config=playerConfig(base,input,previous?.config);
       if(!previous&&sessions.size>=maxSessions)throw new ApiError(503,'玩家配置会话已满，请稍后重试');
       const token=randomBytes(32).toString('base64url'),expiresAt=now()+ttl;
       const runtime=makeRuntime(config);

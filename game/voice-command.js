@@ -246,7 +246,7 @@ export function initVoiceCommands({getState,onApplied,onSimulation,onPilotPrevie
         const pilot=data.pilotAssistant,labels={sleeping:'待命，程序飞行',loading:'准备判断',planning_command:'正在规划任务',planning_departure:'正在选择推力与离场航路',assessing:'正在判断事件',checking_result:'正在检查指令结果',unloading:'结束检查'};
         resource.hidden=false;resource.textContent=pilotModel==='2b'?'2B 飞行员 · 下载暂未提供':`Flash 飞行员 · ${labels[pilot.status]||pilot.status} · 云端模型 · 已判断 ${pilot.modelCalls} 次`;
       }
-      if(connectionChanged&&!busy&&!recording&&!starting)say(!pilotAvailable()?'2B 模型下载暂未提供，请选择 Flash':local?(data.commandReady?'本地指挥官与 Flash 飞行员，可输入文字或语音下令':ai?.error||'正在自动加载本地指挥官模型，飞行控制可正常使用'):data.commandReady?'可语音下令，也可直接输入文字':'请在项目根目录 .env 填写 DASHSCOPE_API_KEY，重启游戏服务后点击上方检查连接',local?ai?.status==='error':!data.commandReady);
+      if(connectionChanged&&!busy&&!recording&&!starting)say(!pilotAvailable()?'2B 模型下载暂未提供，请选择 Flash':local?(data.commandReady?'本地指挥官与 Flash 飞行员，可输入文字或语音下令':ai?.error||'正在自动加载本地指挥官模型，飞行控制可正常使用'):data.commandReady?'可语音下令，也可直接输入文字':'打开设置 → API 接入，填写自己的 Qwen API Key 并应用即可；也可使用本机 .env 配置',local?ai?.status==='error':!data.commandReady);
       if((local&&ai?.status!=='error'||data.pilotAssistant?.enabled)&&!closed)healthTimer=setTimeout(()=>void checkConnection(),2000);
     }catch{badge.textContent='连接暂不可用 · 正在重试';if(!busy&&!recording&&!starting&&!health)say('请使用 start_game.cmd 启动带语音 API 的游戏服务',true);if(!closed)healthTimer=setTimeout(()=>void checkConnection(),2000);}
     sync();

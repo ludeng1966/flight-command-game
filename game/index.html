@@ -27,6 +27,23 @@
 <div class="settings-section"><h3>通联</h3><div id="settings-radio"></div></div>
 <div class="settings-section"><h3>机型与气动</h3><div id="settings-aircraft"></div><p class="setting-hint">更换机型同时应用气动、推力、质量与飞控限制，并按当前状态重规划。战斗机参考战雷，客机参考公开性能资料。</p><a href="./aircraft-models.html" target="_blank" rel="noopener">查看模型与比例</a></div>
 <div class="settings-section"><h3>语言</h3><label for="text-language">文字语言<select id="text-language"><option value="zh">中文</option><option value="en">English</option></select></label><label for="voice-language">语音语言<select id="voice-language"><option value="zh">中文</option><option value="en">English</option></select></label><label for="speech-rate">语音速度<select id="speech-rate"><option value="0.8">0.8×</option><option value="1">1×</option><option value="1.2">1.2×</option></select></label><p class="setting-hint">界面和通联文字、语音播报可分别选择，设置自动保存。</p></div>
+<div class="settings-section"><h3>API 接入</h3>
+<form id="api-credentials" autocomplete="off">
+<p id="api-credentials-summary" class="setting-hint">正在读取连接配置…</p>
+<label for="api-qwen-key">Qwen API Key<input id="api-qwen-key" type="password" autocomplete="new-password" spellcheck="false" maxlength="4096" placeholder="填写自己的百炼 API Key"></label>
+<label for="api-qwen-region">Qwen 地域<select id="api-qwen-region"><option value="beijing">中国内地 · 北京</option><option value="singapore">国际 · 新加坡</option></select></label>
+<label for="api-inworld-key">Inworld API Key<input id="api-inworld-key" type="password" autocomplete="new-password" spellcheck="false" maxlength="4096" placeholder="粘贴 Portal 的 Base64 凭据"></label>
+<details id="api-advanced"><summary>模型与音色（可选）</summary>
+<label for="api-qwen-model">Qwen 模型<input id="api-qwen-model" type="text" maxlength="100" value="qwen3.7-flash" spellcheck="false"></label>
+<label for="api-voice-commander">指挥员 voice ID<input id="api-voice-commander" type="text" maxlength="256" placeholder="Dennis（公共音色）" spellcheck="false"></label>
+<label for="api-voice-alpha">Alpha voice ID<input id="api-voice-alpha" type="text" maxlength="256" placeholder="Alex（公共音色）" spellcheck="false"></label>
+<label for="api-voice-bravo">Bravo voice ID<input id="api-voice-bravo" type="text" maxlength="256" placeholder="Oliver（公共音色）" spellcheck="false"></label>
+<label class="api-localized"><input id="api-pilot-localized" type="checkbox"> 两个男声均已完成英语本地化</label>
+<p class="setting-hint">自定义音色须属于该密钥可访问的工作区。中文跑道仍按“洞九左”播报。</p></details>
+<div class="api-actions"><button type="submit">应用密钥</button><button type="button" id="api-test-qwen">保存并测试 Qwen</button><button type="button" id="api-test-inworld">保存并试听语音</button><button type="button" id="api-clear">恢复本机配置</button></div>
+<p id="api-credentials-status" class="setting-hint" role="status" aria-live="polite"></p>
+<p class="setting-hint">密钥仅保存在当前服务的会话内存中，8 小时后或服务重启后需重新填写；不会写入存档或 .env。留空可保留本会话已填的密钥。测试会产生少量模型调用费用。</p>
+</form></div>
 <div class="settings-section"><h3>飞行员 AI</h3><div id="settings-pilot"></div></div>
 <div class="settings-section"><h3>场景</h3><div id="settings-scenario"></div></div>
 <div class="settings-section"><h3>工具与帮助</h3><div id="settings-tools"></div></div>
@@ -72,4 +89,4 @@
 <link rel="stylesheet" href="./route-editor.css">
 <footer><button id="pause" class="primary">暂停 <kbd>SPACE</kbd></button><details id="speed-menu" class="dock-menu"><summary id="current-rate" aria-label="模拟速度">1×</summary><div id="speed-menu-content" class="dock-popover"></div></details><div id="rates"><button data-rate="1" class="active">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button><button data-rate="8">8×</button></div><span id="clock">T+00:00</span><div class="footer-right"><details id="route-menu" class="dock-menu"><summary>航路</summary><div id="route-menu-content" class="dock-popover"></div></details><details id="view-menu" class="dock-menu"><summary>视图</summary><div id="view-menu-content" class="dock-popover"></div></details><button id="radio-toggle" type="button" aria-expanded="false" aria-controls="radio-console">通联<span id="radio-unread" hidden></span></button><button id="focus">聚焦编队</button><button id="reset">重新开始</button></div></footer>
 <div class="legend"><i></i>友机 <i class="cyan"></i>航点 / 指挥路径 <span>W/S 沿视线移动 · A/D 横移 · Shift 上升 · Ctrl 下降</span></div>
-</main><script type="module" src="./main.js"></script></body></html>
+</main><script type="module" src="./main.js"></script><script type="module" src="./api-settings.js"></script></body></html>
