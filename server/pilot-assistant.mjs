@@ -251,6 +251,7 @@ export class PilotAssistant{
           if(plan.tasks.some(t=>['assign_role','cover','escort'].includes(t.action)))messages[0].content+='\n本次是双机分工/保护任务，resultText只写一句结论，不重复呼号、角色、队形或数值。角色设置成功不等于僚机已飞到保护位。';
           if(fact.modelFacts.observed?.grounded)messages[0].content+='\n本机仍在地面。按真实机位、跑道位置和许可状态交流，resultText只写简短结论；不加高度、空速或马赫数，不编造发动机启动、检查合格或起飞许可。';
           if(plan.tasks.some(t=>['airport','atc'].includes(t.action)))messages[0].content+='\n机场任务的resultText只写中文执行结论，不重复模式标识或双语标签，不得输出reduced_thrust、TAKEOFF等内部代码。推力/航路方案已在instruction中按玩家语言表达。塔台排序、改跑道、许可指示的reported仅表示已记录并核实，不表示飞机已完成动作；阶段许可仍须由实际管制播报和飞行员复诵后生效，不能提前说已获起飞/着陆许可。';
+          if(fact.modelFacts.clockRunning===false)messages[0].content+='\n本次模拟已暂停。若目标已装订但尚未达到，verdict仍用executing表示任务已接收，resultText必须明确“已装订，模拟暂停，等待继续”，不能说正在飞行、转向、爬升或正在执行。不得自行恢复时钟。';
           for(let attempt=0;attempt<2;attempt++){
             const response=await runtime.complete('pilot',messages,resultSchema,{maxTokens:350,signal});this.calls++;timings.push(response.timing);
             if(signal?.aborted)throw new DOMException('检查已取消','AbortError');

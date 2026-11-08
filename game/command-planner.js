@@ -17,6 +17,7 @@ export class CommandPlanner{
     return this.request('prepare',world,{plan,expectedRevision,options},signal);
   }
   forecast(world,timing,signal){
+    if(signal?.aborted)return Promise.reject(cancelled());
     if(!timing.playing)return Promise.resolve({...timing,forecasts:[{outputSec:0,simTimeSec:world.time,units:world.units.map(u=>({id:u.id,position:[...u.position],velocity:[...u.velocity],alive:u.alive!==false}))}]});
     return this.request('forecast',world,{timing},signal);
   }

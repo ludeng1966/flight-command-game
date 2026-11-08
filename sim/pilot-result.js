@@ -132,7 +132,8 @@ export function inspectCommandResult(context,plan,interpretation,result){
     if(tasks.some(t=>t.action==='airport'&&needsDeparturePlan(t.airportOrder))&&state?.departurePowerPlan)requiredReadback+='，'+departurePlanReadback(state.departurePowerPlan,system);
     details.push(result.reason||'');if(state?.navigationBlocked)details.push(state.navigationBlocked);
     return {unitId,requiredReadback,expectedVerdict:verdict,departurePlan:state?.departurePowerPlan??null,modelFacts:{unitId,callsign:unit?.callsign??'指挥台',instruction:requiredReadback,
-      comparisonSummary:{executing:'目标设置与命令一致；当前飞行状态尚未全部达到目标，正在执行。',reached:'当前飞行参数已达到本次指令要求；达到参数目标后仍可继续飞行，不要求航点队列清空。',
+      clockRunning:result.clockRunning,
+      comparisonSummary:{executing:result.clockRunning===false?'目标设置与命令一致，航路或任务已装订；模拟已暂停，等待玩家继续。':'目标设置与命令一致；当前飞行状态尚未全部达到目标，正在执行。',reached:'当前飞行参数已达到本次指令要求；达到参数目标后仍可继续飞行，不要求航点队列清空。',
         blocked:'程序无法执行这条指令。',mismatch:'程序实际装订的设置与指挥命令不一致。只对比installation里的expected和actual说明设置差异；当前飞机还没转向或爬升到位不代表装订错误。',reported:'这是一份已经核实的状态或通报。'}[verdict],
       claimedOutcome:result.outcome,units:unitPolicy(system),installation,goalReached:goals.length?goals.every(Boolean):null,
       tolerances:{headingDeg:3,altitudeM:50,speedKph:5},
@@ -155,7 +156,9 @@ export function validateResultReadbacks(value,facts){
     const allowedNumbers=new Set(((fact.requiredReadback+' '+fact.modelFacts.callsign+' '+JSON.stringify({installation:fact.modelFacts.installation,observed:fact.modelFacts.observed,reason:check.verdict==='blocked'?fact.modelFacts.reason:null})).match(/\d+(?:\.\d+)?/g)??[]));
     for(const numeric of check.readbackText.match(/\d+(?:\.\d+)?/g)??[])if(!allowedNumbers.has(numeric))throw Error('复述添加了指令没有要求的数值，请只复述instruction和结果状态');
     if(check.verdict!=='reached'&&/(已(?:经)?(?:到达|达到)|已(?:经)?完成(?:任务|目标|飞行)|目标已(?:完成|达成)|\b(?:TARGET REACHED|MISSION COMPLETE)\b)/i.test(check.readbackText))throw Error('任务尚未完成，不能报告已经达到目标');
-    if(check.verdict==='executing'&&!/(执行中|正在(?:执行|转向|爬升|下降|飞行))/.test(check.readbackText))throw Error('2B需要说明任务仍在执行中');
+    if(check.verdict==='executing'&&fact.modelFacts.clockRunning===false){
+      if(!/暂停|等待(?:玩家)?继续/.test(check.readbackText)||/正在(?:执行|转向|爬升|下降|飞行)/.test(check.readbackText))throw Error('模拟暂停时应报告已装订、暂停或等待继续，不能声称正在飞行执行');
+    }else if(check.verdict==='executing'&&!/(执行中|正在(?:执行|转向|爬升|下降|飞行))/.test(check.readbackText))throw Error('2B需要说明任务仍在执行中');
     if(check.verdict==='reached'&&!/(已(?:经)?(?:达到|到达)|目标已达成)/.test(check.readbackText))throw Error('2B需要说明采样数据已经达到目标');
     if(check.verdict==='blocked'&&!/(无法|不能执行|未执行)/.test(check.readbackText))throw Error('2B需要说明任务无法执行');
     if(check.verdict==='mismatch'&&!/((装订|设置).*(不一致|未通过|不匹配)|(不一致|不匹配).*装订|未装订)/.test(check.readbackText))throw Error('2B需要明确报告装订或设置不一致，不能仅因当前飞机尚未到达目标而报告错误');
