@@ -20,6 +20,15 @@ export function energyEnvelope(p,h,V,configuration){
     maxSpeed:Math.min(p.limits?.ias?p.limits.ias*Math.sqrt(1.225/rho)*.97:Infinity,(p.limits?.mach??3)*atmosphere(h).soundSpeed*.97)};
 }
 
+export function navigationEnvelope(u){
+  const p=u.profile,V=Math.max(20,u.speed),e=energyEnvelope(p,u.position[2],V,u);
+  const bankG=p.controlLimits?.bankRad?1/Math.cos(p.controlLimits.bankRad):p.maxG;
+  const availableG=Math.max(0,Math.min(p.maxG,e.aero.maxG,e.budgetG,bankG));
+  return {structuralMaxG:p.maxG,configurationMaxG:e.aero.maxG,availableG,sustainableG:e.sustainableMaxG,
+    ceilingM:p.limits?.ceilingM??15000,safeLevelSpeedMps:e.safeSpeed(1),
+    minimumTurnRadiusM:availableG>1?V*V/(G*Math.sqrt(availableG*availableG-1)):null};
+}
+
 export function controlEnergy(u,{gamma,loadFactor,targetSpeed,heightError=0,urgent=false,envelope,previewClimb=0},dt=.1){
   dt=clamp(dt,0,.25);const p=u.profile,V=Math.max(20,Math.hypot(...u.velocity)),base=envelope??energyEnvelope(p,u.position[2],V,u),plan=u.pilotPowerPlan?.active?u.pilotPowerPlan:u.departurePowerPlan;
   const limited=plan?.active&&(plan.executionId||u.position[2]<plan.altitudeM-50)&&V>base.safeSpeed(1)*.95&&u.flightState!=='stall-recovery';
