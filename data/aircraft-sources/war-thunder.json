@@ -1,0 +1,44 @@
+{
+  "f16": {
+    "sourceFile": "gamedata/flightmodels/fm/f_16a_block_10.blkx",
+    "sha256": "d56f981cdcf6fdcd5f2ab13a685c467aa800d0a5d10509cff0d4e930acb2fffd",
+    "emptyMassKg": 7600,
+    "internalFuelKg": 3305,
+    "referenceFuelKg": 2400,
+    "engineCount": 1,
+    "wingAreaM2": 27.900000000000002,
+    "wingSpanM": 9.44,
+    "clMax": 1.7,
+    "clAlphaPerRad": 4.125296124941927,
+    "cd0": 0.016399999999999998,
+    "inducedK": 0.15571497056369202
+  },
+  "j11": {
+    "sourceFile": "gamedata/flightmodels/fm/j_11.blkx",
+    "sha256": "e40fbefaf7149124d9435ea41425c640e57ca05ff820feec063b58383f4ba23e",
+    "emptyMassKg": 16900,
+    "internalFuelKg": 9400,
+    "referenceFuelKg": 4700,
+    "engineCount": 2,
+    "wingAreaM2": 61.980000000000004,
+    "wingSpanM": 14.7,
+    "clMax": 1.55,
+    "clAlphaPerRad": 3.724225668350351,
+    "cd0": 0.019335882542755728,
+    "inducedK": 0.17226266436566307
+  },
+  "su27": {
+    "sourceFile": "gamedata/flightmodels/fm/su_27.blkx",
+    "sha256": "574af74d4c84ef41c69e0ff2429d4f19d44a6b0e1a5394a4ad3dd5a7020b8d94",
+    "emptyMassKg": 16330,
+    "internalFuelKg": 9400,
+    "referenceFuelKg": 4700,
+    "engineCount": 2,
+    "wingAreaM2": 61.980000000000004,
+    "wingSpanM": 14.7,
+    "clMax": 1.55,
+    "clAlphaPerRad": 3.724225668350351,
+    "cd0": 0.019335882542755728,
+    "inducedK": 0.17226266436566307
+  }
+}
