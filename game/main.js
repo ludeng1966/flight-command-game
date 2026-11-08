@@ -110,13 +110,13 @@ function updateUI(){
 function toggle(){world.revision++;playing=!playing;acc=0;updateUI();}
 async function boot(){
   await Promise.all([initLanguages(),loadAircraftModels()]);
-  const [scenario,profiles,terrain,landmask,heightfield]=await Promise.all([read('../data/scenarios/demo.json'),read('../data/aircraft.json'),read('../terrain/air_skyscraper_city_contours.json'),read('../terrain/air_skyscraper_city_landmask.json'),TerrainHeight.load('../terrain/air_skyscraper_city')]);
+  const [scenario,profiles,terrain,landmask,heightfield,aircraftRuntime]=await Promise.all([read('../data/scenarios/demo.json'),read('../data/aircraft.json'),read('../terrain/air_skyscraper_city_contours.json'),read('../terrain/air_skyscraper_city_landmask.json'),TerrainHeight.load('../terrain/air_skyscraper_city'),read('../data/aircraft-runtime.json')]);
   let spawnMode=scenario.defaultSpawnMode??'stands';try{const saved=localStorage.getItem('flight-spawn-mode');if(['stands','airborne'].includes(saved))spawnMode=saved;}catch{}
   let mode='strict';try{const saved=localStorage.getItem('flight-execution-mode');if(['strict','relaxed'].includes(saved))mode=saved;}catch{}
   world=new World(scenario,profiles,heightfield,{spawnMode,mode});selectedId=world.units[0].id;
   let restoredState=null;
   const formFields=['command-style','command-auto','command-text','append-waypoint','airport-runway','airport-gate','airport-taxiways'];
-  const autosave=new AutoSave({storage:{getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)},fingerprint:saveFingerprint(scenario,profiles),
+  const autosave=new AutoSave({storage:{getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)},fingerprint:saveFingerprint(scenario,profiles),compatibleFingerprints:aircraftRuntime.compatibleSaveFingerprints,
     capture:()=>({world:captureWorld(world),training:trainingCoach?.snapshot()??null,
       ui:{selectedId,rate,mapPoint,view:getLiveView(),form:Object.fromEntries(formFields.map(id=>{const el=$('#'+id);return [id,el?.type==='checkbox'?el.checked:el?.value??''];}))}}),
     restore:state=>{
@@ -136,9 +136,9 @@ async function boot(){
   replanner=new RouteReplanner({getWorld:()=>world,planner});
   const configureWorld=()=>{
     world.deferNavigation=u=>{
-      const active=world,key=world.routeKey(u);u.navigationPending=true;
+      const active=world,key=world.routeKey(u),profile=u.profile;u.navigationPending=true;
       planner.request('nav:'+u.id,u,u.waypoints).then(prepared=>{
-        u.navigationPending=false;if(world!==active||world.routeKey(u)!==key||!u.waypoints.length)return;
+        if(u.profile!==profile)return;u.navigationPending=false;if(world!==active||world.routeKey(u)!==key||!u.waypoints.length)return;
         if(u.rwrDefense?.active){u.navigationKey=null;return;}
         try{
           if(!prepared){u.navigationKey=null;return;}
@@ -216,7 +216,7 @@ async function boot(){
   const towerSupervisor=new TowerSupervisor({getWorld:()=>world,enabled:()=>playing&&!!voiceControl?.pilotAssistantEnabled});
   window.addEventListener('pagehide',()=>{towerSupervisor.reset();rwrPilot.stop();pilotSupervisor.stop();radarPilot.stop();attackPilot.stop();});
   aircraftHud=initAircraftHud({getWorld:()=>world,getSelected:()=>selectedId,onSelect:select});
-  appearanceSettings=initAircraftAppearance({getWorld:()=>world,onChange:()=>{updateUI();autosave.save();}});
+  appearanceSettings=initAircraftAppearance({getWorld:()=>world,onChange:()=>{updateUI();autosave.save();},onError:text=>routeMessage(text,true)});
   trainingCoach=initTrainingCoach({getWorld:()=>world,getPlaying:()=>playing,
     onHandoff:(unitId,target)=>{const u=world.units.find(u=>u.id===unitId);if(requestHandoff(world,u,target))voiceControl.requestHandoff(unitId);},onExecutionMode:value=>{const el=$('#execution-mode');el.value=value;el.dispatchEvent(new Event('change'));},issueCommand:(instruction,options)=>voiceControl.issue(instruction,options),cancelCommand:()=>voiceControl.cancel(),getCommandBusy:()=>voiceControl.busy,
     onSimulation:running=>{playing=running;acc=0;},

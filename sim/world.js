@@ -20,8 +20,10 @@ import {controlAuthority,updateControlAuthority} from './control-authority.js';
 import {initializeMass,updateAircraftMass} from './aircraft-mass.js';
 import {applyAtmosphere,updateWeather} from './airport-weather.js';
 import {ATC_INTENTS} from './atc-command.js';
+import {setAircraftType} from './aircraft-type.js';
 export class World {
   constructor(scenario,profiles,terrain=null,{spawnMode='airborne',mode='strict'}={}) {
+    Object.defineProperty(this,'profiles',{value:profiles,enumerable:false});
     this.spawnMode=spawnMode;this.radarTargets=[];this.radarTargetSequence=0;
     this.missiles=[];this.missileSequence=0;this.weaponEvents=[];
     this.rwrPracticeEmitters=[];this.rwrPracticeSequence=0;
@@ -31,7 +33,7 @@ export class World {
     if(scenario.airport)this.airportOps=new AirportOperations(createAirport(scenario.airport,terrain));
     this.units=scenario.units.map(s=>{
       const profile=profiles[s.profile],v=s.speed,a=s.heading*Math.PI/180;
-      return {...s,profile,radar:createRadar(s.profile,profile.radar),weapons:createWeapons(s.profile,s.loadout),rwr:createRwr(s.profile,profile.rwr),rwrDefense:createRwrDefense(),position:[...s.position],velocity:[Math.sin(a)*v,Math.cos(a)*v,0],
+      return {...s,profile,aircraftTypeVersion:1,radar:createRadar(s.profile,profile.radar),weapons:createWeapons(s.profile,s.loadout),rwr:createRwr(s.profile,profile.rwr),rwrDefense:createRwrDefense(),position:[...s.position],velocity:[Math.sin(a)*v,Math.cos(a)*v,0],
         bank:0,cl:profile.mass*G/(.5*density(s.position[2])*v*v*profile.area),
         speed:v,mach:v/atmosphere(s.position[2]).soundSpeed,loadFactor:1,throttle:0,afterburner:0,targetAltitude:s.position[2],holdAltitude:s.position[2],targetSpeed:v,
         orbit:[s.position[0]+4000,s.position[1]],waypoints:[],completedWaypoints:0,nextWaypointNumber:1,alive:true,flightState:'normal',recoveryTime:0,terrain,trail:[],trailRevision:0,control:{bank:0,cl:0,throttle:0}};
@@ -69,9 +71,11 @@ export class World {
   }
   checkRoute(id,points){
     const u=this.units.find(u=>u.id===id);if(!u.alive)return {valid:false,reason:'飞机已坠毁，无法执行航路'};
+    if(points.some(p=>p[2]>(u.profile.limits?.ceilingM??Infinity)))return {valid:false,reason:'航点超出本机型实用升限'};
     if(this.terrain?.checkPoint){for(const point of points){const check=this.terrain.checkPoint(point);if(!check.valid)return check;}return {valid:true,reason:''};}
     return this.terrain?.checkRoute(u.position,points)??{valid:true,reason:''};
   }
+  setAircraftType(id,profileId){return setAircraftType(this,id,profileId);}
   setAirportWeather(patch){if(!this.airportOps)throw Error('本场景未配置机场');const result=updateWeather(this.airportOps.airport,patch,this.time);this.airportOps.weatherChanged?.(this);this.revision++;return result;}
   setAltimeter(id,qnhHpa){if(!Number.isFinite(qnhHpa)||qnhHpa<870||qnhHpa>1085)throw Error('气压设置无效');const u=this.units.find(u=>u.id===id);if(!u)throw Error('飞机不存在');u.qnhHpa=qnhHpa;this.revision++;}
   declareAirportEmergency(id,type='fuel'){

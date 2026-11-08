@@ -122,6 +122,7 @@ export function traceFlight(original,goals,legs,{duration=900,dt=.1,cursor=0,set
 
 export function planSafeRoute(original,goals,terrain){
   if(!goals.length)return {valid:true,legs:[],points:[],warnings:[],detour:false};
+  if(goals.some(p=>p[2]>(original.profile.limits?.ceilingM??Infinity)))return {valid:false,reason:'航点超出本机型实用升限',points:[],warnings:['超出升限'],legs:[]};
   if(terrain?.checkPoint){for(const p of goals){const check=terrain.checkPoint(p);if(!check.valid)return {valid:false,reason:check.reason,points:[],warnings:[check.reason]};}}
   else if(terrain?.checkRoute){const check=terrain.checkRoute(original.position,goals);if(!check.valid)return {...check,points:[],warnings:[check.reason]};}
   if(needsRecovery(original)){
@@ -156,7 +157,8 @@ export function planSafeRoute(original,goals,terrain){
     let origin=[...original.position],heading=Math.atan2(original.velocity[0],original.velocity[1]),legs=[],okay=true;
     for(const [index,goal] of goals.entries()){
       const envelope=energyEnvelope(original.profile,Math.max(origin[2],goal[2]),V);
-      const n=Math.max(1.25,Math.min(setting.g??2.2,startEnvelope.budgetG*.94,envelope.budgetG*.94));
+      const bankG=original.profile.controlLimits?.bankRad?1/Math.cos(original.profile.controlLimits.bankRad):Infinity;
+      const n=Math.max(original.profile.category==='transport'?1.02:1.25,Math.min(setting.g??2.2,startEnvelope.budgetG*.94,envelope.budgetG*.94,bankG*.97));
       const radius=Math.max(400,V*V/(G*Math.sqrt(n*n-1)))*1.06;
       const limits={climb:Math.max(.025,Math.min(.32,envelope.climbRate(Math.min(n,1.5),0,true)/V*.8)),descent:.25};
       const dx=goal[0]-origin[0],dy=goal[1]-origin[1],span=Math.hypot(dx,dy);

@@ -3,8 +3,8 @@ import {SAVE_VERSION,encodeState,decodeState} from '../sim/save-state.js';
 export const SAVE_KEYS=['flight-autosave-v1-a','flight-autosave-v1-b'];
 // Each write replaces only one slot. The other remains a usable previous save.
 export class AutoSave{
-  constructor({storage,fingerprint,capture,restore,onStatus=()=>{},now=()=>Date.now(),intervalMs=2000}){
-    Object.assign(this,{storage,fingerprint,capture,restore,onStatus,now,intervalMs});this.sequence=0;this.lastAt=0;this.lastAttemptAt=-Infinity;this.lastRevision=null;this.ready=false;this.lastError=null;
+  constructor({storage,fingerprint,compatibleFingerprints=[],capture,restore,onStatus=()=>{},now=()=>Date.now(),intervalMs=2000}){
+    Object.assign(this,{storage,fingerprint,compatibleFingerprints,capture,restore,onStatus,now,intervalMs});this.sequence=0;this.lastAt=0;this.lastAttemptAt=-Infinity;this.lastRevision=null;this.ready=false;this.lastError=null;
   }
   load(){
     const candidates=[];let found=false;
@@ -12,7 +12,7 @@ export class AutoSave{
       try{
         const raw=this.storage.getItem(key);if(!raw)continue;found=true;
         const value=JSON.parse(raw);
-        if(value.version!==SAVE_VERSION||value.fingerprint!==this.fingerprint||!Number.isSafeInteger(value.sequence)||value.sequence<1||!Number.isFinite(value.savedAt))continue;
+        if(value.version!==SAVE_VERSION||value.fingerprint!==this.fingerprint&&!this.compatibleFingerprints.includes(value.fingerprint)||!Number.isSafeInteger(value.sequence)||value.sequence<1||!Number.isFinite(value.savedAt))continue;
         this.sequence=Math.max(this.sequence,value.sequence);candidates.push(value);
       }catch(error){this.lastError=error;}
     }

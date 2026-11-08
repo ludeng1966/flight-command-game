@@ -85,7 +85,8 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
       typeof u.alive!=='boolean'||!['speed','bank','cl','holdAltitude','targetSpeed'].every(k=>Number.isFinite(u[k]))||
       !Array.isArray(u.waypoints)||!u.waypoints.every(vec)||!u.control||!Number.isFinite(u.control.bank))throw Error('飞机存档无效');
     ids.add(u.id);
-    if(u.fuel&&(!['capacityKg','massKg','bingoKg','emergencyKg'].every(k=>Number.isFinite(u.fuel[k])&&u.fuel[k]>=0)||u.fuel.capacityKg>10000||u.fuel.massKg>u.fuel.capacityKg||!Number.isFinite(u.operatingMassKg)||u.operatingMassKg<1000||!Number.isFinite(u.referenceFuelKg)||u.referenceFuelKg<0))throw Error('燃油与质量存档无效');
+    const savedProfileId=u.profileId??scenario.units.find(s=>s.id===u.id).profile;if(!Object.hasOwn(profiles,savedProfileId))throw Error('存档机型不存在');
+    if(u.fuel&&(!['capacityKg','massKg','bingoKg','emergencyKg'].every(k=>Number.isFinite(u.fuel[k])&&u.fuel[k]>=0)||u.fuel.capacityKg>(profiles[savedProfileId].fuelCapacityKg??10000)||u.fuel.massKg>u.fuel.capacityKg||!Number.isFinite(u.operatingMassKg)||u.operatingMassKg<1000||!Number.isFinite(u.referenceFuelKg)||u.referenceFuelKg<0))throw Error('燃油与质量存档无效');
     if(u.rwr){try{
       createRwr('f16',u.rwr.config);parseRwrContext(rwrContext(u,saved.time),saved.time);
       if(!['sequence','contactSequence'].every(k=>Number.isSafeInteger(u.rwr[k])&&u.rwr[k]>=0)||!Number.isFinite(u.rwr.accumulator)||u.rwr.accumulator<0||u.rwr.accumulator>=.051||!Array.isArray(u.rwr.events)||u.rwr.events.length>48)throw Error();
@@ -104,12 +105,15 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
   for(const key of worldKeys)if(saved[key]!==undefined)world[key]=saved[key];
   for(const unit of world.units){
     const state=saved.units.find(u=>u.id===unit.id);Object.assign(unit,fields(state,['profile','terrain']));
+    const profileId=state.profileId??scenario.units.find(u=>u.id===unit.id).profile;unit.profileId=profileId;unit.profile={...profiles[profileId]};
+    if(unit.profile.emptyMassKg!==undefined){unit.referenceFuelKg=unit.profile.referenceFuelKg;unit.operatingMassKg=unit.profile.mass;if(unit.fuel)unit.fuel.capacityKg=unit.profile.fuelCapacityKg;}
     if(!state.controlAuthority){delete unit.controlAuthority;controlAuthority(world,unit);}
-    unit.weapons=restoreCarrierLoadout(scenario.units.find(u=>u.id===unit.id).profile,unit.weapons);
+    unit.weapons=restoreCarrierLoadout(profileId,unit.weapons);
     updateAircraftMass(unit,0);
     unit.terrain=terrain;if(unit.navigationPending)unit.navigationKey=null;unit.navigationPending=false;
     if(unit.radarTask)unit.radarTask.pending=false;
     if(unit.attackTask)unit.attackTask.pending=false;
+    if(!state.aircraftTypeVersion&&state.visualModel&&state.visualModel!==profileId&&Object.hasOwn(profiles,state.visualModel))world.setAircraftType(unit.id,state.visualModel);
   }
   if(world.airportOps){
     const savedOps=saved.airportOps;
