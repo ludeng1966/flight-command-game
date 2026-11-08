@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "游戏服务（8001）",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/game-server.mjs",
+      "cwd": "${workspaceFolder}",
+      "env": { "GAME_PORT": "8001" },
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
