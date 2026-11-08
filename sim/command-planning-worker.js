@@ -13,7 +13,7 @@ export function commandPlanningSnapshot(world){
 export function planningWorld(snapshot,terrain=null){
   const {state,profiles,airport,groundSlots}=decodeState(snapshot),world=Object.assign(Object.create(World.prototype),state,{terrain});
   world.units=state.units.map((u,i)=>({...u,profile:profiles[i],terrain}));
-  if(airport){world.airportOps=new AirportOperations(airport);Object.assign(world.airportOps,{leases:state.airportOps.leases,cooldown:state.airportOps.cooldown,eventSequence:state.airportOps.eventSequence,groundSlots,world});}
+  if(airport){world.airportOps=new AirportOperations(airport);Object.assign(world.airportOps,{leases:state.airportOps.leases,cooldown:state.airportOps.cooldown,eventSequence:state.airportOps.eventSequence,groundSlots,groundNodeSlots:state.airportOps.groundNodeSlots??{},world});world.airportOps.traffic.nextThink=state.airportOps.nextThink??world.time;}
   else world.airportOps=null;
   setUnitSystem(world.unitSystem??'metric');
   return world;
@@ -34,7 +34,7 @@ export function runCommandPlanning(job,terrain=null){
   const world=planningWorld(job.snapshot,terrain);
   const draft=preparePilotPlan(world,job.plan,job.expectedRevision,job.options);
   for(const [unitId,plan]of draft.flightPlans??[]){const unit=world.units.find(u=>u.id===unitId),points=draft.plannedRoutes.get(unitId).points;
-    plan.seed={position:[...unit.position],velocity:[...unit.velocity],speed:unit.speed,bank:unit.bank,targetSpeed:job.plan.tasks.filter(t=>t.unitId===unitId&&Number.isFinite(t.speedMps)).at(-1)?.speedMps??unit.targetSpeed,key:JSON.stringify(points.map(p=>p.slice(0,3)))};
+    plan.seed={profileId:unit.profileId,position:[...unit.position],velocity:[...unit.velocity],speed:unit.speed,bank:unit.bank,targetSpeed:job.plan.tasks.filter(t=>t.unitId===unitId&&Number.isFinite(t.speedMps)).at(-1)?.speedMps??unit.targetSpeed,key:JSON.stringify(points.map(p=>p.slice(0,3)))};
   }
   return encodeState({status:draft.status,expectedRevision:draft.expectedRevision,radioStyle:draft.radioStyle,sampledAt:world.time,
     headingPlans:[...(draft.headingPlans??[])],flightPlans:[...(draft.flightPlans??[])],departurePlans:[...(draft.departurePlans??[])],plannedRoutes:[...(draft.plannedRoutes??[])],routeSignatures:Object.fromEntries(world.units.map(u=>[u.id,JSON.stringify(u.waypoints.map(p=>p.slice(0,3)))])),previews:draft.previews??[]});

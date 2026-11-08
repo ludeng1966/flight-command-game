@@ -153,6 +153,7 @@ export function initVoiceCommands({getState,onApplied,onSimulation,onPilotPrevie
       },
       checkPilotResult:health?.pilotAssistant?.enabled?async({outcome,result,reason,revision,commanderMessage})=>{
         const current=()=>{if(ref.world!==getState().world||ref.world.revision!==revision)throw Error('期间已有新操作，旧结果检查已作废');};current();
+        for(let attempt=0;attempt<3;attempt++){
         say(committed?`程序已开始执行，${ref.pilotLabel} 正在检查结果…`:`${ref.pilotLabel} 正在检查程序返回的结果…`);
         const snapshot=commandContext(ref.world,ref.selectedId,ref.mapPoint,ref.radioStyle),clock=getState().playing;
         const receipt=captureCommandResult(ref.world,{outcome,reason:reason??null,clockRunning:typeof clock==='boolean'?clock:result?.simulation?result.simulation==='resume':null});
@@ -161,11 +162,14 @@ export function initVoiceCommands({getState,onApplied,onSimulation,onPilotPrevie
         try{reviewed=await post('/api/tactical/pilot/result',JSON.stringify({requestId,pilotModel:ref.pilotModel,commanderMessage,context:snapshot,plan:reply.plan,interpretation:reply.interpretation,result:receipt}),'application/json',AbortSignal.any([signal,controller.signal]));}
         finally{clearInterval(guard);}
         current();if(ref.world.time-snapshot.simTimeSec>120)throw Error('结果采样已经过期，请重新报告状态');
+        if(clock!==getState().playing)continue;
         const expectedModel=health?.pilotModels?.find(m=>m.id===ref.pilotModel)?.model||pilotModelInfo(ref.pilotModel).model;
         if(reviewed.requestId!==requestId||reviewed.revision!==snapshot.revision||reviewed.simTimeSec!==snapshot.simTimeSec||reviewed.checkedBy!==expectedModel)throw Error(`${ref.pilotLabel} 检查结果不匹配`);
         validateResultReadbacks(reviewed,inspectCommandResult(snapshot,reply.plan,reply.interpretation,receipt));reply.resultReview=reviewed;
         for(const item of reviewed.checks){const unit=ref.world.units.find(u=>u.id===item.unitId);if(unit)unit.lastPilotResult={requestId,revision,...item};}
         return reviewed;
+        }
+        throw Error('检查期间连续切换暂停状态，请重新报告当前状态');
       }:null,
       assertCurrent:()=>assertCurrent(ref),assertWorldCurrent:()=>{if(ref.world!==getState().world)throw Error('战场已经重置，旧结果作废');},onPreview:onPilotPreview,onSimulation,
       onCommitted:()=>{committed=true;for(const task of reply.plan.tasks)if(task.unitId&&!['report_status','atc','radar','sensor_task','attack_task','weapon','assign_role'].includes(task.action))setPilotInstruction(ref.world.units.find(u=>u.id===task.unitId),reply.commanderMessage.text);onApplied();onCommandCommitted({reply,source});sync();}});

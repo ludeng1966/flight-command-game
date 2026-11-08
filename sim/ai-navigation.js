@@ -1,5 +1,5 @@
 const vector=p=>Array.isArray(p)&&p.length===3&&p.every(Number.isFinite);
-const near=(a,b,tolerance=5)=>Math.hypot(...a.map((v,i)=>v-b[i]))<=tolerance;
+const near=(a,b,tolerance=.5)=>Math.hypot(...a.map((v,i)=>v-b[i]))<=tolerance;
 export function forecastOrigin(context,unitId,seconds){
   return context.decisionTiming?.forecasts?.find(f=>f.outputSec===seconds)?.units.find(u=>u.id===unitId)?.position??context.units.find(u=>u.id===unitId)?.position;
 }
