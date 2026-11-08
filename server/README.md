@@ -1,5 +1,24 @@
 # Qwen 指挥服务与本地 2B 实验
 
+## 玩家自行填写 API Key
+
+启动 `start_game.cmd`，进入游戏右上角 **设置 → API 接入**。填写自己的百炼 Qwen API Key、匹配的北京或新加坡地域，以及 Inworld Portal 复制的完整 Base64 API Key；点击“应用密钥”立即生效，不需要编辑 `.env` 或重启。可以只填一个提供商；未填的另一项不会借用本机 `.env` 中的密钥。空白输入保留当前玩家会话中已填的密钥。
+
+“模型与音色（可选）”可以设置 Qwen 模型和指挥员、Alpha、Bravo 的 voice ID。模型默认沿用项目模型名称，须在所选地域和账号中可用。音色留空使用公共音色 Dennis / Alex / Oliver；塔台使用 Yichen / Oliver。原作者的私有克隆音色不会自动授权给其他账号，自定义 ID 必须能被玩家自己的密钥访问。只有两个男声均已完成 `en-US` 本地化时，才勾选英语本地化选项。
+
+“保存并测试 Qwen”会发送一条很短的结构化模型请求；“保存并试听语音”会合成“语音连接正常。”并播放。两者使用当前表单保存后的玩家密钥，会产生少量提供商调用费用；“应用密钥”本身不请求上游。连接失败会显示地域、权限、额度或网络方面的错误，不显示密钥。
+
+密钥只保存在当前 Node 服务进程的内存中，浏览器获得随机的 HttpOnly / SameSite=Strict 会话 cookie。每个会话的模型客户端、飞行员队列和决策缓存独立，更新不会修改 `.env`、游戏存档或其他玩家配置。保存成功后立即清空密码输入框，读取状态只返回是否已填，不回传明文或掩码密钥。会话有效期为 8 小时，服务重启也会失效；过期 cookie 的模型请求返回 401，禁止回退到本机密钥。点击“恢复本机配置”清除当前玩家会话，恢复当前机器原有 `.env` 配置。此功能没有创建邀请码或公网分享地址；当前服务仍只允许本机访问，开发者应各自在自己的机器上运行项目。不要向其他开发者分发自己的 `.env`。
+
+接口均在同一游戏服务上，不接受任意上游 URL：
+
+- `GET /api/player/credentials`：读取当前会话的配置状态。
+- `POST /api/player/credentials`：JSON `{qwenKey, inworldKey, qwenRegion: "beijing" | "singapore", qwenModel, voices: {commander, pilot1, pilot2}, pilotEnglishLocalized}`；密钥可只填一项，更新时省略或空字符串保留当前会话值，显式 `null` 清除该项。至少保留一项密钥。
+- `POST /api/player/credentials/test`：JSON `{provider: "qwen" | "inworld"}`；前者返回连接成功 JSON，后者返回 MP3。
+- `DELETE /api/player/credentials`：清除本会话，恢复本机配置。
+
+接口拒绝跨站 Origin / Sec-Fetch-Site、超长配置、密钥中的换行以及不支持的地域。服务最多保留 32 个玩家内存会话；未配置玩家密钥的原有本机路径保持兼容。验证：`node --test tests/player-credentials.test.mjs tests/inworld-tts.test.mjs tests/bilingual-speech.test.mjs`。
+
 ## 当前默认：3.7-Flash 指挥官 + 程序飞行 + 2B检查后复述
 
 本机和 .env.example 设置 AI_PROVIDER=hybrid。双击 start_game.cmd 启动，Qwen3.7-Flash理解玩家口令，程序完成气动预演、地形检查、装订和连续控制。每次指令得到程序结果后，POST /api/tactical/pilot/result 唤醒本地2B检查，再复述关键参数与结果。所有飞机共用一份模型、一个串行队列，逐机检查。
