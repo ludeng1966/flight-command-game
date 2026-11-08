@@ -37,7 +37,7 @@ export function initApiSettings({doc=globalThis.document,fetchImpl=globalThis.fe
     try{await player.play();say('Inworld 合成成功，正在播放测试语音。');}catch{stopAudio();say('语音已生成，浏览器未允许播放；请再次点击试听。',true);}
   });
   $('api-clear').onclick=()=>void run(async()=>{stopAudio();const response=await request('/api/player/credentials',{method:'DELETE'});render(await response.json());$('api-qwen-key').value='';$('api-inworld-key').value='';refreshGame();say('本会话的玩家密钥已清除，恢复使用本机配置。');});
-  const ready=request('/api/player/credentials').then(response=>response.json()).then(render).catch(error=>say(error.message,true));
+  const ready=request('/api/player/credentials').then(response=>response.json()).then(render).catch(error=>{summary.textContent='尚未连接；可填写密钥或恢复本机配置。';say(error.message,true);});
   return {ready,destroy(){stopAudio();}};
 }
 if(globalThis.document)initApiSettings();
