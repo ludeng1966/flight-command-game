@@ -2,7 +2,7 @@
 
 入口：设置 → 飞机外观，可为 ALPHA / BRAVO 分别选择 F-16、Su-27、J-11、Boeing 747-8I、Airbus A320-200。
 对照页：game/aircraft-models.html。全部模式使用同一相机尺度，网格 10m；单机查看提供近距离外形检查。
-本次接入外观资产，不改变现有飞机的气动配置。J-11 使用 Su-27 基础外形与独立配色，不冒充精确的 J-11 分型模型。
+当前机型选择会同步更换外观、气动、动力、质量与飞控限制。气动数据与近似说明见 docs/aircraft-physics.txt。J-11 使用 Su-27 基础外形与独立配色，但使用独立的战雷 J-11 气动数据，不冒充精确的 J-11 分型外形模型。
 
 源模型：
 F-16：NikolaiVChr/f16，GPL-2.0-or-later。Erik Hofman 及 authors.txt 中的贡献者。

@@ -4,7 +4,7 @@ import {AIRCRAFT_MODELS} from '../three3d/aircraft-catalog.js';
 import {loadAircraftModels,buildAircraft} from '../three3d/aircraft.js';
 const canvas=document.querySelector('#models'),status=document.querySelector('#status');
 try{
-  await loadAircraftModels();const scene=new THREE.Scene(),renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x08131c);renderer.outputColorSpace=THREE.SRGBColorSpace;
+  const [,profiles]=await Promise.all([loadAircraftModels(),fetch('../data/aircraft.json').then(r=>{if(!r.ok)throw Error('气动配置加载失败');return r.json();})]);const scene=new THREE.Scene(),renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x08131c);renderer.outputColorSpace=THREE.SRGBColorSpace;
   const camera=new THREE.OrthographicCamera(),controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.target.set(0,0,0);
   scene.add(new THREE.HemisphereLight(0xe0efff,0x263c50,2.4));const light=new THREE.DirectionalLight(0xffffff,2.8);light.position.set(-70,100,-80);scene.add(light);
   const grid=new THREE.GridHelper(240,24,0x2e5266,0x183242);grid.position.y=-6;scene.add(grid);
@@ -12,7 +12,7 @@ try{
   for(const [i,[id,spec]]of Object.entries(AIRCRAFT_MODELS).entries()){
     const model=buildAircraft(colors[i],id);model.position.x=x+spec.wingspanM/2;scene.add(model);models.set(id,model);x+=spec.wingspanM+12;
     const option=document.createElement('option');option.value=id;option.textContent=spec.name;document.querySelector('#focus').append(option);
-    const article=document.createElement('article');article.style.setProperty('--tint',colors[i]);article.innerHTML=`<h2>${spec.name}</h2><p>机长 ${spec.lengthM} m</p><p>翼展 ${spec.wingspanM} m</p><p>${model.userData.triangles.toLocaleString()} 三角面</p><p><a href="${spec.source}" target="_blank" rel="noopener">公开模型 / 授权 ↗</a></p>`;document.querySelector('#specs').append(article);
+    const p=profiles[id],article=document.createElement('article');article.style.setProperty('--tint',colors[i]);article.innerHTML=`<h2>${spec.name}</h2><p>机长 ${spec.lengthM} m</p><p>翼展 ${spec.wingspanM} m</p><p>参考飞行质量 ${(p.mass/1000).toFixed(1)} t</p><p>机翼 ${p.area.toFixed(1)} m² · ${p.maxG} G</p><p>${p.category==='transport'?'OpenAP 参考气动':'战雷数据映射'} · ${p.engineCount} 台发动机</p><p>${model.userData.triangles.toLocaleString()} 三角面</p><p><a href="${spec.source}" target="_blank" rel="noopener">公开模型 / 授权 ↗</a></p>`;document.querySelector('#specs').append(article);
   }
   const focus=document.querySelector('#focus');
   function frameView(){
@@ -24,6 +24,6 @@ try{
   function resize(){renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);frameView();}new ResizeObserver(resize).observe(canvas);resize();
   for(const button of document.querySelectorAll('[data-view]'))button.onclick=()=>{view=button.dataset.view;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b===button));frameView();};focus.onchange=frameView;
   document.querySelector('#gear').onchange=e=>{for(const model of models.values())model.userData.gear.visible=e.target.checked;};
-  status.textContent='5 款外观 · 模型已加载';canvas.dataset.loaded='true';
+  status.textContent='5 款机型 · 气动已接入';canvas.dataset.loaded='true';
   renderer.setAnimationLoop(()=>{controls.update();renderer.render(scene,camera);});
 }catch(error){status.textContent='加载失败：'+error.message;console.error(error);}

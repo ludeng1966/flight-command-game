@@ -33,6 +33,11 @@
 
 ## 游戏素材
 
+### 飞行性能参考数据
+
+- [OpenAP](https://github.com/TUDelft-CNS-ATM/openap)：A320、747-8的机体参数、阻力极线和选用发动机记录保留于 `data/aircraft-sources/openap/`，按其 GPL-3.0 数据许可保留。离线推力公式适配参考 OpenAP（代码 LGPL-3.0）和 [Sun 等人的论文](https://doi.org/10.3390/aerospace7080104)，源代码许可另存为 `CODE-LICENSE`。
+- F-16、J-11、Su-27 参数由玩家本机战雷 FM 提取、映射，保留来源 SHA-256；并未复制原气动求解器。直接字段与工程近似分别列在 `docs/aircraft-physics.txt` 及各机型 `provenance` 中。
+
 ### 公开飞机外观模型
 
 `assets/aircraft/` 的简化网格派生自以下公开模型，分别保留原许可；原 AC3D 源文件、许可全文、作者说明、下载 URL 和 Git blob SHA-1 收录于 `assets/aircraft/sources/`。转换工具及尺寸说明见 `docs/aircraft-models.txt`。

@@ -1,0 +1,45 @@
+机型气动与动力接入（2026-11-08）
+
+入口：设置 → 机型与气动。选择机型同时更换气动、推力、质量、燃油、飞控限制和外形；保持实际位置、速度和滚转姿态，从当前状态重新规划尚未完成的航路。
+新机型不继承 F-16 武器挂载。新机型的雷达/武器系统未按气动数据自动推定。
+
+参考飞行配置（不含额外挂载，燃油会消耗）：
+F-16A Block 10：10000 kg；机翼27.90m²；单发；空机含油液7600kg + 燃油2400kg；清洁CLmax=1.70；CD0=0.01640；k=0.155715。
+J-11：21600 kg；机翼61.98m²；双发；空机含油液16900kg + 燃油4700kg；清洁CLmax=1.55；CD0=0.019336；k=0.172263。
+Su-27：21030 kg；机翼61.98m²；双发；空机含油液16330kg + 燃油4700kg；单独读取su_27.blkx。
+A320-200 / CFM56-5B4：63600 kg；机翼122.4m²；双发；空机42600kg + 载荷12000kg + 燃油9000kg；清洁CLmax=1.5（估计）；CD0=0.018；k≈0.041935。
+747-8I / GEnx-2B67：350100 kg；机翼554m²；四发；空机220100kg + 载荷45000kg + 燃油85000kg；清洁CLmax=1.45（估计）；CD0=0.021；k=0.047。
+两款客机的清洁过载上限为2.5G，起降构型2G，常规自动飞行最大坡度30度；滚转、拉升、速度参考和发动机响应更缓，不使用加力。
+
+战雷来源：
+F:/mygame/wt_flight_research/local_aces/aces.vromfs.bin_u/gamedata/flightmodels/fm/
+f_16a_block_10.blkx、j_11.blkx、su_27.blkx；SHA-256 与提取摘要收录于 data/aircraft-sources/war-thunder.json。
+直接采用机翼分区面积、翼展、升力曲线斜率、临界CL与迎角、各马赫修正参数、空机/油液质量、内部油箱容量、逐高度逐速度推力表、发动机数量、军推/加力倍率与发动机时间常数。
+双发推力累计一次；旧单发F-16与双发J-11不共用推力表。
+机翼/机身/平尾/垂尾的最小阻力系数按源参考面积合并为整机CD0；诱导因子由源机翼面积、翼展和Oswald效率计算。跨音速修正平滑连接，加力根据闭环能量需求启停。
+
+客机来源：
+OpenAP 航空器、阻力极线、ICAO发动机数据：
+https://github.com/TUDelft-CNS-ATM/openap/tree/master/openap/data
+Sun, Hoekstra & Ellerbroek (2020), OpenAP: An Open-Source Aircraft Performance Model for Air Transportation Studies and Simulations：
+https://doi.org/10.3390/aerospace7080104
+A320 厂家外形与机场资料：
+https://www.airbus.com/sites/g/files/jlcbta136/files/2023-05/Airbus-techdata-AC-A320_0523.pdf
+747-8 厂家资料：
+https://www.boeing.com/resources/boeingdotcom/company/about_bca/startup/pdf/historical/747-8I_-_passenger.pdf
+源YAML、选用发动机CSV行与数据许可保留于 data/aircraft-sources/openap/。OpenAP数据GPL-3.0，推力公式适配工具遵循源代码LGPL-3.0。
+采用OpenAP的CD0、诱导阻力、空机质量、速度/高度限制与发动机静推力。A320外形为传统翼尖版本，因此采用122.4m² / 34.1m并按OpenAP效率系数修正诱导阻力，不套用鲨鳍小翼的35.8m翼展。
+最大推力依OpenAP/Bartel-Young关系生成高度-速度表，平滑连接低速起飞与高空飞行状态；CFM56巡航单发推力22241N来自OpenAP输入表。GEnx巡航推力未给出独立试验值，采用OpenAP的0.2*Tstatic+890N回退估计，明确记在provenance。
+
+近似范围：
+这是有效质点气动模型，不是战雷原求解器，也不是完整AFM/BADA或六自由度模型。
+未把机身涡升力、配平、侧滑、各舵面力矩、复杂高攻角尾旋和气弹性单独求解。
+战斗机9G运行限制、滚转/CL响应属于控制器近似；整机CD0合并是面积映射，不是复制原引擎的逐面阻力求解。
+客机CLalpha、CLmax、襟翼增升、跨音速阻力增量、载荷、发动机响应与常规飞控限制是工程参考估计；不冒充厂家完整气动数据库。
+燃油流量由战雷耗油参数/模式倍率或ICAO LTO数据估算，实时改变质量；航路预测使用当前质量，预测期间不假定提前减轻重量。
+燃油容量按OpenAP体积数据以0.8kg/L换算；速度统一TAS，VMO以近似等效空速处理，MMO另行限制。
+
+重建：node tools/build-aircraft-profiles.mjs [本机flightmodels/fm路径]
+性能表：node tools/export_performance.mjs
+连续飞行检查：node tools/benchmark-aircraft-profiles.mjs
+旧存档只通过 data/aircraft-runtime.json 中明确登记的指纹迁移。恢复后使用实际profileId重建气动与质量，客机不会在刷新后变回F-16参数；旧的外观专用选择会迁移为对应真实机型。
