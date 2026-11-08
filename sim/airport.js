@@ -146,7 +146,7 @@ export class AirportOperations{
   }
   apply(u,order,world,departurePlan=null){
     const r=this.validate(u,order,world.executionMode),s=u.surface??={phase:'airborne',grounded:false,heading:Math.atan2(u.velocity[0],u.velocity[1]),route:[]};
-    if(order.intent==='land'&&s.phase==='approach'&&s.runway===r.designator){s.landingRequested=true;this.log(u,'着陆许可请求已记录，保持原进近',world.time);return;}
+    if(order.intent==='land'&&s.phase==='approach'&&s.runway===r.designator&&(!order.mode||order.mode===s.approachType)){s.landingRequested=true;this.log(u,'着陆许可请求已记录，保持原进近',world.time);return;}
     s.runway=r.designator;s.climbAltitude=order.altitudeM??this.airport.elevation+1200;s.originalMode=order.mode??null;
     if(['takeoff','land','approach'].includes(order.intent)){
       s.sectionMode=['formation','section'].includes(order.mode)?order.mode:null;s.sectionIntent=order.intent==='takeoff'?'departure':'arrival';s.sectionLeaderId=null;s.sectionWingId=null;s.sectionWaiting=false;s.sectionJoined=false;
@@ -158,7 +158,7 @@ export class AirportOperations{
     if(order.intent==='abort_takeoff'){s.phase='rejected';s.depart=false;this.log(u,'中断起飞，保持跑道刹车',world.time);return;}
     if(order.intent==='go_around'){this.goAround(u,world,'指挥复飞');return;}
     if(['approach','land'].includes(order.intent)){
-      s.phase='approach';s.grounded=false;s.landCleared=false;s.landingRequested=true;s.station='approach';u.gearDown=true;u.flaps='landing';
+      s.phase='approach';s.grounded=false;s.landCleared=false;s.landingRequested=order.intent==='land';s.station='approach';u.gearDown=true;u.flaps='landing';
       s.arrivalGate=order.gate??null;
       s.approachType=s.sectionMode?'overhead':APPROACH_TYPES.includes(order.mode)?order.mode:'ils';s.procedure=arrivalProcedure(this.airport,r,s.approachType,u);
       u.targetSpeed=s.procedure.targetSpeedMps;s.towerHold={headingDeg:(Math.atan2(u.velocity[0],u.velocity[1])*180/Math.PI+360)%360,altitudeM:u.position[2],speedMps:u.speed};

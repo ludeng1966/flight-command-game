@@ -16,7 +16,7 @@ export function updateAirportSections(ops,world){
     const ls=lead.surface,ws=wing.surface;
     if(ls.sectionIntent==='departure'){
       const q=ops.traffic.state.requests.find(q=>q.id===ws.atcRequestId);
-      if(q&&ls.grounded){q.priority=-10;ws.sectionWaiting=true;}
+      if(q&&ls.grounded){const leadRequest=ops.traffic.state.requests.find(q=>q.id===ls.atcRequestId);if(leadRequest)leadRequest.priority=Math.max(10,leadRequest.priority);q.priority=Math.max(0,q.priority);ws.sectionWaiting=true;}
       else ws.sectionWaiting=false;
       if(!ls.grounded&&!ws.grounded&&ls.phase==='climb'&&ws.phase==='climb'&&lead.position[2]>ops.airport.elevation+450&&wing.position[2]>ops.airport.elevation+450&&!ws.sectionJoined){
         installFormation(world,wing,{targetId:lead.id,action:'join_formation',formation:'echelon',side:'right',rangeM:1200});ws.sectionJoined=true;

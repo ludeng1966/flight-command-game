@@ -18,7 +18,7 @@ test('存档保留航点编号、共享引用和教学Set，排除地形及异�
   w.deferNavigation=()=>{};w.prediction={points:Array(500).fill([1,2,3])};u.terrain={secret:'not-saved'};
   const state=roundtrip({world:captureWorld(w),set:new Set([point])}),restored=restoreWorld(state.world,scenario,profiles);
   assert.equal(restored.units[0].waypoints[0].number,17);assert.equal(restored.units[0].gateEntered,restored.units[0].waypoints[0]);
-  assert.equal([...state.set][0],restored.units[0].waypoints[0]);assert.equal(restored.units[0].profile,profiles[scenario.units[0].profile]);
+  assert.equal([...state.set][0],restored.units[0].waypoints[0]);assert.notEqual(restored.units[0].profile,profiles[scenario.units[0].profile]);assert.equal(restored.units[0].profile.name,profiles[scenario.units[0].profile].name);assert.equal(restored.units[0].profile.mass,u.profile.mass);
   assert.equal(restored.units[0].navigationPending,false);assert.equal(restored.units[0].navigationKey,null);assert.equal(state.world.prediction,undefined);assert.equal(state.world.units[0].terrain,undefined);
 });
 test('飞行中存档后可连续执行原航路，恢复后气动状态与未退出一致',()=>{

@@ -6,6 +6,15 @@ const rank=u=>(u.surface?.emergency?-100000:0)+(u.surface?.phase==='exit'?-10000
 export function prepareGroundTraffic(ops,world){
   const a=ops.airport,units=world.units.filter(taxiing).sort((u,v)=>rank(u)-rank(v)||u.id.localeCompare(v.id));
   ops.groundSlots??={};
+  ops.groundNodeSlots??={};
+  for(const [node,id]of Object.entries(ops.groundNodeSlots))if(!units.some(u=>u.id===id&&u.surface.route[0]===node))delete ops.groundNodeSlots[node];
+  for(const node of new Set(units.map(u=>u.surface.route[0]))){
+    if(ops.groundNodeSlots[node])continue;
+    const candidates=units.filter(u=>u.surface.route[0]===node).sort((u,v)=>{
+      const du=range(u.position,a.nodes[node]),dv=range(v.position,a.nodes[node]);
+      return du<90||dv<90?du-dv:rank(u)-rank(v)||u.id.localeCompare(v.id);
+    });if(candidates[0])ops.groundNodeSlots[node]=candidates[0].id;
+  }
   for(const [key,id]of Object.entries(ops.groundSlots)){
     const u=units.find(u=>u.id===id);if(!u||taxiEdgeKey(u.surface.node,u.surface.route[0])!==key)delete ops.groundSlots[key];
   }
@@ -37,7 +46,7 @@ export function prepareGroundTraffic(ops,world){
 export function groundSpeedLimit(ops,u,world,target){
   const s=u.surface,a=ops.airport,brake=Math.max(.5,brakingDeceleration(a.weather)*.57),from=a.nodes[s.node],key=taxiEdgeKey(s.node,s.route[0]);
   let limit=10,reason=null;
-  if(from&&range(u.position,from)<18&&ops.groundSlots[key]!==u.id){limit=0;reason='等待滑行路段通行权';}
+  if(from&&range(u.position,from)<18&&(ops.groundSlots[key]!==u.id||ops.groundNodeSlots[s.route[0]]!==u.id)){limit=0;reason='等待滑行路段通行权';}
   const heading=s.heading,f=[Math.sin(heading),Math.cos(heading)];
   for(const v of world.units){
     if(v===u||!v.alive||!v.surface?.grounded)continue;
@@ -52,7 +61,7 @@ export function groundSpeedLimit(ops,u,world,target){
   const destination=s.route[0];
   if(range(u.position,target)<Math.max(40,u.speed*u.speed/(2*brake)+35))for(const v of world.units){
     if(v===u||!taxiing(v)||v.surface.route[0]!==destination)continue;
-    if(rank(v)<rank(u)||rank(v)===rank(u)&&v.id<u.id){limit=0;reason='路口让行';}
+    if(ops.groundNodeSlots[destination]!==u.id){limit=0;reason='路口让行';}
   }
   if(reason){s.groundWaitSince??=world.time;s.message=reason;
     if(world.time-(s.groundWaitReportedAt??-Infinity)>25){s.groundWaitReportedAt=world.time;ops.notice(u,world,reason+'，塔台正在安排通行','HOLD POSITION, GROUND TRAFFIC. AWAIT TAXI INSTRUCTIONS.');}

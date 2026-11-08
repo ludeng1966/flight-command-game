@@ -15,10 +15,10 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 // Real producers and one complete flight cycle, without cloud AI or audio calls.
 export async function radioPronunciationCorpus(){
   const world=new World(scenario,profiles,null,{spawnMode:'stands'}),unit=world.units[1],airport=world.airportOps.airport;
-  const events=[...airport.events],log=world.airportOps.log.bind(world.airportOps),messages=[];
-  world.airportOps.log=(...args)=>{log(...args);events.push({...airport.events.at(-1)});};
+  const events=[...airport.events],messages=[];let lastEvent=events.at(-1)?.id??0;
+  const collect=()=>{for(const event of airport.events)if(event.id>lastEvent){events.push({...event});lastEvent=event.id;}};
   const advance=(until,seconds)=>{
-    for(let i=0;i<seconds*60&&!until()&&unit.alive;i++)world.step(1/60);
+    collect();for(let i=0;i<seconds*60&&!until()&&unit.alive;i++){world.step(1/60);collect();}
     if(!unit.alive||!until())throw Error('Pronunciation audit flight did not complete: '+unit.surface?.phase);
   };
   world.airportCommand(unit.id,{intent:'taxi',runway:'09L'});advance(()=>unit.surface.phase==='holding',650);

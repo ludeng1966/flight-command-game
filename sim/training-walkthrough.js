@@ -2,7 +2,7 @@ import {FlightTrainingSession} from './training.js';
 import {TRAINING_MISSIONS} from './training-missions.js';
 import {commandById} from './military-commands.js';
 import {trainingLevel} from './training-levels.js';
-import {controlAuthority,setHandoffMode,requestHandoff} from './control-authority.js';
+import {controlAuthority,setHandoffMode,requestHandoff,airportExitReady} from './control-authority.js';
 const near=(a,b,tolerance=1)=>a&&b&&a.every((v,i)=>Math.abs(v-b[i])<tolerance);
 export class TrainingWalkthrough{
   constructor(world,unitId,{levelId=null}={}){
@@ -99,7 +99,7 @@ export class TrainingWalkthrough{
     if(this.issued.lastPosition){this.issued.travel+=Math.hypot(...u.position.map((v,i)=>v-this.issued.lastPosition[i]));this.issued.lastPosition=[...u.position];}
     if(intent==='taxi'&&phase==='holding'&&u.speed<.5)this.complete();
     if(intent==='line_up'&&phase==='lined_up'&&u.speed<.5)this.complete();
-    if(intent==='takeoff'&&this.flight.completed.departure)this.complete();
+    if(intent==='takeoff'&&this.flight.completed.departure&&airportExitReady(world,u))this.complete();
     if(intent==='cruise'){
       const stable=!u.surface?.grounded&&u.flightState==='normal'&&!u.navigationBlocked&&Math.abs(u.position[2]-6096)<150&&Math.abs(u.speed-350*1852/3600)<15&&Math.abs(u.bank)<(this.flight.startingAirborne?Math.PI/4:Math.PI/12);
       this.stableSeconds=stable?this.stableSeconds+dt:0;if(this.stableSeconds>=10)this.complete();

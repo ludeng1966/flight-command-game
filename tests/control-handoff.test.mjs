@@ -25,7 +25,7 @@ for(const mode of ['strict','relaxed'])test(`${mode}真实离场后交接：先�
 test('指挥官AI核对地面任务后直接以塔台身份发令，不额外播报玩家转述',async()=>{
  const w=make(),heard=[],r=reply(w,'taxi',{runway:'09L',airportRef:'BAY',mode:'A,A1'});let received;
  await runCommandSession({world:w,reply:r,expectedRevision:w.revision,enforceAuthority:true,pause:async()=>{},radio:{phase(){},async transmit(m){heard.push(m);return {id:'radio-'+heard.length,speechText:m.text,speechLanguage:m.language};}},planPilotCommand:async({commanderMessage})=>{received=commanderMessage;assert.equal(w.units[0].surface.phase,'parked');return r;}});
- assert.equal(heard[0].label,'塔台 · BAY');assert.match(heard[0].text,/BAY塔台/);assert.equal(heard[0].speaker,'controller');assert.equal(heard.filter(m=>m.speaker==='controller').length,1);assert(!heard.some(m=>m.requestOnly||m.label==='玩家 → 塔台'));assert.equal(received.speaker,'controller');assert.match(received.text,/BAY塔台/);assert.equal(w.units[0].surface.phase,'taxi');
+ assert.equal(heard[0].label,'地面 · BAY');assert.match(heard[0].text,/BAY地面/);assert.equal(heard[0].speaker,'controller');assert.equal(heard.filter(m=>m.speaker==='controller').length,1);assert(!heard.some(m=>m.requestOnly||m.label==='玩家 → 塔台'));assert.equal(received.speaker,'controller');assert.match(received.text,/BAY地面/);assert.equal(w.units[0].surface.phase,'taxi');
 });
 test('严苛模式交接前不执行空中任务；请求后完成确认才允许巡航',async()=>{
  const w=make(),u=depart(w),before=w.revision,r=reply(w,'cruise',{altitudeM:6096,speedMps:180}),radio={phase(){},async transmit(){}};

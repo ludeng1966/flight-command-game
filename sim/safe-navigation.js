@@ -150,7 +150,8 @@ export function planSafeRoute(original,goals,terrain){
   const settings=[{direct:true},...[1.6,2.2,3].flatMap(g=>[1,-1].map(side=>({g,side,angle:0}))),
     ...[Math.PI/6,Math.PI/3,Math.PI/2,Math.PI*2/3,Math.PI].flatMap(angle=>[1,-1].map(side=>({g:3,side,angle}))),
     ...[-1,1].flatMap(via=>[1,-1].map(side=>({g:2.2,side,via,angle:0}))),
-    ...[Math.PI/3,Math.PI*2/3,Math.PI,TAU,TAU*2,TAU*3].flatMap(angle=>[1,-1].map(side=>({g:2.2,side,angle})))];
+    ...[Math.PI/3,Math.PI*2/3,Math.PI,TAU,TAU*2,TAU*3].flatMap(angle=>[1,-1].map(side=>({g:2.2,side,angle}))),
+    ...[1.3,1.5,1.7].flatMap(g=>[TAU*2,TAU*3,TAU*4].flatMap(angle=>[1,-1].map(side=>({g,side,angle}))))];
   for(const setting of settings){
     let origin=[...original.position],heading=Math.atan2(original.velocity[0],original.velocity[1]),legs=[],okay=true;
     for(const [index,goal] of goals.entries()){

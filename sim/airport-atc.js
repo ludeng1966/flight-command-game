@@ -121,6 +121,7 @@ export class AirportTrafficController{
     for(const q of [...s.requests])if(q.status==='missed'){
       const u=world.units.find(u=>u.id===q.unitId);if(!u?.alive||u.surface?.phase!=='missed'){q.status='cancelled';continue;}
       if(!u.waypoints.length&&world.time-q.requestedAt>30){
+        if(s.communicationFailures.includes(u.id)){u.surface.towerHold=null;u.headingTarget=null;u.holdAltitude=u.surface.missedProcedure?.altitudeM??u.position[2];if(!u.surface.lostCommsHold){const h=Math.atan2(u.velocity[0],u.velocity[1]);u.orbit=[u.position[0]+Math.cos(h)*4000,u.position[1]-Math.sin(h)*4000];u.surface.lostCommsHold=true;}continue;}u.surface.lostCommsHold=false;
         const current=this.ops.airport.runways.find(r=>r.designator===u.surface.runway);
         if(current&&(a.closed.includes(current.stripId)||a.closed.includes(current.designator)||!runwayWeatherLimits(a.weather,current,u.profile).valid)){this.ops.resolveRunwayUnavailable(u,world,'原跑道不可用');continue;}
         try{this.ops.apply(u,{intent:'land',runway:u.surface.runway,airportId:a.id,mode:u.surface.approachType??'ils',taxiways:[],gate:u.surface.arrivalGate??null,altitudeM:null},world);}
@@ -160,7 +161,7 @@ export class AirportTrafficController{
         if(surface.phase==='approach'&&!this.current(u,'approach'))this.issue(u,'approach',{...base,procedure:surface.procedure?.id??`${a.id}-${r.designator}`,approachType:surface.approachType??'ils',initialAltitudeM:surface.procedure?.points?.[0]?.[2]??a.elevation+1200},world,{station:'approach'});
         if(q.etaSec<120&&surface.station!=='tower'){this.issue(u,'contact',{station:'tower',frequencyMHz:AIRPORT_STATIONS.tower.frequencyMHz},world,{station:'approach'});q.reason='转交塔台获取着陆许可';return;}
         const earlier=requests.some(v=>v.q!==q&&v.q.kind==='arrival'&&v.r.stripId===r.stripId&&(v.q.priority>q.priority||v.q.priority===q.priority&&v.q.etaSec<q.etaSec));
-        if(!earlier&&q.etaSec<180&&this.runwayAvailable(r,u,world,'arrival')){
+        if(surface.landingRequested&&!earlier&&q.etaSec<180&&surface.station==='tower'&&this.runwayAvailable(r,u,world,'arrival')){
           this.ops.leases[r.stripId]=u.id;this.issue(u,'land',base,world);q.status='cleared';q.reason=null;
         }else{q.status='waiting';q.reason=u.surface.performanceReason??(earlier?'按到达次序保持进近间隔':'继续进近，等待跑道可用');}
       }

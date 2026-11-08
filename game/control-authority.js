@@ -1,5 +1,6 @@
 import {controlAuthority,requestHandoff,CONTROL_NAMES} from '../sim/control-authority.js';
 import {escapeHTML as esc} from './training-store.js';
+import {AIRPORT_STATIONS} from '../sim/airport-atc.js';
 export function initControlAuthority({getWorld,getSelected,onRequest}){
   const panel=document.querySelector('#control-authority');
   const hint=document.createElement('p');hint.id='command-route-hint';document.querySelector('#command-text').before(hint);let last='',error='';
@@ -7,7 +8,7 @@ export function initControlAuthority({getWorld,getSelected,onRequest}){
   function update(){
     const w=getWorld(),u=w.units.find(u=>u.id===getSelected());if(!u)return;const c=controlAuthority(w,u),key=JSON.stringify([u.id,c,w.executionMode,error]);if(key===last)return;last=key;
     panel.dataset.phase=c.phase;
-    const who=c.owner==='tower'?`${c.airportId}塔台`:'空中指挥',target=c.target??(c.owner==='commander'?'tower':'commander');
+    const station=AIRPORT_STATIONS[u.surface?.station??c.station],who=c.owner==='tower'?`${c.airportId}${station?.zh??'塔台'} ${station?.frequencyMHz??118.1}`:'空中指挥',target=c.target??(c.owner==='commander'?'tower':'commander');
     const field=document.querySelector('#command-text'),label=document.querySelector('label[for="command-text"]');if(label)label.textContent=c.owner==='tower'?'塔台任务 · 指挥官AI核对后发令':'指挥任务 · AI下令';field.placeholder=c.owner==='tower'?`塔台，请安排${u.callsign}……`:`空中指挥，让${u.callsign}巡航……`;
     panel.textContent=c.phase==='transferring'?`管制：${CONTROL_NAMES[c.owner]} · 交接${c.progress}/4`:`管制：${CONTROL_NAMES[c.owner]}`;
     panel.title=`当前管制方：${who}；${c.mode==='manual'?'严苛 · 手动交接':'宽松 · 自动交接'}${c.phase==='ready'?`；等待移交${CONTROL_NAMES[c.target]}`:''}`;panel.setAttribute('aria-label',panel.title);

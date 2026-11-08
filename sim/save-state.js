@@ -59,7 +59,7 @@ export function saveFingerprint(scenario,profiles){
 export function captureWorld(world){
   return {...Object.fromEntries(worldKeys.filter(k=>world[k]!==undefined).map(k=>[k,world[k]])),
     units:world.units.map(u=>fields(u,['profile','terrain'])),
-    airportOps:world.airportOps?{leases:world.airportOps.leases,cooldown:world.airportOps.cooldown,eventSequence:world.airportOps.eventSequence,
+    airportOps:world.airportOps?{leases:world.airportOps.leases,cooldown:world.airportOps.cooldown,eventSequence:world.airportOps.eventSequence,nextThink:world.airportOps.traffic.nextThink,groundSlots:world.airportOps.groundSlots,groundNodeSlots:world.airportOps.groundNodeSlots,
       airport:Object.fromEntries(airportKeys.filter(k=>world.airportOps.airport[k]!==undefined).map(k=>[k,world.airportOps.airport[k]]))}:null};
 }
 export function restoreWorld(saved,scenario,profiles,terrain=null){
@@ -114,10 +114,11 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
     if(!savedOps||!savedOps.leases||!savedOps.cooldown||!savedOps.airport||!Array.isArray(savedOps.airport.events)||!Array.isArray(savedOps.airport.closed))throw Error('机场存档无效');
     for(const owner of Object.values(savedOps.leases))if(!ids.has(owner))throw Error('跑道占用存档无效');
     Object.assign(world.airportOps,{leases:savedOps.leases,cooldown:savedOps.cooldown,eventSequence:savedOps.eventSequence});
+    world.airportOps.groundSlots=savedOps.groundSlots??{};world.airportOps.groundNodeSlots=savedOps.groundNodeSlots??{};world.airportOps.traffic.nextThink=savedOps.nextThink??saved.time;
     for(const key of airportKeys)if(savedOps.airport[key]!==undefined)world.airportOps.airport[key]=savedOps.airport[key];
   }
   // Restored airport events remain history; only events created after this point go on air.
   world.airportRadioStartId=Math.max(world.airportOps?.eventSequence??0,...(world.airportOps?.airport.events??[]).map(e=>Number.isSafeInteger(e.id)?e.id:0));
-  world.airportOps?.traffic.resume(world);
+  if(world.airportOps?.traffic.state.radioRequired)world.airportOps.traffic.resume(world);
   return world;
 }

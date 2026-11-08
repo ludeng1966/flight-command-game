@@ -101,7 +101,7 @@ export function updatePilot(u,dt=.1) {
     const gamma=clamp((u.targetAltitude-u.position[2])/5500,-.2,.2);
     desired=[Math.sin(heading)*Math.cos(gamma),Math.cos(heading)*Math.cos(gamma),Math.sin(gamma)];distance=V*22;
   }
-  if(u.wind&&(!u.headingRoute&&u.waypoints.length||u.headingTarget==null)){
+  if(u.wind&&!u.formationGuidance&&!evasion&&(!u.headingRoute&&u.waypoints.length||u.headingTarget==null)){
     const heading=Math.atan2(desired[0],desired[1]),cross=u.wind[0]*Math.cos(heading)-u.wind[1]*Math.sin(heading),corrected=heading-Math.asin(clamp(cross/Math.max(20,V*Math.hypot(desired[0],desired[1])),-.6,.6)),horizontal=Math.hypot(desired[0],desired[1]);
     desired=[Math.sin(corrected)*horizontal,Math.cos(corrected)*horizontal,desired[2]];
   }
