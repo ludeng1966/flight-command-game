@@ -1,0 +1,121 @@
+[
+  {
+    "id": "f16",
+    "repo": "NikolaiVChr/f16",
+    "files": [
+      {
+        "file": "f16.ac",
+        "url": "https://raw.githubusercontent.com/NikolaiVChr/f16/master/Models/f16.ac",
+        "sha": "2e643f0a6503500f7989460bd46be262632e8467"
+      },
+      {
+        "file": "outlet.ac",
+        "url": "https://raw.githubusercontent.com/NikolaiVChr/f16/master/Models/outlet.ac",
+        "sha": "cbe15ac36920097b1303138822a2967f793901b4"
+      },
+      {
+        "file": "LICENSE",
+        "url": "https://raw.githubusercontent.com/NikolaiVChr/f16/master/LICENSE",
+        "sha": "99fb2388698b507deea0c5b7e140570e943dc91e"
+      },
+      {
+        "file": "README.md",
+        "url": "https://raw.githubusercontent.com/NikolaiVChr/f16/master/README.md",
+        "sha": "810cf9e18400f7224b4e67a0cae250068b21f9b8"
+      },
+      {
+        "file": "authors.txt",
+        "url": "https://raw.githubusercontent.com/NikolaiVChr/f16/master/authors.txt",
+        "sha": "d706e8d865d13c00dbce3c07adbcd7d6b11f4e26"
+      },
+      {
+        "file": "copyright.txt",
+        "url": "https://raw.githubusercontent.com/NikolaiVChr/f16/master/copyright.txt",
+        "sha": "3aa83545acefb6fa40a58c32fd670d3d1868f9bf"
+      }
+    ]
+  },
+  {
+    "id": "su27",
+    "repo": "xcvb85/Su-27",
+    "files": [
+      {
+        "file": "Su-27.ac",
+        "url": "https://raw.githubusercontent.com/xcvb85/Su-27/main/Models/Su-27.ac",
+        "sha": "fc6f13672dc4616de88b77ac1f5d64b3156aa956"
+      },
+      {
+        "file": "LICENSE",
+        "url": "https://raw.githubusercontent.com/xcvb85/Su-27/main/LICENSE",
+        "sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7"
+      },
+      {
+        "file": "README.md",
+        "url": "https://raw.githubusercontent.com/xcvb85/Su-27/main/README.md",
+        "sha": "ab71ca84c4ffc37fabe4d7b0cf02c1874ec7e816"
+      },
+      {
+        "file": "Gear.ac",
+        "url": "https://raw.githubusercontent.com/xcvb85/Su-27/main/Models/Gear.ac",
+        "sha": "f23603a8a17728f435fcbdfb56a18c50e407aa73"
+      }
+    ]
+  },
+  {
+    "id": "b7478",
+    "repo": "JMaverick16/747-8",
+    "files": [
+      {
+        "file": "747-8.ac",
+        "url": "https://raw.githubusercontent.com/JMaverick16/747-8/master/Models/747-8.ac",
+        "sha": "740be278777161d96d7311629ecf3bb47798384a"
+      },
+      {
+        "file": "LICENSE",
+        "url": "https://raw.githubusercontent.com/JMaverick16/747-8/master/LICENSE",
+        "sha": "d7f105139782ab695d86613e343916f7372f4ac0"
+      },
+      {
+        "file": "README",
+        "url": "https://raw.githubusercontent.com/JMaverick16/747-8/master/README",
+        "sha": "599e3f8a867bd8829571a0412d32d2e33b552d06"
+      },
+      {
+        "file": "747-8i_gear.ac",
+        "url": "https://raw.githubusercontent.com/JMaverick16/747-8/master/Models/747-8i_gear.ac",
+        "sha": "74a1e520f40cb3a16fa363ccd2b6c06eb393b445"
+      }
+    ]
+  },
+  {
+    "id": "a320",
+    "repo": "legoboyvdlp/A320-family",
+    "files": [
+      {
+        "file": "A320-216.ac",
+        "url": "https://raw.githubusercontent.com/legoboyvdlp/A320-family/dev/Models/Fuselage/res/A320-216.ac",
+        "sha": "bf2e414df8f5ae9c239856f8a3904b8ac9690288"
+      },
+      {
+        "file": "CFM56.ac",
+        "url": "https://raw.githubusercontent.com/legoboyvdlp/A320-family/dev/Models/Fuselage/res/CFM56.ac",
+        "sha": "87581f8b3bdc53a37a840b68beb61fcd5d6b5f07"
+      },
+      {
+        "file": "LICENSE",
+        "url": "https://raw.githubusercontent.com/legoboyvdlp/A320-family/dev/LICENSE",
+        "sha": "23cb790338e191e29205d6f4123882c0583ef8eb"
+      },
+      {
+        "file": "README.copyright.md",
+        "url": "https://raw.githubusercontent.com/legoboyvdlp/A320-family/dev/README.copyright.md",
+        "sha": "0a3855c440df428bc5151cdafbbe0904429e3b85"
+      },
+      {
+        "file": "README.md",
+        "url": "https://raw.githubusercontent.com/legoboyvdlp/A320-family/dev/README.md",
+        "sha": "f87810fd98eb358691a7d6d7c2add8e852d59dea"
+      }
+    ]
+  }
+]

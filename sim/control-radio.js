@@ -3,7 +3,7 @@ import {controlAuthority} from './control-authority.js';
 import {AIRPORT_STATIONS} from './airport-atc.js';
 const airportActions=new Set(['taxi','hold_short','line_up','takeoff','abort_takeoff','approach','land','return_to_base','go_around']);
 export function towerTask(reply,world){
-  const tasks=reply.plan?.tasks??[];return tasks.length>0&&tasks.every(t=>t.unitId&&(t.action==='airport'&&airportActions.has(t.airportOrder.intent)||t.action==='report_status'&&controlAuthority(world,world.units.find(u=>u.id===t.unitId)).owner==='tower'));
+  const tasks=reply.plan?.tasks??[];return tasks.length>0&&tasks.every(t=>t.unitId&&(t.action==='atc'||t.action==='airport'&&airportActions.has(t.airportOrder.intent)||t.action==='report_status'&&controlAuthority(world,world.units.find(u=>u.id===t.unitId)).owner==='tower'));
 }
 export function createTowerTransmission(reply,world,style,system){
   const airport=world.airportOps?.airport.id??'BAY',base=createCommanderTransmission(reply,world.units,style,system);

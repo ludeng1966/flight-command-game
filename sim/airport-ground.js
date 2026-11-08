@@ -2,7 +2,7 @@ import {brakingDeceleration} from './airport-weather.js';
 const range=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 export const taxiEdgeKey=(a,b)=>[a,b].sort().join('|');
 const taxiing=u=>u.alive&&u.surface?.grounded&&['taxi','lineup_taxi','exit'].includes(u.surface.phase)&&u.surface.route?.length;
-const rank=u=>(u.surface?.emergency?-100000:0)+(u.surface?.phase==='exit'?-10000:0)+(u.surface?.taxiRequestedAt??0);
+const rank=u=>(u.surface?.emergency?-1e9:0)+(u.surface?.phase==='exit'?-1e8:0)+(u.surface?.atcGroundOrder??0)*1e6+(u.surface?.taxiRequestedAt??0);
 export function prepareGroundTraffic(ops,world){
   const a=ops.airport,units=world.units.filter(taxiing).sort((u,v)=>rank(u)-rank(v)||u.id.localeCompare(v.id));
   ops.groundSlots??={};
@@ -39,7 +39,7 @@ export function prepareGroundTraffic(ops,world){
     const retreat=rank(u)<rank(v)||rank(u)===rank(v)&&u.id<v.id?v:u;
     const target=a.nodes[retreat.surface.node];if(target&&range(retreat.position,target)>20){
       retreat.surface.tow={target:[...target],node:retreat.surface.node};
-      ops.notice(retreat,world,'地面交通冲突，地勤拖回路口后重新滑行','GROUND TRAFFIC CONFLICT. TOWING BACK TO JUNCTION, THEN REVISED TAXI ROUTE.');
+      ops.notice(retreat,world,'地面交通冲突，地勤拖回路口后重新滑行','GROUND TRAFFIC CONFLICT. TOWING BACK TO JUNCTION, THEN REVISED TAXI ROUTE.','ground');
     }
   }
 }
@@ -64,7 +64,7 @@ export function groundSpeedLimit(ops,u,world,target){
     if(ops.groundNodeSlots[destination]!==u.id){limit=0;reason='路口让行';}
   }
   if(reason){s.groundWaitSince??=world.time;s.message=reason;
-    if(world.time-(s.groundWaitReportedAt??-Infinity)>25){s.groundWaitReportedAt=world.time;ops.notice(u,world,reason+'，塔台正在安排通行','HOLD POSITION, GROUND TRAFFIC. AWAIT TAXI INSTRUCTIONS.');}
+    if(world.time-(s.groundWaitReportedAt??-Infinity)>25){s.groundWaitReportedAt=world.time;ops.notice(u,world,reason+'，地面正在安排通行','HOLD POSITION, GROUND TRAFFIC. AWAIT TAXI INSTRUCTIONS.','ground');}
   }else s.groundWaitSince=null;
   return {limit,brake,reason};
 }

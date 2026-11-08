@@ -14,6 +14,7 @@ import {validatePlan} from '../sim/orders.js';
 import {validateMilitaryInterpretation,normalizeMilitaryInterpretation,groundCooperation,compileMilitaryInterpretation,militarySchemaFor,MILITARY_SYSTEM} from './military-planner.mjs';
 import {inspectCommandResult,validateResultReadbacks,RESULT_VERDICTS} from '../sim/pilot-result.js';
 import {unitPolicy} from '../sim/units.js';
+import {ATC_INTENTS,atcTaskFor} from '../sim/atc-command.js';
 import {englishResultReadback} from '../sim/result-language.js';
 import {validateExecutionObservation,validatePilotAdjustment} from '../sim/pilot-execution.js';
 
@@ -63,6 +64,7 @@ export class PilotAssistant{
             verifyCommanderHeading(interpretation,commanderMessage);
             verifyCommanderNumbers(interpretation,commanderMessage);
             verifyCommanderAirportInstruction(interpretation,commanderMessage);
+            if(attempt===0&&interpretation.status==='understood')for(const order of interpretation.orders)if(ATC_INTENTS.includes(order.intent))atcTaskFor(order,context);
             if(attempt===0)for(const order of interpretation.orders??[])if(order.intent==='attack'){
               try{attackMissionTaskFor(order,context);}catch(error){throw Error('请修正攻击任务表达并保留原指令：'+error.message+'。不能要求玩家手工搜索、锁定、选弹或设置发射时机。');}
             }
@@ -244,7 +246,7 @@ export class PilotAssistant{
           messages[0].content+='\n结论使用明确状态词：executing必须写“正在执行，尚未达到目标”；reached写“已达到目标”；blocked写“无法执行”；mismatch写“装订不一致”；reported写“状态已核实”。只复述这一条任务，不追加教材示例。';
           if(plan.tasks.some(t=>['assign_role','cover','escort'].includes(t.action)))messages[0].content+='\n本次是双机分工/保护任务，resultText只写一句结论，不重复呼号、角色、队形或数值。角色设置成功不等于僚机已飞到保护位。';
           if(fact.modelFacts.observed?.grounded)messages[0].content+='\n本机仍在地面。按真实机位、跑道位置和许可状态交流，resultText只写简短结论；不加高度、空速或马赫数，不编造发动机启动、检查合格或起飞许可。';
-          if(plan.tasks.some(t=>t.action==='airport'))messages[0].content+='\n机场任务的resultText只写中文执行结论，不重复模式标识或双语标签，不得输出reduced_thrust、TAKEOFF等内部代码。推力/航路方案已在instruction中按玩家语言表达。';
+          if(plan.tasks.some(t=>['airport','atc'].includes(t.action)))messages[0].content+='\n机场任务的resultText只写中文执行结论，不重复模式标识或双语标签，不得输出reduced_thrust、TAKEOFF等内部代码。推力/航路方案已在instruction中按玩家语言表达。塔台排序、改跑道、许可指示的reported仅表示已记录并核实，不表示飞机已完成动作；阶段许可仍须由实际管制播报和飞行员复诵后生效，不能提前说已获起飞/着陆许可。';
           for(let attempt=0;attempt<2;attempt++){
             const response=await runtime.complete('pilot',messages,resultSchema,{maxTokens:350,signal});this.calls++;timings.push(response.timing);
             if(signal?.aborted)throw new DOMException('检查已取消','AbortError');

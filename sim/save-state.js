@@ -8,6 +8,7 @@ import {MISSILE_MODELS,MISSILE_PHASES} from './missiles.js';
 import {createRwr,rwrContext,parseRwrContext} from './rwr.js';
 import {defenseContext,parseDefenseContext} from './rwr-defense.js';
 import {updateAircraftMass} from './aircraft-mass.js';
+import {airportWeather} from './airport-weather.js';
 
 export const SAVE_VERSION=1;
 const worldKeys=['spawnMode','executionMode','unitSystem','bullseye','time','ai','history','revision','commandLog','lastDt','radarTargets','radarTargetSequence','missiles','missileSequence','weaponEvents','rwrPracticeEmitters','rwrPracticeSequence'];
@@ -84,6 +85,7 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
       typeof u.alive!=='boolean'||!['speed','bank','cl','holdAltitude','targetSpeed'].every(k=>Number.isFinite(u[k]))||
       !Array.isArray(u.waypoints)||!u.waypoints.every(vec)||!u.control||!Number.isFinite(u.control.bank))throw Error('飞机存档无效');
     ids.add(u.id);
+    if(u.fuel&&(!['capacityKg','massKg','bingoKg','emergencyKg'].every(k=>Number.isFinite(u.fuel[k])&&u.fuel[k]>=0)||u.fuel.capacityKg>10000||u.fuel.massKg>u.fuel.capacityKg||!Number.isFinite(u.operatingMassKg)||u.operatingMassKg<1000||!Number.isFinite(u.referenceFuelKg)||u.referenceFuelKg<0))throw Error('燃油与质量存档无效');
     if(u.rwr){try{
       createRwr('f16',u.rwr.config);parseRwrContext(rwrContext(u,saved.time),saved.time);
       if(!['sequence','contactSequence'].every(k=>Number.isSafeInteger(u.rwr[k])&&u.rwr[k]>=0)||!Number.isFinite(u.rwr.accumulator)||u.rwr.accumulator<0||u.rwr.accumulator>=.051||!Array.isArray(u.rwr.events)||u.rwr.events.length>48)throw Error();
@@ -116,6 +118,10 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
     Object.assign(world.airportOps,{leases:savedOps.leases,cooldown:savedOps.cooldown,eventSequence:savedOps.eventSequence});
     world.airportOps.groundSlots=savedOps.groundSlots??{};world.airportOps.groundNodeSlots=savedOps.groundNodeSlots??{};world.airportOps.traffic.nextThink=savedOps.nextThink??saved.time;
     for(const key of airportKeys)if(savedOps.airport[key]!==undefined)world.airportOps.airport[key]=savedOps.airport[key];
+    const airport=world.airportOps.airport;airport.weather=airportWeather(airport.weather);const atc=airport.atc;
+    if(!atc||!Array.isArray(atc.requests)||atc.requests.length>64||!Array.isArray(atc.clearances)||atc.clearances.length>128||!Array.isArray(atc.communicationFailures)||atc.communicationFailures.some(id=>!ids.has(id))||!Number.isSafeInteger(atc.sequence)||!Number.isSafeInteger(atc.requestSequence)||!Number.isSafeInteger(atc.revision))throw Error('机场管制存档无效');
+    for(const q of atc.requests)if(!q||!ids.has(q.unitId)||typeof q.id!=='string'||!['arrival','departure'].includes(q.kind)||!Number.isFinite(q.requestedAt)||q.requestedAt>saved.time||!Number.isFinite(q.priority)||q.priority<0||q.priority>100)throw Error('管制队列存档无效');
+    for(const c of atc.clearances)if(!c||!ids.has(c.unitId)||typeof c.id!=='string'||!['issued','delivered','active','completed','cancelled','expired'].includes(c.status)||!['taxi','line_up','takeoff','approach','land','cross','hold','go_around','contact','vector'].includes(c.type)||!c.parameters||!Number.isFinite(c.issuedAt)||c.issuedAt>saved.time||c.parameters.runway&&!airport.runways.some(r=>r.designator===c.parameters.runway))throw Error('管制许可存档无效');
   }
   // Restored airport events remain history; only events created after this point go on air.
   world.airportRadioStartId=Math.max(world.airportOps?.eventSequence??0,...(world.airportOps?.airport.events??[]).map(e=>Number.isSafeInteger(e.id)?e.id:0));

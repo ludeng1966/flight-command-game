@@ -1,0 +1,86 @@
+[
+  {
+    "id": "f16",
+    "sourceTriangles": 19154,
+    "triangles": 5621,
+    "bytes": 181258,
+    "sourceSize": [
+      14.30662,
+      5.10835,
+      9.58917
+    ],
+    "dimensions": {
+      "lengthM": 15.027,
+      "wingspanM": 9.449,
+      "heightM": 5.09
+    },
+    "actualSize": [
+      9.449,
+      5.09,
+      15.0269
+    ]
+  },
+  {
+    "id": "su27",
+    "sourceTriangles": 9453,
+    "triangles": 4226,
+    "bytes": 124884,
+    "sourceSize": [
+      22.07678,
+      6.30525,
+      15.24774
+    ],
+    "dimensions": {
+      "lengthM": 21.935,
+      "wingspanM": 14.7,
+      "heightM": 5.932
+    },
+    "actualSize": [
+      14.7,
+      5.932,
+      21.935
+    ]
+  },
+  {
+    "id": "b7478",
+    "sourceTriangles": 32394,
+    "triangles": 8060,
+    "bytes": 278108,
+    "sourceSize": [
+      76.55279999999999,
+      20.016801,
+      68.40350000000001
+    ],
+    "dimensions": {
+      "lengthM": 76.3,
+      "wingspanM": 68.4,
+      "heightM": 19.4
+    },
+    "actualSize": [
+      68.3438,
+      19.3884,
+      76.25
+    ]
+  },
+  {
+    "id": "a320",
+    "sourceTriangles": 67820,
+    "triangles": 13960,
+    "bytes": 579677,
+    "sourceSize": [
+      37.6058,
+      12.24455,
+      34.099000000000004
+    ],
+    "dimensions": {
+      "lengthM": 37.57,
+      "wingspanM": 34.1,
+      "heightM": 11.76
+    },
+    "actualSize": [
+      34.097,
+      11.7493,
+      37.4883
+    ]
+  }
+]

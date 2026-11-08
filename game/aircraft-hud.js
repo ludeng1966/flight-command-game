@@ -1,4 +1,5 @@
 import {aircraftPortraits} from '../three3d/aircraft-portrait.js';
+import {AIRCRAFT_MODELS,aircraftModelId} from '../three3d/aircraft-catalog.js';
 import {selectedAircraftStatus} from '../sim/unit-status.js';
 import {groundStatusReport} from '../sim/ground-radio.js';
 import {formatAltitude,formatSpeed,formatMach} from '../sim/units.js';
@@ -24,15 +25,20 @@ export function initAircraftHud({getWorld,getSelected,onSelect}){
   function expandStatus(){panel.dataset.collapsed=String(collapsed);panel.querySelector('#selected-aircraft-details').hidden=collapsed;statusToggle.setAttribute('aria-expanded',String(!collapsed));statusToggle.setAttribute('aria-label',(collapsed?'展开':'收起')+'选中飞机状态');statusToggle.title=collapsed?'展开选中飞机状态':'收起选中飞机状态';statusToggle.textContent=collapsed?(panel.dataset.alert?'警告 ▾':'状态 ▾'):'收起 ▴';}
   statusToggle.onclick=()=>{collapsed=!collapsed;try{localStorage.setItem('flight-aircraft-status-collapsed',String(collapsed));}catch{}expandStatus();};expandStatus();
   const layout=new ResizeObserver(()=>stage.style.setProperty('--selected-status-bottom',Math.ceil(panel.getBoundingClientRect().bottom-stage.getBoundingClientRect().top)+'px'));layout.observe(panel);
-  try{const images=aircraftPortraits(units);for(const unit of units){const button=buttons.get(unit.id),img=button.querySelector('img');img.src=images.get(unit.id);img.hidden=false;button.querySelector('.portrait-fallback').hidden=true;}}
-  catch{rail.title='飞机缩略图暂不可用，仍可通过编号选择飞机';}
+  let portraitsKey='';
+  function refreshPortraits(current){
+    const next=JSON.stringify(current.map(u=>[u.id,aircraftModelId(u),u.color]));if(next===portraitsKey)return;portraitsKey=next;
+    try{const images=aircraftPortraits(current);for(const u of current){const button=buttons.get(u.id);if(!button)continue;const img=button.querySelector('img');img.src=images.get(u.id);img.hidden=false;button.querySelector('.portrait-fallback').hidden=true;button.title=u.callsign+' · '+AIRCRAFT_MODELS[aircraftModelId(u)].name;}}
+    catch{rail.title='飞机缩略图暂不可用，仍可通过编号选择飞机';}
+  }
   function update(){
     const world=getWorld(),selected=getSelected(),unit=world.units.find(u=>u.id===selected);if(!unit)return;
+    refreshPortraits(world.units);
     for(const u of world.units){const b=buttons.get(u.id);if(!b)continue;b.setAttribute('aria-pressed',String(u.id===selected));b.classList.toggle('damaged',u.alive===false);}
-    const state=selectedAircraftStatus(unit),ground=groundStatusReport(unit),next=JSON.stringify([state,ground,formatSpeed(state.speed),formatAltitude(state.altitudeM),formatAltitude(state.targetAltitudeM),formatSpeed(state.targetSpeed)]);if(next===key)return;key=next;
+    const state=selectedAircraftStatus(unit),ground=groundStatusReport(unit),exterior=AIRCRAFT_MODELS[aircraftModelId(unit)].name,next=JSON.stringify([state,ground,exterior,formatSpeed(state.speed),formatAltitude(state.altitudeM),formatAltitude(state.targetAltitudeM),formatSpeed(state.targetSpeed)]);if(next===key)return;key=next;
     panel.style.setProperty('--aircraft-color',state.color);panel.dataset.unitId=unit.id;panel.dataset.alert=state.alert??'';
     if(collapsed){statusToggle.textContent=state.alert?'警告 ▾':'状态 ▾';statusToggle.title=(state.alert?state.phase+'，':'')+'展开选中飞机状态';}
-    panel.querySelector('h2').textContent=state.callsign;panel.querySelector('.aircraft-phase').textContent=state.phase;panel.querySelector('.aircraft-model').textContent=state.model+' · '+state.role;
+    panel.querySelector('h2').textContent=state.callsign;panel.querySelector('.aircraft-phase').textContent=state.phase;panel.querySelector('.aircraft-model').textContent=exterior+' · '+state.role;
     const metrics={heading:String(Math.round(state.headingDeg)%360).padStart(3,'0')+'°',speed:formatSpeed(state.speed),altitude:formatAltitude(state.altitudeM),mach:formatMach(state.mach),target:`目标 ${formatAltitude(state.targetAltitudeM)} / ${formatSpeed(state.targetSpeed)}`,waypoints:`航点 ${state.remaining} 待飞 · ${state.completed} 已通过`};
     if(ground){metrics.target=ground;metrics.waypoints='地面移动按当前阶段许可执行';}
     for(const [name,text]of Object.entries(metrics))panel.querySelector(`[data-metric="${name}"]`).textContent=text;

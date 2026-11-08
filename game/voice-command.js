@@ -156,7 +156,7 @@ export function initVoiceCommands({getState,onApplied,onSimulation,onPilotPrevie
         return reviewed;
       }:null,
       assertCurrent:()=>assertCurrent(ref),assertWorldCurrent:()=>{if(ref.world!==getState().world)throw Error('战场已经重置，旧结果作废');},onPreview:onPilotPreview,onSimulation,
-      onCommitted:()=>{committed=true;for(const task of reply.plan.tasks)if(task.unitId&&!['report_status','radar','sensor_task','attack_task','weapon','assign_role'].includes(task.action))setPilotInstruction(ref.world.units.find(u=>u.id===task.unitId),reply.commanderMessage.text);onApplied();onCommandCommitted({reply,source});sync();}});
+      onCommitted:()=>{committed=true;for(const task of reply.plan.tasks)if(task.unitId&&!['report_status','atc','radar','sensor_task','attack_task','weapon','assign_role'].includes(task.action))setPilotInstruction(ref.world.units.find(u=>u.id===task.unitId),reply.commanderMessage.text);onApplied();onCommandCommitted({reply,source});sync();}});
     if(token!==serial)return;
     ref.world.recordMilitaryOrder?.(requestId,reply.interpretation,reply.execution);
     if(result.committed){

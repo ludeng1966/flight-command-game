@@ -12,9 +12,10 @@ import {defenseContext,DEFENSE_SCHEMA,validateDefenseOrder,validateDefenseTask,a
 import {weaponsContext,validateWeaponOrder,applyWeaponOrder,WEAPON_OPERATIONS} from './weapons.js';
 import {validateAttackOrder,validateAttackAssignment,installAttackTask,attackTaskContext,cancelAttackTask} from './attack-task.js';
 import {ATTACK_ORDER_KEYS} from './attack-contract.js';
+import {ATC_ORDER_SCHEMA,validateAtcOrder,validateAtcAssignment,applyAtcOrder} from './atc-command.js';
 // AI 与游戏共用的命令契约。所有单位均为米、秒、弧度（headingDeg 除外）。
 export const LIMITS = Object.freeze({altitudeM:[500,15000],speedMps:[400/3.6,2400/3.6],coordinateM:[-200000,200000]});
-export const ACTIONS = ['set_flight','fly_to','fly_heading','orbit','clear_waypoints','report_status','pause','resume','airport','radar','sensor_task','attack_task','weapon','defense','assign_role',...FORMATION_ACTIONS];
+export const ACTIONS = ['set_flight','fly_to','fly_heading','orbit','clear_waypoints','report_status','pause','resume','airport','atc','radar','sensor_task','attack_task','weapon','defense','assign_role',...FORMATION_ACTIONS];
 const numericFields = ['altitudeM','speedMps','headingDeg','eastM','northM','distanceM'];
 const taskKeys = ['unitId','action',...numericFields,'append'];
 const formationKeys=['targetId','formation','side','rangeM'];
@@ -32,6 +33,7 @@ export const PLAN_SCHEMA = {
     status:{type:'string',enum:['accepted','needs_clarification','unsupported']},
     summary:{type:'string'},
     tasks:{type:'array',items:{anyOf:[
+      {type:'object',additionalProperties:false,required:['unitId','action','atcOrder'],properties:{unitId:{type:'string'},action:{const:'atc'},atcOrder:ATC_ORDER_SCHEMA}},
       {type:'object',additionalProperties:false,required:['unitId','action','defenseOrder'],properties:{unitId:{type:'string'},action:{const:'defense'},defenseOrder:DEFENSE_SCHEMA}},
       {type:'object',additionalProperties:false,required:['unitId','action','attackOrder'],properties:{unitId:{type:'string'},action:{const:'attack_task'},attackOrder:{type:'object',additionalProperties:false,required:ATTACK_ORDER_KEYS,properties:{targetId:{type:['string','null']},targetRef:{type:['string','null']},weaponRef:{type:['string','null']},shotLimit:{type:'integer',minimum:1,maximum:4},altitudeM:{type:['number','null']},speedMps:{type:['number','null']},headingDeg:{type:['number','null']}}}}},
       {type:'object',additionalProperties:false,required:['unitId','action','sensorTask'],properties:{unitId:{type:'string'},action:{const:'sensor_task'},sensorTask:{type:'object',additionalProperties:false,required:['goal','targetId','targetRef'],properties:{goal:{enum:['search','track_target']},targetId:{type:['string','null']},targetRef:{type:['string','null']}}}}},
@@ -66,6 +68,7 @@ export function validatePlan(plan,units) {
   }
   if(!plan.tasks.length) fail('AI 没有返回可执行任务');
   for(const t of plan.tasks) {
+    if(t.action==='atc'){if(!exactKeys(t,['unitId','action','atcOrder'])||!units.some(u=>u.id===t.unitId&&u.alive!==false))fail('塔台指令对象无效');validateAtcOrder(t.atcOrder,units.map(u=>u.id));continue;}
     if(t.action==='defense'){if(!exactKeys(t,['unitId','action','defenseOrder'])||!units.some(u=>u.id===t.unitId&&u.alive!==false))fail('自卫规避任务无效');validateDefenseOrder(t.defenseOrder);continue;}
     if(t.action==='attack_task'){if(!exactKeys(t,['unitId','action','attackOrder'])||!units.some(u=>u.id===t.unitId&&u.alive!==false))fail('攻击任务对象无效');validateAttackOrder(t.attackOrder);continue;}
     if(t.action==='sensor_task'){if(!exactKeys(t,['unitId','action','sensorTask'])||!units.some(u=>u.id===t.unitId&&u.alive!==false))fail('雷达任务对象无效');validateRadarTask(t.sensorTask);continue;}
@@ -142,9 +145,10 @@ export function preparePilotPlan(world,plan,expectedRevision,{radioStyle='pla',p
   const headingPlans=new Map(),flightPlans=new Map(),departurePlans=new Map();
   const weaponTasks=plan.tasks.filter(t=>t.action==='weapon');
   if(weaponTasks.some((t,i)=>weaponTasks.findIndex(x=>x.unitId===t.unitId&&x.weaponOrder.operation===t.weaponOrder.operation)!==i))fail('同机重复武器操作请分条下达，不能重复发射');
-  if(plan.tasks.some(t=>t.action==='airport')&&plan.tasks.some(t=>t.action!=='airport'))fail('机场任务与空中导航请分批下达');
+  if(plan.tasks.some(t=>['airport','atc'].includes(t.action))&&plan.tasks.some(t=>!['airport','atc'].includes(t.action)))fail('机场任务与空中导航请分批下达');
   if(plan.tasks.filter(t=>t.action==='airport').some((t,i,a)=>a.findIndex(x=>x.unitId===t.unitId)!==i))fail('同机机场阶段任务请逐条下达');
   for(const [index,t] of plan.tasks.entries()){
+    if(t.action==='atc'){validateAtcAssignment(world,world.units.find(u=>u.id===t.unitId),t.atcOrder);continue;}
     if(t.action==='defense'){validateDefenseTask(world,world.units.find(u=>u.id===t.unitId),t.defenseOrder);continue;}
     if(t.action==='attack_task'){validateAttackAssignment(world,world.units.find(u=>u.id===t.unitId),t.attackOrder);continue;}
     if(t.action==='sensor_task'){if(!world.units.find(u=>u.id===t.unitId)?.radar?.available)fail('受令机没有可用的搜索雷达');continue;}
@@ -182,7 +186,7 @@ export function preparePilotPlan(world,plan,expectedRevision,{radioStyle='pla',p
     if(flightCheck&&!flightCheck.valid)fail(flightCheck.reason||'指令航路无法安全飞行');
     if(flightCheck)flightPlans.set(t.unitId,flightCheck);
   }
-  const affected=new Set(plan.tasks.filter(t=>t.unitId&&!['report_status','airport','assign_role','radar','sensor_task','attack_task','weapon','defense'].includes(t.action)).map(t=>t.unitId));
+  const affected=new Set(plan.tasks.filter(t=>t.unitId&&!['report_status','airport','atc','assign_role','radar','sensor_task','attack_task','weapon','defense'].includes(t.action)).map(t=>t.unitId));
   const previews=[...routes].filter(([id,r])=>affected.has(id)&&r.points.length).map(([unitId,r])=>({unitId,points:r.points.map(p=>[...p]),flightPoints:flightPlans.get(unitId)?.points||[]}));
   return {world,plan,expectedRevision,radioStyle,headingPlans,flightPlans,departurePlans,previews,status:'prepared',committed:false};
 }
@@ -194,17 +198,18 @@ export function commitPilotPlan(draft){
   if(world.revision!==expectedRevision)fail('规划期间收到新指令，旧航路已作废');
   const revisionBefore=world.revision;
   const missilesBefore=world.missiles?.length,missileSequenceBefore=world.missileSequence,weaponEventsBefore=world.weaponEvents?.length;
-  const leasesBefore=world.airportOps?structuredClone(world.airportOps.leases):null,cooldownBefore=world.airportOps?structuredClone(world.airportOps.cooldown):null,eventsBefore=world.airportOps?.airport.events.length;
+  const leasesBefore=world.airportOps?structuredClone(world.airportOps.leases):null,cooldownBefore=world.airportOps?structuredClone(world.airportOps.cooldown):null,eventsBefore=world.airportOps?structuredClone(world.airportOps.airport.events):null;
   const atcBefore=world.airportOps?structuredClone(world.airportOps.airport.atc):null,airportSequenceBefore=world.airportOps?.eventSequence;
   const saved=world.units.map(unit=>({unit,state:{...unit,attackTask:unit.attackTask?structuredClone(unit.attackTask):unit.attackTask,radarTask:unit.radarTask?structuredClone(unit.radarTask):unit.radarTask,weapons:unit.weapons?structuredClone(unit.weapons):unit.weapons,radar:unit.radar?structuredClone(unit.radar):unit.radar,routeLoop:unit.routeLoop?structuredClone(unit.routeLoop):unit.routeLoop,surface:unit.surface?structuredClone(unit.surface):unit.surface,waypoints:unit.waypoints.map(w=>Object.assign(w.slice(),w)),headingRoute:unit.headingRoute?{...unit.headingRoute}:unit.headingRoute}}));
   let simulation=null;
   for(const {unit,state}of saved){state.rwr=unit.rwr?structuredClone(unit.rwr):unit.rwr;state.rwrDefense=unit.rwrDefense?structuredClone(unit.rwrDefense):unit.rwrDefense;}
   try{
   for(const id of new Set(plan.tasks.filter(t=>t.unitId&&['fly_to','fly_heading','orbit','clear_waypoints','airport',...FORMATION_ACTIONS].includes(t.action)).map(t=>t.unitId)))cancelAttackTask(world,world.units.find(u=>u.id===id));
-  for(const id of new Set(plan.tasks.filter(t=>t.unitId&&!['report_status','defense'].includes(t.action)).map(t=>t.unitId)))notePlayerDefenseOrder(world,world.units.find(u=>u.id===id));
+  for(const id of new Set(plan.tasks.filter(t=>t.unitId&&!['report_status','atc','defense'].includes(t.action)).map(t=>t.unitId)))notePlayerDefenseOrder(world,world.units.find(u=>u.id===id));
   const roleLead=plan.tasks.find(t=>t.action==='assign_role'&&t.role==='lead');
   if(roleLead){for(const t of plan.tasks.filter(t=>t.action==='assign_role'))leaveFormation(world.units.find(u=>u.id===t.unitId),'长僚机重新分工');bindFlightRoles(world,roleLead.unitId,roleLead.targetId);}
   for(const [index,t] of plan.tasks.entries()) {
+    if(t.action==='atc'){applyAtcOrder(world,world.units.find(u=>u.id===t.unitId),t.atcOrder);continue;}
     if(t.action==='defense'){applyDefenseTask(world,world.units.find(u=>u.id===t.unitId),t.defenseOrder);continue;}
     if(t.action==='attack_task'){installAttackTask(world,world.units.find(u=>u.id===t.unitId),t.attackOrder);continue;}
     if(t.action==='sensor_task'){installRadarTask(world,world.units.find(u=>u.id===t.unitId),t.sensorTask);continue;}
@@ -215,6 +220,7 @@ export function commitPilotPlan(draft){
     if(t.action==='report_status')continue;
     if(t.action==='pause'||t.action==='resume'){simulation=t.action;continue;}
     const u=world.units.find(u=>u.id===t.unitId);
+    world.cancelAirportNavigation?.(u);
     if(FORMATION_ACTIONS.includes(t.action)){installFormation(world,u,t);continue;}
     leaveFormation(u,'独立飞行任务已接管，退出编队');
     u.departurePowerPlan=null;
@@ -232,13 +238,13 @@ export function commitPilotPlan(draft){
     }
   }
   if(plan.tasks.some(t=>t.action!=='report_status'))world.revision++;
-  for(const id of new Set(plan.tasks.filter(t=>t.unitId&&!['report_status','radar','sensor_task','attack_task','weapon','defense','assign_role','pause','resume'].includes(t.action)).map(t=>t.unitId)))beginPilotExecution(world,world.units.find(u=>u.id===id));
+  for(const id of new Set(plan.tasks.filter(t=>t.unitId&&!['report_status','atc','radar','sensor_task','attack_task','weapon','defense','assign_role','pause','resume'].includes(t.action)).map(t=>t.unitId)))beginPilotExecution(world,world.units.find(u=>u.id===id));
   draft.committed=true;
   return {summary:radioReadback(plan,world.units,radioStyle,world.unitSystem),simulation};
   }catch(error){
     // 下层飞行可行性检查也可能拒绝任务；回滚整批，保留原有单位对象引用。
     for(const {unit,state}of saved){for(const key of Object.keys(unit))if(!Object.hasOwn(state,key))delete unit[key];Object.assign(unit,state);}
-    if(world.airportOps){world.airportOps.leases=leasesBefore;world.airportOps.cooldown=cooldownBefore;world.airportOps.airport.events.length=eventsBefore;world.airportOps.airport.atc=atcBefore;world.airportOps.eventSequence=airportSequenceBefore;}
+    if(world.airportOps){world.airportOps.leases=leasesBefore;world.airportOps.cooldown=cooldownBefore;world.airportOps.airport.events=eventsBefore;world.airportOps.airport.atc=atcBefore;world.airportOps.eventSequence=airportSequenceBefore;}
     if(world.missiles)world.missiles.length=missilesBefore;if(world.weaponEvents)world.weaponEvents.length=weaponEventsBefore;world.missileSequence=missileSequenceBefore;
     world.revision=revisionBefore;throw error;
   }

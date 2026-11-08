@@ -14,6 +14,12 @@ export const CAPABILITIES=Object.freeze({
 });
 export const COMMAND_GROUPS=Object.freeze({navigation:'导航与飞行',formation:'编队与协同',mission:'任务与巡逻',combat:'交战与防御',weapons:'武器与交战规则',sensors:'传感器与对抗',airfield:'起飞与降落',emergency:'应急与报告',simulation:'模拟控制'});
 const rows=[
+  ['atc_sequence','airfield','调整进离场排序',['airfields'],'塔台，让Bravo排第一，Alpha排在Bravo后面'],
+  ['change_runway','airfield','更换跑道',['airfields'],'Alpha，改用09R跑道，其他要求不变'],
+  ['atc_clearance','airfield','签发阶段许可',['airfields'],'Alpha，跑道09L，可以起飞'],
+  ['atc_cancel_clearance','airfield','取消阶段许可',['airfields'],'Alpha，取消09L起飞许可，对正等待'],
+  ['atc_hold','airfield','地面保持原位',['airfields'],'Bravo，原位等待三十秒'],
+  ['atc_resume','airfield','恢复滑行',['airfields'],'Bravo，可以继续按原许可滑行'],
   ['cruise','navigation','巡航 / CRUISE',['navigation'],'Alpha，开始巡航，保持现有高度和速度'],
   ['fly_heading','navigation','航向与前出',['navigation'],'Alpha，航向两拐洞，前出十公里'],
   ['set_flight','navigation','高度与速度',['navigation'],'幺洞幺，爬升八千米，速度六百公里每小时'],

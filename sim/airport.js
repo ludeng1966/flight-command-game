@@ -7,6 +7,7 @@ import {evaluateDeparturePlan} from './departure-plan.js';
 import {takeoffPerformance,landingPerformance} from './airport-performance.js';
 import {prepareGroundTraffic,groundSpeedLimit,taxiEdgeKey} from './airport-ground.js';
 import {updateAirportSections} from './airport-section.js';
+import {applyAtcDecision} from './atc-decisions.js';
 import {arrivalProcedure,runwayProcedure,updateApproachReceiver,APPROACH_TYPES} from './airport-procedures.js';
 
 export const AIRPORT_INTENTS=['taxi','hold_short','line_up','takeoff','abort_takeoff','approach','land','go_around','gear','flaps'];
@@ -61,8 +62,10 @@ export function taxiPath(airport,from,to,via=[],{avoidEdges=[],avoidNodes=[]}={}
 export class AirportOperations{
   constructor(airport){this.airport=airport;this.leases={};this.cooldown={};this.eventSequence=0;Object.defineProperty(this,'world',{value:null,writable:true,enumerable:false});this.traffic=new AirportTrafficController(this);this.groundSlots={};}
   beginFrame(world){
+    if(this.traffic.state.playerDirected)this.traffic.state.guidanceMode=world.executionMode==='strict'?'player':'assisted';
     this.world=world;this.airport.clock=world.time;this.airport.weather??=airportWeather({windFromDeg:this.airport.wind?.heading??90,windSpeedMps:this.airport.wind?.speedMps??3});
     for(const u of world.units){const s=u.surface;if(!u.alive||!s)continue;
+      if(s.pendingRunwayChange&&s.node&&Math.hypot(u.position[0]-this.airport.nodes[s.node][0],u.position[1]-this.airport.nodes[s.node][1])<4){const d=s.pendingRunwayChange;s.pendingRunwayChange=null;try{applyAtcDecision(world,d);}catch(error){s.atcHoldUntil=Infinity;s.lastATCError=error.message;this.notice(u,world,'改跑道暂无法执行，在路口保持原位','UNABLE RUNWAY CHANGE. HOLD POSITION AT TAXI JUNCTION.','ground');}}
       if(s.grounded&&s.phase==='taxi'&&s.route.length&&!s.clearances)this.traffic.issue(u,'taxi',{runway:s.runway,route:[s.node,...s.route],limit:s.destination??s.route.at(-1)},world);
       if(s.grounded&&s.depart&&!s.atcRequestId)this.traffic.request(u,'departure',world);
       if(s.phase==='final'&&s.landCleared&&!s.clearances){const c=this.traffic.issue(u,'land',{runway:s.runway},world);this.traffic.delivered(c.id,world);this.traffic.acknowledge(c.id,c.parameters,world);}
@@ -92,6 +95,7 @@ export class AirportOperations{
   resolveRunwayUnavailable(u,world,reason){
     const s=u.surface;if(world.time-(s.runwayReviewAt??-Infinity)<20)return;s.runwayReviewAt=world.time;
     const next=this.airport.runways.filter(r=>r.designator!==s.runway&&!this.airport.closed.includes(r.designator)&&!this.airport.closed.includes(r.stripId)&&runwayWeatherLimits(this.airport.weather,r,u.profile).valid).sort((a,b)=>Math.abs(angle((a.headingDeg-this.airport.weather.windFromDeg)*Math.PI/180))-Math.abs(angle((b.headingDeg-this.airport.weather.windFromDeg)*Math.PI/180)))[0];
+    if(this.traffic.state.playerDirected||this.traffic.state.guidanceMode==='player'){s.lastATCError=reason;this.notice(u,world,reason+'，请求玩家重新指定跑道或等待安排','RUNWAY UNAVAILABLE. REQUEST REVISED RUNWAY OR HOLD INSTRUCTIONS.',s.grounded?'ground':'approach');return;}
     if(!next||s.phase==='takeoff_roll'||s.phase==='lined_up'||s.runwayLocked){this.notice(u,world,reason+'，保持等待','STANDBY, RUNWAY OR WEATHER UNAVAILABLE.');return;}
     if(!s.grounded){if(s.phase!=='missed'){this.goAround(u,world,reason);return;}if(u.waypoints.length)return;try{this.apply(u,{intent:'land',runway:next.designator,mode:s.approachType??'ils',airportId:this.airport.id,taxiways:[],gate:s.arrivalGate??null,altitudeM:null},world);}catch(error){s.lastATCError=error.message;}return;}
     this.traffic.cancelUnit(u,world,'改用跑道'+next.designator,'CHANGE TO RUNWAY '+next.designator);this.release(u.id);
@@ -146,7 +150,7 @@ export class AirportOperations{
   }
   apply(u,order,world,departurePlan=null){
     const r=this.validate(u,order,world.executionMode),s=u.surface??={phase:'airborne',grounded:false,heading:Math.atan2(u.velocity[0],u.velocity[1]),route:[]};
-    if(order.intent==='land'&&s.phase==='approach'&&s.runway===r.designator&&(!order.mode||order.mode===s.approachType)){s.landingRequested=true;this.log(u,'着陆许可请求已记录，保持原进近',world.time);return;}
+    if(order.intent==='land'&&s.phase==='approach'&&s.runway===r.designator&&(!order.mode||order.mode===s.approachType)){s.landingRequested=true;s.playerAuthorizations??={};s.playerAuthorizations.land=true;s.explicitPhaseClearances??={};s.explicitPhaseClearances.land=true;this.log(u,'着陆许可请求已记录，保持原进近',world.time);return;}
     s.runway=r.designator;s.climbAltitude=order.altitudeM??this.airport.elevation+1200;s.originalMode=order.mode??null;
     if(['takeoff','land','approach'].includes(order.intent)){
       s.sectionMode=['formation','section'].includes(order.mode)?order.mode:null;s.sectionIntent=order.intent==='takeoff'?'departure':'arrival';s.sectionLeaderId=null;s.sectionWingId=null;s.sectionWaiting=false;s.sectionJoined=false;
@@ -154,17 +158,22 @@ export class AirportOperations{
     if(order.intent==='takeoff')u.departurePowerPlan=departurePlan?{...structuredClone(departurePlan),active:true}:null;
     if(order.intent==='gear'){u.gearDown=order.mode!=='up';return;}
     if(order.intent==='flaps'){u.flaps=order.mode??'landing';return;}
-    this.traffic.cancelUnit(u,world);s.clearances??={};
+    this.traffic.cancelUnit(u,world);s.clearances??={};s.playerAuthorizations={};s.explicitPhaseClearances={};s.clearanceInhibits={};s.pendingRunwayChange=null;
+    if(order.intent==='line_up'){s.playerAuthorizations.line_up=true;s.explicitPhaseClearances.line_up=true;}
+    if(order.intent==='takeoff'&&s.phase==='lined_up'){s.playerAuthorizations.takeoff=true;s.explicitPhaseClearances.takeoff=true;}
+    if(order.intent==='approach')s.playerAuthorizations.approach=true;
+    if(order.intent==='land'){s.playerAuthorizations.approach=true;s.playerAuthorizations.land=true;}
     if(order.intent==='abort_takeoff'){s.phase='rejected';s.depart=false;this.log(u,'中断起飞，保持跑道刹车',world.time);return;}
     if(order.intent==='go_around'){this.goAround(u,world,'指挥复飞');return;}
     if(['approach','land'].includes(order.intent)){
+      s.pilotStageRequests={};
       s.phase='approach';s.grounded=false;s.landCleared=false;s.landingRequested=order.intent==='land';s.station='approach';u.gearDown=true;u.flaps='landing';
       s.arrivalGate=order.gate??null;
       s.approachType=s.sectionMode?'overhead':APPROACH_TYPES.includes(order.mode)?order.mode:'ils';s.procedure=arrivalProcedure(this.airport,r,s.approachType,u);
       u.targetSpeed=s.procedure.targetSpeedMps;s.towerHold={headingDeg:(Math.atan2(u.velocity[0],u.velocity[1])*180/Math.PI+360)%360,altitudeM:u.position[2],speedMps:u.speed};
       this.installProcedureRoute(u,world,s.procedure.points);u.waypoints.forEach((p,i)=>p.fixName=s.procedure.points[i]?.fixName);
       this.traffic.request(u,'arrival',world,{approachType:s.approachType});
-      this.log(u,`${r.designator}进近，请求着陆许可`,world.time);return;
+      this.log(u,`请求${r.designator}进近许可`,world.time);return;
     }
     if(order.intent==='hold_short'){s.depart=false;s.lineUp=false;for(const q of this.traffic.state.requests)if(q.unitId===u.id)q.status='cancelled';if(s.phase==='holding'){this.log(u,'保持跑道外等待',world.time);return;}}
     if(order.intent==='line_up'){s.lineUp=true;s.taxiRequestedAt??=world.time;this.traffic.request(u,'departure',world);return;}
@@ -172,12 +181,13 @@ export class AirportOperations{
     if(s.phase==='lined_up'&&s.depart){this.traffic.request(u,'departure',world);return;}
     const from=s.node??this.nearestNode(u.position),to=order.gate??r.hold;
     const route=this.taxiRoute(from,to,order.taxiways??[],world.executionMode);if(route.rerouted)this.log(u,'放宽模式：原滑行道无法使用，已改走可达路线',world.time);
-    s.route=route.path.slice(1);s.destination=to;s.phase='taxi';u.waypoints=[];u.headingRoute=null;
+    s.route=route.path.slice(1);s.destination=to;s.phase='taxi';s.pilotStageRequests={};u.waypoints=[];u.headingRoute=null;
     s.taxiRequestedAt=world.time;s.station='ground';s.tow=null;s.groupMode=['formation','section'].includes(order.mode)?order.mode:null;
     if(s.depart)this.traffic.request(u,'departure',world);
-    this.traffic.issue(u,'taxi',{runway:r.designator,route:[...route.path],limit:to,qnhHpa:this.airport.weather.qnhHpa,atisCode:atisInformation(this.airport).code},world);
+    if(this.traffic.state.guidanceMode!=='player'||['taxi','hold_short'].includes(order.intent))this.traffic.issue(u,'taxi',{runway:r.designator,route:[...route.path],limit:to,qnhHpa:this.airport.weather.qnhHpa,atisCode:atisInformation(this.airport).code},world);
   }
   goAround(u,world,reason){
+    u.surface.pilotStageRequests={};
     const s=u.surface,r=this.runway(s.runway,true);this.release(u.id);s.phase='missed';s.grounded=false;s.landCleared=false;u.gearDown=false;u.flaps='takeoff';
     this.traffic.cancelUnit(u,world,'执行复飞','GOING AROUND');s.station='approach';s.towerHold=null;s.missedProcedure=runwayProcedure(this.airport,r).missed;
     u.waypoints=[];u.headingRoute=null;u.headingTarget=r.headingDeg*Math.PI/180;u.holdAltitude=Math.max(u.position[2]+500,s.missedProcedure.altitudeM);u.targetSpeed=Math.max(150,u.speed);u.navigationBlocked=null;
@@ -199,13 +209,17 @@ export class AirportOperations{
       }
       if(['approach','final'].includes(s.phase))u.speedBrake=u.speed>Math.max(95,u.targetSpeed+10);
       if(s.phase==='climb'&&u.position[2]>a.elevation+100){if((u.position[0]-(r.direction===1?r.x1:r.x0))*r.direction>150||Math.abs(u.position[1]-r.y)>800)this.release(u.id);if(u.position[2]>a.elevation+300)u.gearDown=false;}
+      if(s.phase==='climb'&&!u.departurePowerPlan&&!s.sidInstalled&&u.position[2]>a.elevation+300&&world.time>=(s.sidRetryAt??0)){
+        s.sidRetryAt=world.time+10;s.departureProcedure??=runwayProcedure(a,r).sid;const exit=[...s.departureProcedure.exit];exit[2]=s.climbAltitude;
+        try{this.installProcedureRoute(u,world,[exit]);s.sidInstalled=true;}catch(error){s.lastATCError=error.message;}
+      }
       if(s.phase==='climb'&&u.departurePowerPlan&&!u.departurePowerPlan.routeInstalled&&u.position[2]>a.elevation+300){
         const power=u.departurePowerPlan;u.waypoints=power.points.map((p,i)=>Object.assign([...p],{number:i+1}));u.nextWaypointNumber=u.waypoints.length+1;u.completedWaypoints=0;u.navLegs=[];u.navCursor=0;u.navigationKey=null;power.routeInstalled=true;
       }
       if(s.phase==='approach'&&!u.waypoints.length){
         if(Math.abs(angle(Math.atan2(u.velocity[0],u.velocity[1])-r.headingDeg*Math.PI/180))>.3||u.speed>115){this.goAround(u,world,'进近方向或速度未稳定');return false;}
         if(this.occupied(r,world.units,u.id,{includeApproach:false})){this.goAround(u,world,'跑道仍被占用');return false;}
-        s.phase='final';s.towerHold=null;this.traffic.complete(u,'approach',world);
+        s.phase='final';s.towerHold=null;this.traffic.complete(u,'approach',world);this.traffic.requestNext(u,world);
       }
       if(s.phase==='final'){
         const receiver=updateApproachReceiver(u,a,r),start=r.direction===1?r.x0:r.x1,d=receiver.distanceM,lateral=r.y-u.position[1];
@@ -233,13 +247,14 @@ export class AirportOperations{
     if(s.phase==='holding'&&(s.lineUp||s.depart)&&this.traffic.permitted(u,'line_up')){
       if(!this.occupied(r,world.units,u.id)){this.leases[r.stripId]=u.id;s.route=[r.entry];s.phase='lineup_taxi';}else s.message='跑道占用，保持等待';
     }
-    if(s.phase==='lined_up'&&s.depart&&this.traffic.permitted(u,'takeoff')){s.phase='takeoff_roll';u.gearDown=true;u.flaps='takeoff';}
+    if(s.phase==='lined_up'&&s.depart&&this.traffic.permitted(u,'takeoff')&&!(s.atcHoldUntil>world.time)){s.phase='takeoff_roll';u.gearDown=true;u.flaps='takeoff';}
     if(s.phase==='takeoff_roll'){
       if(this.occupied(r,world.units,u.id,{includeApproach:false})){s.phase='rejected';this.log(u,'跑道侵入，中断起飞',world.time);}
       else{
         const power=u.departurePowerPlan,throttle=power?.throttle??1,afterburner=power?.afterburner??1;
         const speed=u.speed,airSpeed=Math.max(0,speed+windComponents(a.weather,r.headingDeg).headwindMps),thrust=thrustAt(u.profile,a.elevation,Math.max(1,airSpeed),afterburner)*dryFraction(u.profile,throttle),drag=dragAt(u.profile,a.elevation,airSpeed,.2);
-        u.speed=Math.max(0,speed+(thrust-drag-u.profile.mass*.02*G)/u.profile.mass*dt);s.heading=r.headingDeg*Math.PI/180;u.throttle=throttle;u.afterburner=afterburner;
+        const rolling=(a.weather.runwayCondition==='wet'?.025:.02)*u.profile.mass*G;
+        u.speed=Math.max(0,speed+(thrust-drag-rolling)/u.profile.mass*dt);s.heading=r.headingDeg*Math.PI/180;u.throttle=throttle;u.afterburner=afterburner;
         const rotation=Math.max(u.profile.airportRotationSpeed??105,energyEnvelope(u.profile,a.elevation,Math.max(60,u.speed)).safeSpeed(1)*1.45);
         if(airSpeed>=rotation){s.phase='climb';s.grounded=false;u.flightState='normal';u.speed=airSpeed;u.velocity=[Math.sin(s.heading)*airSpeed,Math.cos(s.heading)*airSpeed,0];u.cl=u.profile.mass*G/(.5*density(a.elevation)*(u.profile.densityScale??1)*airSpeed*airSpeed*u.profile.area);u.guidance={bank:0,n:1};u.energy=undefined;u.headingTarget=s.heading;u.holdAltitude=s.climbAltitude;u.targetSpeed=power?.climbSpeedMps??Math.max(150,rotation+25);u.control={bank:0,cl:u.cl*1.2,maxG:3,throttle,afterburner};if(power)power.routeInstalled=false;this.traffic.complete(u,'takeoff',world);s.departureProcedure=runwayProcedure(a,r).sid;this.log(u,'抬轮离地，爬升',world.time);return false;}
         const remaining=r.direction===1?r.x1-u.position[0]:u.position[0]-r.x0;if(remaining<150){s.phase='rejected';this.log(u,'未达抬轮速度，中断起飞',world.time);}
@@ -262,7 +277,7 @@ export class AirportOperations{
     }
     if(['taxi','lineup_taxi','exit'].includes(s.phase)){
       const id=s.route[0],target=a.nodes[id];
-      if(!target){u.speed=Math.max(0,u.speed-2*dt);if(u.speed<.1){u.speed=0;s.phase=s.phase==='lineup_taxi'?'lined_up':s.node===r.hold?'holding':s.destination?.startsWith('G')&&s.node!==s.destination?'waiting_gate':'parked';if(s.phase==='lined_up'){s.heading=r.headingDeg*Math.PI/180;this.log(u,`${r.designator}已对正，等待起飞许可`,world.time);}if(s.phase==='holding')this.log(u,`已到${r.designator}等待点，跑道外等待`,world.time);if(s.phase==='parked')this.log(u,`已到达${s.node}，刹车停车`,world.time);if(s.phase==='waiting_gate')s.message='指定机位占用，在滑行道等待';} }
+      if(!target){u.speed=Math.max(0,u.speed-2*dt);if(u.speed<.1){u.speed=0;s.phase=s.phase==='lineup_taxi'?'lined_up':s.node===r.hold?'holding':s.destination?.startsWith('G')&&s.node!==s.destination?'waiting_gate':'parked';if(s.phase==='lined_up'){s.heading=r.headingDeg*Math.PI/180;this.traffic.requestNext(u,world);}if(s.phase==='holding'){s.message=`已到${r.designator}等待点，跑道外等待`;this.traffic.requestNext(u,world);}if(s.phase==='parked')this.log(u,`已到达${s.node}，刹车停车`,world.time);if(s.phase==='waiting_gate')s.message='指定机位占用，在滑行道等待';} }
       else{
         const dx=target[0]-u.position[0],dy=target[1]-u.position[1],span=Math.hypot(dx,dy),desired=Math.atan2(dx,dy),error=angle(desired-s.heading);
         const edge=a.edges.find(e=>e.a===s.node&&e.b===id||e.b===s.node&&e.a===id),closed=edge&&a.closed.includes(edge.name);

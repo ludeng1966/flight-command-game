@@ -5,6 +5,7 @@ import {FORMATIONS,doctrineLabel} from './formation-doctrine.js';
 import {getUnitSystem,unitLabels,altitudeValue,speedValue,distanceValue,rounded} from './units.js';
 import {selectedAircraftStatus} from './unit-status.js';
 import {groundStatusReport} from './ground-radio.js';
+import {atcOrderPhrase} from './atc-command.js';
 export const RADIO_STYLES=['pla','nato'];
 const ZH_DIGITS='洞幺两三四五六拐八勾';
 const EN_DIGITS=['ZERO','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINER'];
@@ -36,6 +37,7 @@ export function radioReadback(plan,units,style='pla',system=getUnitSystem()){
     const index=units.findIndex(u=>u.id===t.unitId),u=units[index],number=u.radioNumber||String(101+index);
     const call=style==='pla'?radioDigits(number):u.callsign;
     const ack=style==='nato'?'ROGER':'收到';
+    if(t.action==='atc')return `${call}，${ack}。${atcOrderPhrase(t.atcOrder,units,style==='nato')}。`;
     if(t.action==='attack_task')return `${call}，${ack}。攻击任务已接收，由我完成搜索、锁定、选弹和发射判断。`;
     if(t.action==='defense')return `${call}，${ack}。${defensePhrase(t.defenseOrder,style==='nato')}，${t.defenseOrder.mode==='execute'?'开始执行，不保证已脱离威胁':'策略已设置'}。`;
     if(t.action==='sensor_task')return `${call}，${ack}。${t.sensorTask.goal==='search'?'前方空域搜索':'目标持续跟踪'}任务已接收，由我自主操作雷达。`;

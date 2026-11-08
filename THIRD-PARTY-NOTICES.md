@@ -33,4 +33,17 @@
 
 ## 游戏素材
 
+### 公开飞机外观模型
+
+`assets/aircraft/` 的简化网格派生自以下公开模型，分别保留原许可；原 AC3D 源文件、许可全文、作者说明、下载 URL 和 Git blob SHA-1 收录于 `assets/aircraft/sources/`。转换工具及尺寸说明见 `docs/aircraft-models.txt`。
+
+| 模型 | 来源 / 作者 | 许可 |
+|---|---|---|
+| F-16 | [NikolaiVChr/f16](https://github.com/NikolaiVChr/f16)，Erik Hofman 及 `authors.txt` 贡献者 | GPL-2.0-or-later |
+| Su-27 / J-11 基础外形 | [xcvb85/Su-27](https://github.com/xcvb85/Su-27)，Yanes Bechir、FGUK 及项目贡献者 | GPL-3.0 |
+| Boeing 747-8I | [JMaverick16/747-8](https://github.com/JMaverick16/747-8)，John Williams、Grupo FGBr、Gijs de Rooy 等 | GPL-2.0 |
+| Airbus A320-200 | [legoboyvdlp/A320-family](https://github.com/legoboyvdlp/A320-family)，Josh Davidson、Jonathan Redpath、merspieler、Matthew Maring、Thorsten Herrmann、Semir Gebran | GPL-2.0 |
+
+本项目对这些模型进行了外形提取、减面、米制尺寸校准和材质重设；J-11 共用 Su-27 网格并改变配色。构建工具使用 [meshoptimizer](https://github.com/zeux/meshoptimizer) 1.3.0（MIT）和 [earcut](https://github.com/mapbox/earcut) 3.2.4（ISC），均不加入浏览器运行时。
+
 《战争雷霆》（War Thunder）及其素材版权归 Gaijin Entertainment 所有，本项目与 Gaijin 无关。仓库不包含游戏原始文件（`.wrpl`、关卡、贴图、模型）；示例数据是由玩家自己的回放与地形派生的结果。

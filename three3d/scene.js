@@ -14,7 +14,8 @@ import {formatAltitude} from '../sim/units.js';
  * 对外接口与旧实现一致：window.ACEScene = { init, render, setCamera, setOption, getReady, getStats }
  * ===================================================================== */
 import * as THREE from 'three';
-import {buildAircraft} from './aircraft.js';
+import {buildAircraft,disposeAircraft} from './aircraft.js';
+import {aircraftModelId} from './aircraft-catalog.js';
 import { ribbonWindow, missileVisibleStart, TRAIL_FADE_DEAD, MISSILE_FADE } from './trail-window.js';
 import { OrbitControls } from '../vendor/three/OrbitControls.js';
 import {CAMERA_DISTANCE,cameraMotionScale,installCameraFocus,terrainFocusPoint} from './camera-focus.js';
@@ -1849,7 +1850,7 @@ export function initLive(canvas, {terrain, landmask, runways, units,heightfield,
   const motionMedia=matchMedia('(prefers-reduced-motion: reduce)');liveReducedMotion=motionMedia.matches;motionMedia.addEventListener('change',e=>liveReducedMotion=e.matches);
   liveUnits=new Map();
   for(const u of units){
-    const vis={im:buildAircraft(u.color)};state.scene.add(vis.im);vis.im.userData.unitId=u.id;
+    const vis={im:buildAircraft(u.color,u)};state.scene.add(vis.im);vis.im.userData.unitId=u.id;
     const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(256*3),3));
     const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:u.color,transparent:true,opacity:.65}));
     line.frustumCulled=false;state.scene.add(line);
@@ -1918,6 +1919,9 @@ export function renderLive(snapshot,dt=1/60){
   const labelOverlap=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
   for(const u of snapshot.units){
     const obj=liveUnits.get(u.id);if(!obj)continue;
+    if(obj.vis.im.userData.modelId!==aircraftModelId(u)){
+      state.scene.remove(obj.vis.im);disposeAircraft(obj.vis.im);obj.vis.im=buildAircraft(u.color,u);obj.vis.im.userData.unitId=u.id;state.scene.add(obj.vis.im);
+    }
     obj.line.visible=liveDisplay.trails==='all'||(liveDisplay.trails==='selected'&&u.id===snapshot.selectedId);
     const pos=V3(...u.position),forward=V3(...u.forward).normalize(),up=V3(...u.up).normalize();
     const right=new THREE.Vector3().crossVectors(forward,up).normalize();
@@ -1926,8 +1930,9 @@ export function renderLive(snapshot,dt=1/60){
     const quat=new THREE.Quaternion().setFromRotationMatrix(rot);
     const scale=aircraftVisualScale(cam,pos,cv.clientHeight);
     obj.vis.im.position.copy(pos);obj.vis.im.quaternion.copy(quat);obj.vis.im.scale.setScalar(scale);
+    if(u.surface?.grounded&&u.gearDown){const ground=liveTerrain?.heightAt(u.position[0],u.position[1]);if(ground!==null&&ground!==undefined)obj.vis.im.position.y=ground-obj.vis.im.userData.bounds.min[1]*scale;}
     obj.vis.im.userData.gear.visible=u.gearDown===true;
-    const flame=obj.vis.im.userData.flame;flame.visible=u.alive!==false&&u.afterburner>.03;flame.scale.set(1,.4+u.afterburner*.9,1);
+    const flame=obj.vis.im.userData.flame;flame.visible=obj.vis.im.userData.spec.afterburner&&u.alive!==false&&u.afterburner>.03;flame.scale.set(1,1,.4+u.afterburner*.9);
     const crashed=u.alive===false,data=obj.vis.im.userData;
     if(data.crashed!==crashed){data.materials.forEach((mat,i)=>crashed?mat.color.set('#ff5364'):mat.color.copy(data.baseColors[i]));data.crashed=crashed;}
     const arr=obj.line.geometry.attributes.position;

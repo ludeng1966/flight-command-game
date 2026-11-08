@@ -31,7 +31,7 @@ export function updateAirportSections(ops,world){
         ws.sectionWaiting=true;
       }else{
         ws.sectionWaiting=false;ws.sectionReleased=true;
-        try{ops.apply(wing,{intent:'land',runway:ws.runway,mode:'overhead',airportId:ops.airport.id,taxiways:[],gate:ws.arrivalGate??null,altitudeM:null},world);}
+        try{ops.apply(wing,{intent:ops.traffic.state.guidanceMode==='player'?'approach':'land',runway:ws.runway,mode:'overhead',airportId:ops.airport.id,taxiways:[],gate:ws.arrivalGate??null,altitudeM:null},world);}
         catch(error){ws.sectionReleased=false;ws.lastATCError=error.message;}
       }
     }

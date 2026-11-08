@@ -73,6 +73,14 @@ export function verifyCommanderHeading(interpretation,message){
 // player's free-form request or constructing an executable order from keywords.
 export function verifyCommanderAirportInstruction(interpretation,message){
   if(interpretation.status!=='understood')return;
+  const phaseNames={滑行:'taxi',进入跑道对正等待:'line_up',起飞:'takeoff',进近:'approach',着陆:'land',所有阶段:'all',TAXI:'taxi','LINE UP AND WAIT':'line_up',TAKEOFF:'takeoff',APPROACH:'approach',LANDING:'land','ALL PHASES':'all'},administrative=new Map();
+  for(const match of message.text.matchAll(/(签发|取消)(滑行|进入跑道对正等待|起飞|进近|着陆|所有阶段)许可|(ISSUE|CANCEL) (TAXI|LINE UP AND WAIT|TAKEOFF|APPROACH|LANDING|ALL PHASES) CLEARANCE/gi)){
+    const intent=match[1]==='签发'||match[3]?.toUpperCase()==='ISSUE'?'atc_clearance':'atc_cancel_clearance';if(!administrative.has(intent))administrative.set(intent,new Set());administrative.get(intent).add(phaseNames[match[2]??match[4].toUpperCase()]);
+  }
+  if(administrative.size)for(const o of interpretation.orders){
+    if(['takeoff','land','approach','taxi','line_up','hold_short'].includes(o.intent))throw Error('本次实际通话是签发或取消已有任务的阶段许可，须保留为atc_clearance/atc_cancel_clearance，不得重建机场任务');
+    if(administrative.has(o.intent)&&!administrative.get(o.intent).has(o.parameters.mode))throw Error('飞行员改变了实际播报的许可阶段，请按原许可复诵');
+  }
   const text=message.text.toUpperCase(),rules=[
     ['abort_takeoff',/中断起飞|ABORT TAKEOFF|REJECT(?:ED)? TAKEOFF/],
     ['go_around',/复飞|GO AROUND/],['line_up',/进入跑道|对正等待|LINE UP/],

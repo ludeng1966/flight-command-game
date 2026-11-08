@@ -3,6 +3,7 @@ import {unitLabels,altitudeValue,speedValue,distanceValue} from './units.js';
 import {airportCommandLabel,airportModeLabel} from './airport-language.js';
 import {needsDeparturePlan,departurePlanReadback} from './departure-plan.js';
 import {groundStatusReport} from './ground-radio.js';
+import {atcOrderPhrase} from './atc-command.js';
 const n=value=>String(Math.round(value*100)/100);
 const label=value=>String(value??'').replaceAll('_',' ').toUpperCase();
 const airportNames={taxi:'TAXI',hold_short:'HOLD SHORT',line_up:'LINE UP AND WAIT',takeoff:'TAKE OFF',abort_takeoff:'ABORT TAKEOFF',approach:'APPROACH',land:'LAND',go_around:'GO AROUND',gear:'LANDING GEAR',flaps:'FLAPS'};
@@ -13,6 +14,7 @@ export function englishResultReadback(fact,plan,context,interpretation){
     parts.push(groundStatusReport(unit,'en')??`Heading ${n(Math.round(unit.headingDeg))} degrees, altitude ${n(radioAltitude(unit.position[2],system))} ${labels.altitudeEnglish}, true airspeed ${n(radioSpeed(unit.speedMps,system))} ${labels.speedEnglish}`);
   }else for(const t of tasks){
     const p=[],target=context.units.find(u=>u.id===t.targetId)?.callsign??t.targetId;
+    if(t.action==='atc')p.push(atcOrderPhrase(t.atcOrder,context.units,true));
     if(t.action==='defense')p.push(defensePhrase(t.defenseOrder,true));
     if(t.action==='weapon')p.push(weaponPhrase(t.weaponOrder,true)+(t.weaponOrder.operation==='launch'&&fact.expectedVerdict==='reported'?'. Launched; hit not confirmed':''));
     if(t.action==='assign_role')p.push(`Assigned as ${t.role==='lead'?'flight lead':'wingman'}, partner ${target}`);

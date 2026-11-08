@@ -6,6 +6,8 @@ import {createCommanderTransmission,captureCommanderMessage} from '../sim/comman
 import {towerTask,createTowerTransmission} from '../sim/control-radio.js';
 import {controlAuthority,requestHandoff} from '../sim/control-authority.js';
 import {transmitHandoff} from './control-handoff.js';
+import {validateAtcAssignment} from '../sim/atc-command.js';
+import {AIRPORT_STATIONS} from '../sim/airport-atc.js';
 
 const abortError=()=>new DOMException('通联已取消','AbortError');
 export function radioPause(ms,signal){
@@ -22,9 +24,10 @@ export function radioPause(ms,signal){
 export async function runCommandSession({world,reply,expectedRevision,selectedUnitId=null,style='pla',radio,signal,onPreview=()=>{},onCommitted=()=>{},onSimulation=()=>{},pause=radioPause,assertCurrent=()=>{},assertWorldCurrent=()=>{},reviewPilot=null,checkPilotResult=null,planPilotCommand=null,pilotLabel='AI',enforceAuthority=false}){
   let {plan,interpretation,execution}=reply;const language=style==='nato'?'en-US':'zh-CN';
   const throughTower=plan.status==='accepted'&&towerTask(reply,world),airport=world.airportOps?.airport.id??'BAY';
+  let towerStation='tower';
   const transmit=(message,options)=>{
     if(throughTower&&message.speaker==='pilot'){
-      const address=(text,en=false)=>{if(!text)return text;const target=en?`${airport} TOWER`:`${airport}塔台`;if(text.startsWith(target))return text;return target+(en?', ':'，')+text.replace(en?/^CONTROL[., ]*/:/^指挥台[，,。]*/,'');};
+      const address=(text,en=false)=>{if(!text)return text;const station=AIRPORT_STATIONS[towerStation]??AIRPORT_STATIONS.tower,target=en?`${airport} ${station.en}`:`${airport}${station.zh}`;if(text.startsWith(target))return text;return target+(en?', ':'，')+text.replace(en?/^CONTROL[., ]*/:/^指挥台[，,。]*/,'');};
       message={...message,text:address(message.text,message.language==='en-US'),...(message.texts?{texts:{zh:address(message.texts.zh),en:address(message.texts.en,true)}}:{})};
     }
     return radio.transmit(message,options);
@@ -54,7 +57,8 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
   check();
   if(enforceAuthority&&plan.status==='accepted')for(const id of new Set(plan.tasks.map(t=>t.unitId).filter(Boolean))){
     const u=world.units.find(u=>u.id===id),c=controlAuthority(world,u),tasks=plan.tasks.filter(t=>t.unitId===id);
-    if(throughTower&&tasks.some(t=>t.action==='airport')){
+    if(throughTower&&tasks.some(t=>['airport','atc'].includes(t.action))){
+      for(const t of tasks.filter(t=>t.action==='atc'))validateAtcAssignment(world,u,t.atcOrder);
       for(const t of tasks.filter(t=>t.action==='airport'))world.airportOps?.validate(u,t.airportOrder,world.executionMode);
       if(c.owner==='commander'){if(c.mode==='manual')throw Error('严苛模式需要手动交接：先点击“返场联系塔台”，等待塔台确认接管');requestHandoff(world,u,'tower');await transmitHandoff(world,u,radio,{signal});check();}
     }else if(!throughTower&&c.owner==='tower'&&tasks.some(t=>!['report_status','pause','resume'].includes(t.action))){
@@ -63,6 +67,7 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
     }
   }
   const transmission=throughTower?createTowerTransmission(reply,world,style,world.unitSystem):createCommanderTransmission(reply,world.units,style,world.unitSystem);
+  towerStation=transmission.controllerRole??'tower';
   radio.phase(throughTower?'tower-command':'commander',throughTower?'指挥官AI已核对 · 以塔台身份发令':'空中指挥 · 正在播报命令');
   const record=await transmit(transmission,{signal});check();
   reply.commanderMessage=captureCommanderMessage(transmission,record,reply.requestId,world.unitSystem);

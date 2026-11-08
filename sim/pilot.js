@@ -82,6 +82,7 @@ export function updatePilot(u,dt=.1) {
   }
   let desired,distance;u.navigationSpeed=u.targetSpeed;u.navigationClimbPreview=0;u.navigationLoadPreview=1;
   if(evasion){
+    u.navigationSpeed=evasion.speedMps??u.targetSpeed;
     const h=evasion.headingDeg*Math.PI/180,gamma=clamp((evasion.altitudeM-u.position[2])/4000,-.15,.15);
     desired=[Math.sin(h)*Math.cos(gamma),Math.cos(h)*Math.cos(gamma),Math.sin(gamma)];distance=V*6;u.targetAltitude=evasion.altitudeM;
   }else if(u.formationGuidance&&!u.navigationBlocked){

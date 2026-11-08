@@ -1,5 +1,4 @@
 import {commandContext} from '../sim/orders.js';
-import {applyAtcDecision} from '../sim/atc-decisions.js';
 export class TowerSupervisor{
   constructor({getWorld,enabled=()=>true,fetchImpl=fetch,now=()=>performance.now(),onStatus=()=>{}}){Object.assign(this,{getWorld,enabled,fetchImpl,now,onStatus});this.nextAt=0;this.active=null;this.world=null;this.signature=null;}
   reset(){this.active?.abort();this.active=null;this.signature=null;this.nextAt=0;}
@@ -18,7 +17,10 @@ export class TowerSupervisor{
       if(!response.ok)throw Error(result.error??'塔台判断暂不可用');
       if(result.requestId!==requestId||result.revision!==context.revision||result.simTimeSec!==context.simTimeSec)throw Error('塔台评估已过期');
       for(const d of result.decisions){
-        try{applyAtcDecision(world,d,{requestId:requests.get(d.unitId)});const u=world.units.find(u=>u.id===d.unitId);if(u?.surface)u.surface.lastATCError=null;}
+        try{if(d.action==='continue')continue;
+          const state=world.airportOps.traffic.state;state.recommendations??=[];state.recommendations=state.recommendations.filter(r=>r.unitId!==d.unitId||r.status!=='pending');
+          state.recommendations.push({...d,id:requestId+'-'+d.unitId,requestId:requests.get(d.unitId),proposedAt:world.time,status:'pending'});state.recommendations=state.recommendations.slice(-16);
+          const u=world.units.find(u=>u.id===d.unitId);if(u?.surface)u.surface.lastATCError=null;}
         catch(error){const u=world.units.find(u=>u.id===d.unitId);if(u?.surface)u.surface.lastATCError=error.message;this.onStatus({error:error.message});}
       }
     }catch(error){if(!controller.signal.aborted){this.signature=null;this.nextAt=this.now()+30000;this.onStatus({error:error.message});}}

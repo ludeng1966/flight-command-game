@@ -11,6 +11,7 @@ import {defenseTaskFor} from '../sim/rwr-defense.js';
 import {radarMissionTaskFor} from '../sim/radar-task.js';
 import {WEAPON_INTENTS,weaponTaskFor} from '../sim/weapons.js';
 import {attackMissionTaskFor} from '../sim/attack-task.js';
+import {ATC_INTENTS,ATC_LANGUAGE_RULES,atcTaskFor} from '../sim/atc-command.js';
 
 const numbers=['altitudeM','speedMps','headingDeg','eastM','northM','distanceM','durationSec','rangeM','quantity','bearingDeg'];
 const strings=['targetId','targetRef','runway','airportRef','formation','side','weapon','mode','role','holdPoint','constraints'];
@@ -39,8 +40,16 @@ export function militarySchemaFor(context){
   order.parameters.properties.targetId.enum=[null,...new Set([...ids,...context.units.flatMap(u=>[...(u.radar?.contacts??[]),...(u.weapons?.contacts??[])].map(c=>c.id))])];
   const global=structuredClone(item),unit=structuredClone(item);
   global.properties.intent.enum=['pause','resume'];global.properties.unitIds.maxItems=0;
-  unit.properties.intent.enum=COMMAND_CATALOG.map(c=>c.id).filter(id=>!['pause','resume'].includes(id));unit.properties.unitIds.minItems=1;
-  schema.properties.orders.items={anyOf:[global,unit]};
+  unit.properties.intent.enum=COMMAND_CATALOG.map(c=>c.id).filter(id=>!['pause','resume',...ATC_INTENTS].includes(id));unit.properties.unitIds.minItems=1;
+  const atc=ATC_INTENTS.map(intent=>{
+    const branch=structuredClone(item);branch.properties.intent.enum=[intent];branch.properties.unitIds.minItems=1;
+    const p=branch.properties.parameters.properties,allowed=new Set(['runway','airportRef','constraints',...(intent==='atc_sequence'?['quantity','mode','targetId','targetRef']:['atc_clearance','atc_cancel_clearance','change_runway'].includes(intent)?['mode']:intent==='atc_hold'?['durationSec']:[])]);
+    for(const key of [...numbers,...strings])if(!allowed.has(key))p[key]={type:'null'};p.append={const:false};
+    if(intent==='atc_sequence'){p.quantity={type:['integer','null'],minimum:1,maximum:32};p.mode={enum:[null,'before','after','first','next','last']};p.targetId={enum:[null,...ids]};}
+    if(['atc_clearance','atc_cancel_clearance'].includes(intent))p.mode={enum:[null,'taxi','line_up','takeoff','approach','land',...(intent==='atc_cancel_clearance'?['all']:[])]};
+    return branch;
+  });
+  schema.properties.orders.items={anyOf:[global,unit,...atc]};
   return schema;
 }
 export function normalizeMilitaryInterpretation(value,{instruction=''}={}){
@@ -52,7 +61,7 @@ export function normalizeMilitaryInterpretation(value,{instruction=''}={}){
     let intent=o.intent==='notch'&&/(防御|\bdefend\b)/i.test(instruction)&&!/(\bnotch\b|切口|切向)/i.test(instruction)?'defend':o.intent;
     if(intent==='search'&&/(雷达(?:切换|开启|打开|设置)?(?:为|至|到)?搜索|\bradar\s+search\b)/i.test(instruction)&&!/(搜索|巡逻).*(区域|空域|航线)/.test(instruction))intent='radar_mode';
     return {...o,id:`order-${i+1}`,unitIds:Array.isArray(o.unitIds)?[...new Set(o.unitIds)]:o.unitIds,
-      intent,parameters:normalizeFormationParameters(o.parameters),condition,timing:condition?'on_condition':instruction&&!explicitSequence&&o.timing==='after_previous'?'now':o.timing};
+      intent,parameters:normalizeFormationParameters(o.parameters),condition,timing:condition?'on_condition':intent==='atc_sequence'||instruction&&!explicitSequence&&o.timing==='after_previous'?'now':o.timing};
   });
   const sameAirport=(a,b)=>JSON.stringify(a.unitIds)===JSON.stringify(b.unitIds)&&(!a.parameters.runway||!b.parameters.runway||a.parameters.runway===b.parameters.runway)&&(!a.parameters.airportRef||!b.parameters.airportRef||a.parameters.airportRef===b.parameters.airportRef);
   const kept=orders.filter(o=>{
@@ -125,6 +134,7 @@ export function validateMilitaryInterpretation(value,context){
 }
 
 export const MILITARY_SYSTEM=`你是空中指挥游戏里玩家指挥员的传令接口：理解玩家意图，以指挥台身份形成命令。输出统一意图协议 JSON，不直接控制飞机，也不把所有口令都改写为航向。
+${ATC_LANGUAGE_RULES}
 指挥员只筛查明显离谱、未知对象或确实缺少关键目标的命令。常规推力调整、爬升、速度与航路安排交给飞行员模型规划判断，不因需要规划细节就拒绝或追问玩家画航路。减推力起飞使用takeoff与mode=reduced_thrust，由飞行员选择实际油门和离场航路；普通起飞未指定减推力时mode=null，不擅自添加特殊模式。
 执行模式由context.executionMode决定。strict严格模式：未知实体、含糊左右跑道和未实现阶段应澄清，保留玩家约束。relaxed放宽模式：允许在已知机场范围内补全未给定的跑道、常规滑行路线和离场流程；可将滑行/等待/进入/起飞编排为一个takeoff请求，保留指定高度与路线。未知机场、目标和未实现功能不能编造，碰撞和跑道占用由程序核验；on_condition条件不能删掉立即执行。
 “返航本场降落/返航并在某跑道降落”是一个return_to_base意图，保留runway/airportRef/holdPoint，由程序执行返航进近至停车；不要拆出两个同机重复任务，也不要为普通返航降落凭空添加after_previous。起飞加爬升高度使用一个takeoff意图及altitudeM。
@@ -136,7 +146,7 @@ ${COMMAND_PLANNING_RULES}
 version="1.0"。理解成功 status=understood 并给 orders；真正无法理解为 unknown；缺少当前已实现导航必需信息或呼号有歧义为 needs_clarification。这两种情况下 orders=[]。
 每条 order 记录 id、intent、unitIds、speechAct、timing、condition、parameters。id 按顺序使用 order-1、order-2 等且不可重复。unitIds 只能用 context.units.id 中的真实 ID，不可写呼号、sync、selected 等占位符。所有参数键必填，未指定的值=null，append=false；不能编造目标、机场、跑道或坐标。
 机场、滑行道、机位与呼号是完整实体名称，按context原样识别，不能把机场名拆成其他军事简语或新增战术命令。明确的单一滑行/对正/起飞任务不能凭空附加进攻战术；未提及的任务不输出。
-识别呼号以 context.units 的 callsign/number/aliases/radioNumber 为准。Alpha/Alfa/阿尔法、Bravo/布拉沃、幺洞幺/101 等只有匹配词典时才有效。没有点名用 selectedUnitId；全体必须展开所有真实单位ID，例如 ["blue-1","blue-2"]，不能用空数组代表全体；只有 pause/resume 的 unitIds=[]。报告请求也只发给实际被叫到的飞机；selectedUnitId仅在没有呼号时补缺，不能因为当前选中了另一架就把它额外加入unitIds。未知呼号要求澄清。
+识别呼号以 context.units 的 callsign/number/aliases/radioNumber 为准。Alpha/Alfa/阿尔法、Bravo/布拉沃、幺洞幺/101 等只有匹配词典时才有效。没有点名通常用 selectedUnitId；塔台正在回应飞行员的唯一待许可请求时，按上面的塔台规则使用请求对象。全体必须展开所有真实单位ID，例如 ["blue-1","blue-2"]，不能用空数组代表全体；只有 pause/resume 的 unitIds=[]。报告请求也只发给实际被叫到的飞机；selectedUnitId仅在没有呼号时补缺，不能因为当前选中了另一架就把它额外加入unitIds。未知呼号要求澄清。
 玩家命令用 directive；请求/报告/许可分别 request/report/clearance。FOX ONE/TWO/THREE 是发射通报，BINGO/JOKER 是油量状态通报，TALLY/NO JOY 是目视状态通报，统一 report_event + speechAct=report，保留 mode；不能解释为发射或强制返航。WEAPONS FREE 是交战规则，不等于立即发射。
 中英文都要区分“要求飞机报告”和“玩家正在通报事实”。例如“Alpha, report heading, altitude and speed.”、“Alpha, report status.”、“Alpha，报告状态”都是report_status，speechAct=request或directive，必须执行本机状态采样；不能用speechAct=report把这类请求降为仅记录通报。“确认机位/地面准备情况/是否准备好滑行”也属于report_status请求，不擅自给滑行或起飞许可。地面状态询问不要改写成报告高度空速；准备离场使用位置、准备和许可术语。report_status不设置飞行目标，parameters所有数值和文本字段必须为null，append=false；机位、速度等当前事实从context采样，不能填入目标参数。
 顺序与条件必须保留：“起飞后集合”拆为 takeoff(now)、join_formation(after_previous)；“如果遭袭则防御”用 defend(on_condition)，condition 保存自然语言条件；不能删掉条件立刻执行。条件不为空时 timing 必须 on_condition，不能写成 after_previous 或 now。
@@ -201,7 +211,7 @@ export function compileMilitaryInterpretation(value,context){
     }
     if(o.timing!=='now')needed.push('scheduler');
     if(o.parameters.constraints)needed.push('advanced_control');
-    if(o.speechAct==='report'||o.speechAct==='request'&&o.intent!=='report_status'&&!airportIntent)informational=true;
+    if(o.speechAct==='report'||o.speechAct==='request'&&o.intent!=='report_status'&&!airportIntent&&!ATC_INTENTS.includes(o.intent))informational=true;
     for(const id of needed)missing.add(id);
     states.push({id:o.id,intent:o.intent,label:command.label,status:needed.length?'capability_unavailable':o.speechAct==='report'?'informational':'ready',missingCapabilities:needed});
   }
@@ -214,6 +224,7 @@ export function compileMilitaryInterpretation(value,context){
   try{tasks.push(...roleTasks(value.orders,context));}catch(error){return result('needs_clarification',error.message);}
   for(const o of value.orders){
     const p=o.parameters;
+    if(ATC_INTENTS.includes(o.intent)){try{tasks.push(...atcTaskFor(o,context));}catch(error){return result('needs_clarification',error.message);}continue;}
     if(['defend','notch','drag'].includes(o.intent)){
       try{tasks.push(...defenseTaskFor(o,context));}catch(error){return result('needs_clarification',error.message);}
       continue;

@@ -19,6 +19,7 @@ import {createRwrDefense,stepRwrDefense,notePlayerDefenseOrder} from './rwr-defe
 import {controlAuthority,updateControlAuthority} from './control-authority.js';
 import {initializeMass,updateAircraftMass} from './aircraft-mass.js';
 import {applyAtmosphere,updateWeather} from './airport-weather.js';
+import {ATC_INTENTS} from './atc-command.js';
 export class World {
   constructor(scenario,profiles,terrain=null,{spawnMode='airborne',mode='strict'}={}) {
     this.spawnMode=spawnMode;this.radarTargets=[];this.radarTargetSequence=0;
@@ -83,7 +84,9 @@ export class World {
     this.airportOps.notice(u,this,'已确认应急，优先安排返场，其他航空器保持间隔','EMERGENCY ACKNOWLEDGED, PRIORITY ARRIVAL. OTHER TRAFFIC MAINTAIN SEPARATION.','approach');this.revision++;
   }
   restoreAirportRadio(id){const u=this.units.find(u=>u.id===id);if(!u)throw Error('飞机不存在');const atc=this.airportOps.traffic,s=atc.state;s.communicationFailures=s.communicationFailures.filter(v=>v!==id);if(u.surface){u.surface.atcHoldUntil=0;if(u.surface.emergencyType==='radio'){u.surface.emergency=false;u.surface.emergencyType=null;u.transponderCode='2000';}if(u.surface.grounded&&u.surface.phase==='taxi'&&u.surface.route.length)atc.issue(u,'taxi',{runway:u.surface.runway,route:[u.surface.node,...u.surface.route],limit:u.surface.destination},this);}atc.resume(this);this.airportOps.notice(u,this,'无线电检查正常，按新许可执行','RADIO CHECK READABILITY FIVE. FOLLOW REVISED CLEARANCE.',u.surface?.station??'approach');this.revision++;}
-  cancelAirportNavigation(u){if(this.atcRouteInstall||!u.surface||u.surface.grounded||!['approach','final','missed'].includes(u.surface.phase))return;
+  cancelAirportNavigation(u){if(this.atcRouteInstall||!u.surface||u.surface.grounded)return;
+    if(u.surface.phase==='climb'){u.surface.sidInstalled=true;return;}
+    if(!['approach','final','missed'].includes(u.surface.phase))return;
     this.airportOps?.traffic.cancelUnit(u,this,'新飞行任务已接管','NEW FLIGHT TASK HAS CONTROL');for(const q of this.airportOps?.traffic.state.requests??[])if(q.unitId===u.id)q.status='cancelled';u.surface.phase='airborne';u.surface.towerHold=null;
   }
   radarCommand(id,radarOrder){return applyPlan(this,{status:'accepted',summary:'雷达操作',tasks:[{unitId:id,action:'radar',radarOrder}]},this.revision);}
@@ -133,7 +136,7 @@ export class World {
     this.commandLog.push({requestId,time:this.time,interpretation,execution});
     if(this.commandLog.length>32)this.commandLog.shift();
     for(const order of interpretation.orders??[]){
-      if(order.speechAct!=='directive')continue;
+      if(order.speechAct!=='directive'||ATC_INTENTS.includes(order.intent))continue;
       for(const id of order.unitIds){
         const unit=this.units.find(u=>u.id===id);if(!unit)continue;
         if(FORMATION_ACTIONS.includes(order.intent)||order.intent==='assign_role')unit.pilotMission=null;

@@ -6,6 +6,7 @@ export const HANDBOOK=Object.freeze([
   {id:'rwr',file:'17_告警与自卫.txt',title:'雷达告警与玩家优先的自卫'},
   {id:'weapons',file:'16_导弹与引导.txt',title:'导弹与引导'},
   {id:'airport',file:'10_机场运行.txt',title:'机场运行'},
+  {id:'airport_compact',file:'18_机场运行速记.txt',title:'机场运行速记（2B）'},
   {id:'start',file:'00_先读这里.txt',title:'先读这里'},
   {id:'result',file:'09_检查结果再复述.txt',title:'检查结果再复述'},
   {id:'units',file:'10_单位怎么读.txt',title:'单位怎么读'},
@@ -33,7 +34,7 @@ export function pilotReading(instruction='',{compact=false}={}){
   if(/导弹|发射|武器|引导|照射|AIM|PL.?12|PL.?5|MISSILE|FIRE|LAUNCH|WEAPONS|FOX/i.test(instruction))ids.push('weapons');
   if(!compact)ids.push('planning');
   if(needsFormationReading(instruction))ids.push(compact?'formation_compact':'formation');
-  if(/机场|跑道|滑行|起飞|降落|着陆|复飞|起落架|襟翼|TAXI|TAKEOFF|LANDING|GO AROUND/i.test(instruction))ids.push('airport');
+  if(/机场|跑道|滑行|起飞|降落|着陆|复飞|起落架|襟翼|进近|塔台|离场|排序|放行|许可|TAXI|TAKEOFF|LANDING|GO AROUND|RUNWAY|APPROACH|ATIS|QNH|GROUND|TOWER|DEPARTURE|SEQUENCE|CLEARANCE|HOLD POSITION/i.test(instruction))ids.push(compact?'airport_compact':'airport');
   const files=ids.map(readPilotFile);
   return appendAviationReading({files:files.map(({id,file,title})=>({id,file,title})),text:files.map(entry=>`【参考文件：${entry.file}】\n${entry.text}`).join('\n\n')},instruction,{compact});
 }

@@ -28,6 +28,8 @@ import {setLiveDisplayOptions,getLiveMapHeading,getLiveMapObstacles} from '../th
 import {initMapCompass} from './map-compass.js';
 import {initMissionReport} from './mission-report.js';
 import {initAircraftHud} from './aircraft-hud.js';
+import {loadAircraftModels} from '../three3d/aircraft.js';
+import {initAircraftAppearance} from './aircraft-appearance.js';
 import {AutoSave} from './autosave.js';
 import {captureWorld,restoreWorld,saveFingerprint} from '../sim/save-state.js';
 import {restoreTraining} from '../sim/training-state.js';
@@ -41,7 +43,7 @@ if(routeRadio)new ResizeObserver(entries=>canvas.parentNode.style.setProperty('-
 let mapPoint=null,voiceControl=null,routeEditor=null,messageTimer=null,planner=null,replanner=null,predictionAt=0,predictionBusy=false,pilotSupervisor=null;
 let radarPilot=null,attackPilot=null,rwrPilot=null,rwrControl=null;
 const cameraKeys=new Set();
-let airportControl=null,atcControl=null,radarControl=null,weaponControl=null,trainingCoach=null,missionReport=null,aircraftHud=null,authorityHud=null;
+let airportControl=null,atcControl=null,radarControl=null,weaponControl=null,trainingCoach=null,missionReport=null,aircraftHud=null,authorityHud=null,appearanceSettings=null;
 const cameraCodes=new Set(['KeyW','KeyA','KeyS','KeyD','ShiftLeft','ShiftRight','ControlLeft','ControlRight']);
 const editing=el=>el?.matches('input,textarea,select,[contenteditable="true"]');
 function cameraInput(){
@@ -73,7 +75,7 @@ function updateUI(){
   weaponControl?.update();
   trainingCoach?.update();
   missionReport?.update();
-  aircraftHud?.update();authorityHud?.update();
+  aircraftHud?.update();authorityHud?.update();appearanceSettings?.update();
   for(const id of ['hold','clear','route-edit'])document.getElementById(id).disabled=selected().surface?.grounded===true||controlAuthority(world,selected()).owner!=='commander';
   for(const u of world.units){
     const el=document.getElementById(u.id),metrics=el.querySelector('.metrics');el.classList.toggle('selected',u.id===selectedId);
@@ -107,7 +109,7 @@ function updateUI(){
 }
 function toggle(){world.revision++;playing=!playing;acc=0;updateUI();}
 async function boot(){
-  await initLanguages();
+  await Promise.all([initLanguages(),loadAircraftModels()]);
   const [scenario,profiles,terrain,landmask,heightfield]=await Promise.all([read('../data/scenarios/demo.json'),read('../data/aircraft.json'),read('../terrain/air_skyscraper_city_contours.json'),read('../terrain/air_skyscraper_city_landmask.json'),TerrainHeight.load('../terrain/air_skyscraper_city')]);
   let spawnMode=scenario.defaultSpawnMode??'stands';try{const saved=localStorage.getItem('flight-spawn-mode');if(['stands','airborne'].includes(saved))spawnMode=saved;}catch{}
   let mode='strict';try{const saved=localStorage.getItem('flight-execution-mode');if(['strict','relaxed'].includes(saved))mode=saved;}catch{}
@@ -214,6 +216,7 @@ async function boot(){
   const towerSupervisor=new TowerSupervisor({getWorld:()=>world,enabled:()=>playing&&!!voiceControl?.pilotAssistantEnabled});
   window.addEventListener('pagehide',()=>{towerSupervisor.reset();rwrPilot.stop();pilotSupervisor.stop();radarPilot.stop();attackPilot.stop();});
   aircraftHud=initAircraftHud({getWorld:()=>world,getSelected:()=>selectedId,onSelect:select});
+  appearanceSettings=initAircraftAppearance({getWorld:()=>world,onChange:()=>{updateUI();autosave.save();}});
   trainingCoach=initTrainingCoach({getWorld:()=>world,getPlaying:()=>playing,
     onHandoff:(unitId,target)=>{const u=world.units.find(u=>u.id===unitId);if(requestHandoff(world,u,target))voiceControl.requestHandoff(unitId);},onExecutionMode:value=>{const el=$('#execution-mode');el.value=value;el.dispatchEvent(new Event('change'));},issueCommand:(instruction,options)=>voiceControl.issue(instruction,options),cancelCommand:()=>voiceControl.cancel(),getCommandBusy:()=>voiceControl.busy,
     onSimulation:running=>{playing=running;acc=0;},

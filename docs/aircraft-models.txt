@@ -1,0 +1,23 @@
+公开飞机模型接入（2026-11-08）
+
+入口：设置 → 飞机外观，可为 ALPHA / BRAVO 分别选择 F-16、Su-27、J-11、Boeing 747-8I、Airbus A320-200。
+对照页：game/aircraft-models.html。全部模式使用同一相机尺度，网格 10m；单机查看提供近距离外形检查。
+本次接入外观资产，不改变现有飞机的气动配置。J-11 使用 Su-27 基础外形与独立配色，不冒充精确的 J-11 分型模型。
+
+源模型：
+F-16：NikolaiVChr/f16，GPL-2.0-or-later。Erik Hofman 及 authors.txt 中的贡献者。
+Su-27 / J-11：xcvb85/Su-27，GPL-3.0。Yanes Bechir、FGUK 及 README 中的贡献者。
+747-8I：JMaverick16/747-8，GPL-2.0。John Williams、Grupo FGBr、Gijs de Rooy 等，详见原 README。
+A320-200 CFM：legoboyvdlp/A320-family，GPL-2.0。Josh Davidson、Jonathan Redpath、merspieler、Matthew Maring、Thorsten Herrmann、Semir Gebran。
+assets/aircraft/sources/ 保留原始 AC3D 文件、许可、作者说明与按 Git blob SHA-1 锁定的来源清单。派生 JSON 模型保留各自原许可，不按项目 MIT 许可重新授权。
+
+处理：提取外部机身、翼面、尾翼、发动机与独立起落架；移除内饰、贴纸、动画重复件与细小机械；丢弃大贴图，采用统一材质。
+AC3D 层级变换与多边形绕序保持；使用 earcut 三角化、meshoptimizer 保边界减面，合并为少量按材质/起落架区分的网格。两款客机的每侧翼面用原始顶点的三维凸包封闭，合并不再动画的缝翼、襟翼和扰流板，避免静态翼面出现锯齿缺口。
+按公开外形尺寸校准三轴，局部 -Z 机头、+Y 机背，1 单位 = 1m。减面后的实际包围尺寸见 assets/aircraft/build-report.json，最大尺寸误差控制在 0.5% 以内。
+地图远距仍使用原有辨识放大系数，所有机型共用 15m 参考长度，避免逐机型归一化成一样大；近距放大系数为 1。
+缩略图允许为图标独立取景，调用与地图完全相同的网格与材质。切换外观自动更新缩略图并保存到现有进度。
+
+复建：node tools/fetch-aircraft-sources.mjs
+安装构建依赖：npm install --prefix .game-server/model-tools meshoptimizer@1.3.0 earcut@3.2.4 three@0.186.0
+转换：node tools/build-aircraft-models.mjs
+构建依赖仅离线转换使用；浏览器不加载 AC3D、减面器、外部 CDN 或高分辨率贴图。

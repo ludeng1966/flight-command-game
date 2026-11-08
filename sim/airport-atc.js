@@ -1,5 +1,6 @@
 import {atisInformation,runwayWeatherLimits} from './airport-weather.js';
 import {runwayProcedure} from './airport-procedures.js';
+import {PILOT_STAGE_CLEARANCES,stageRequestText} from './pilot-stage-request.js';
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const active=c=>['issued','delivered','active'].includes(c.status);
 const types=new Set(['taxi','line_up','takeoff','approach','land','cross','hold','go_around','contact','vector']);
@@ -29,10 +30,30 @@ export class AirportTrafficController{
   constructor(ops){Object.defineProperty(this,'ops',{value:ops,enumerable:false});initializeAtc(ops.airport);this.nextThink=0;}
   get state(){return initializeAtc(this.ops.airport);}
   resume(world){
+    for(const u of world.units)for(const request of Object.values(u.surface?.pilotStageRequests??{}))if(request.status==='pending'&&request.phase===u.surface.phase&&request.runway===u.surface.runway)this.emitPilotRequest(u,request,world);
     for(const c of this.state.clearances)if(['issued','delivered'].includes(c.status)){
       c.status='issued';c.deliveredAt=null;this.ops.airport.events.push({id:++this.ops.eventSequence,unitId:c.unitId,time:world.time,text:'恢复待确认许可',kind:'clearance',clearanceId:c.id,station:c.station});
     }
   }
+  emitPilotRequest(unit,request,world){
+    const id=++this.ops.eventSequence;request.eventId=id;
+    this.ops.airport.events.push({id,unitId:unit.id,time:world.time,text:stageRequestText(request.phase,request.runway),kind:'pilot_request',pilotRequestId:request.id,requestedClearance:request.clearance,phase:request.phase,runway:request.runway,grounded:unit.surface.grounded===true,alreadyCleared:request.alreadyCleared,station:'tower'});
+    if(this.ops.airport.events.length>96)this.ops.airport.events.shift();
+  }
+  requestNext(unit,world){
+    const s=unit.surface,type=PILOT_STAGE_CLEARANCES[s?.phase];if(!type||!s.runway||!unit.alive)return null;
+    if(s.station!=='tower'){this.issue(unit,'contact',{station:'tower',frequencyMHz:AIRPORT_STATIONS.tower.frequencyMHz},world,{station:s.station??(s.grounded?'ground':'approach')});return null;}
+    s.pilotStageRequests??={};const old=s.pilotStageRequests[type];if(old&&old.runway===s.runway&&old.phase===s.phase)return old;
+    if(this.state.guidanceMode==='player'&&!s.explicitPhaseClearances?.[type]&&!this.permitted(unit,type)&&s.playerAuthorizations)delete s.playerAuthorizations[type];
+    const request={id:`pilot-request-${this.ops.eventSequence+1}`,clearance:type,phase:s.phase,runway:s.runway,status:'pending',requestedAt:world.time,reportedAt:null,alreadyCleared:this.permitted(unit,type)};
+    s.pilotStageRequests[type]=request;this.emitPilotRequest(unit,request,world);s.message=stageRequestText(s.phase,s.runway);this.state.revision++;return request;
+  }
+  pilotRequestSent(unit,id,world){
+    const request=Object.values(unit.surface?.pilotStageRequests??{}).find(r=>r.id===id);
+    if(!request||request.status!=='pending'||request.phase!==unit.surface.phase||request.runway!==unit.surface.runway)return false;
+    request.status='reported';request.reportedAt=world.time;request.reportedOrder=this.state.pilotReportSequence=(this.state.pilotReportSequence??0)+1;this.state.revision++;return true;
+  }
+  stageReported(unit,type){const request=unit.surface?.pilotStageRequests?.[type];return request?.runway===unit.surface.runway&&request.phase===unit.surface.phase&&request.status==='reported';}
   request(unit,kind,world,details={}){
     for(const old of this.state.requests)if(old.unitId===unit.id&&old.status!=='completed')old.status='superseded';
     const r={id:`request-${++this.state.requestSequence}`,unitId:unit.id,kind,requestedAt:world.time,runway:unit.surface.runway,
@@ -58,6 +79,22 @@ export class AirportTrafficController{
   }
   current(unit,type){const id=unit.surface?.clearances?.[type];return this.state.clearances.find(c=>c.id===id&&active(c));}
   permitted(unit,type){return this.current(unit,type)?.status==='active';}
+  playerAllows(unit,type){return !unit.surface?.clearanceInhibits?.[type]&&(this.state.guidanceMode!=='player'||unit.surface?.playerAuthorizations?.[type]===true);}
+  authorize(unit,type,world){
+    const s=unit.surface;if(!unit.alive||!s)throw Error('管制对象无效');
+    if(this.state.communicationFailures.includes(unit.id))throw Error('通信失效，无法送达新许可');
+    const r=this.ops.runway(s.runway),base={runway:r.designator,qnhHpa:this.ops.airport.weather.qnhHpa,atisCode:atisInformation(this.ops.airport).code};
+    if(type==='taxi'){if(!s.grounded||s.phase!=='taxi'||!s.route.length)throw Error('请先安排滑行目的地');if(s.clearanceInhibits)delete s.clearanceInhibits.taxi;return this.issue(unit,'taxi',{...base,route:[s.node,...s.route],limit:s.destination},world);}
+    if(type==='line_up'&&(!s.grounded||s.phase!=='holding'))throw Error('飞机尚未到跑道外等待点');
+    if(type==='takeoff'&&(!s.grounded||s.phase!=='lined_up'))throw Error('飞机尚未进入跑道对正');
+    if(['line_up','takeoff','land'].includes(type)&&!this.runwayAvailable(r,unit,world,type==='land'?'arrival':'departure'))throw Error('跑道交通、间隔或起降性能不允许');
+    if(['approach','land'].includes(type)&&(s.grounded||!['approach','final'].includes(s.phase)))throw Error('请先安排进近程序');
+    if(!['line_up','takeoff','approach','land'].includes(type))throw Error('未知玩家许可');
+    if(s.clearanceInhibits)delete s.clearanceInhibits[type];
+    s.playerAuthorizations??={};s.playerAuthorizations[type]=true;s.explicitPhaseClearances??={};s.explicitPhaseClearances[type]=true;
+    if(type==='line_up')s.lineUp=true;if(type==='takeoff')s.depart=true;if(type==='land')s.landingRequested=true;
+    if(['line_up','takeoff'].includes(type)&&!this.state.requests.some(q=>q.id===s.atcRequestId&&['pending','waiting','cleared'].includes(q.status)))this.request(unit,'departure',world);this.state.revision++;
+  }
   delivered(id,world){const c=this.state.clearances.find(c=>c.id===id);if(!c||c.status!=='issued')return false;c.status='delivered';c.deliveredAt=world.time;return true;}
   acknowledge(id,readback,world){
     const c=this.state.clearances.find(c=>c.id===id),unit=world.units.find(u=>u.id===c?.unitId);
@@ -79,9 +116,9 @@ export class AirportTrafficController{
     if(c.type==='vector')unit.surface.towerHold={...c.parameters,until:world.time+45,vector:true};
     unit.qnhHpa=c.parameters.qnhHpa??unit.qnhHpa;unit.atisCode=c.parameters.atisCode??unit.atisCode;return true;
   }
-  complete(unit,type,world){const c=this.current(unit,type);if(c){c.status='completed';c.completedAt=world.time;this.state.revision++;}}
+  complete(unit,type,world){const c=this.current(unit,type);if(c){c.status='completed';c.completedAt=world.time;if(unit.surface.playerAuthorizations)delete unit.surface.playerAuthorizations[type];if(unit.surface.explicitPhaseClearances)delete unit.surface.explicitPhaseClearances[type];this.state.revision++;}}
   cancel(c,world,zh,en){if(!active(c))return;c.status='cancelled';c.cancelledAt=world.time;this.state.revision++;
-    const u=world.units.find(u=>u.id===c.unitId);if(u)this.notice(u,world,`取消${({taxi:'原滑行许可',line_up:'进入跑道许可',takeoff:'起飞许可',land:'着陆许可',approach:'原进近许可'})[c.type]??'原许可'}，${zh}`,`CANCEL ${c.type.toUpperCase().replaceAll('_',' ')} CLEARANCE. ${en}.`,c.station);
+    const u=world.units.find(u=>u.id===c.unitId);if(u){if(u.surface.playerAuthorizations)delete u.surface.playerAuthorizations[c.type];if(u.surface.explicitPhaseClearances)delete u.surface.explicitPhaseClearances[c.type];this.notice(u,world,`取消${({taxi:'原滑行许可',line_up:'进入跑道许可',takeoff:'起飞许可',land:'着陆许可',approach:'原进近许可'})[c.type]??'原许可'}，${zh}`,`CANCEL ${c.type.toUpperCase().replaceAll('_',' ')} CLEARANCE. ${en}.`,c.station);}
   }
   cancelUnit(unit,world,zh='任务已更新',en='TASK REVISED'){for(const c of this.state.clearances)if(c.unitId===unit.id&&active(c))this.cancel(c,world,zh,en);}
   arrivalBlocks(r,units,owner,time=this.ops.airport.clock??0){
@@ -104,6 +141,7 @@ export class AirportTrafficController{
   tick(world){
     this.ops.world=world;const a=this.ops.airport,s=this.state;
     if(world.time<this.nextThink)return;this.nextThink=world.time+.25;
+    for(const u of world.units){const request=this.requestNext(u,world);if(request?.status==='pending'&&!s.radioRequired&&!s.communicationFailures.includes(u.id)&&world.time-request.requestedAt>=1)this.pilotRequestSent(u,request.id,world);}
     for(const u of world.units){const surface=u.surface,p=surface?.departureProcedure,r=a.runways.find(r=>r.designator===surface?.runway);
       if(!u.alive||surface?.phase!=='climb'||!p||!r)continue;
       if((u.position[0]-(r.direction===1?r.x1:r.x0))*r.direction>=p.transferDistanceM&&u.position[2]>=a.elevation+p.transferHeightM&&surface.station!=='departure')
@@ -112,7 +150,7 @@ export class AirportTrafficController{
     for(const c of s.clearances.filter(active)){
       const u=world.units.find(u=>u.id===c.unitId);if(!u?.alive){c.status='cancelled';continue;}
       if(c.type==='vector'&&c.status==='active'&&world.time>=u.surface.towerHold?.until){u.surface.towerHold=null;this.complete(u,'vector',world);}
-      if(c.expiresAt!==null&&world.time>c.expiresAt){this.cancel(c,world,'许可有效期结束，等待重新许可','CLEARANCE EXPIRED, STANDBY');continue;}
+      if(c.expiresAt!==null&&world.time>c.expiresAt){this.cancel(c,world,'许可有效期结束，等待重新许可','CLEARANCE EXPIRED, STANDBY');c.status='expired';continue;}
       if(!s.radioRequired&&!s.communicationFailures.includes(u.id)&&['issued','delivered'].includes(c.status)){
         if(world.time-c.issuedAt>=1)this.delivered(c.id,world);
         if(world.time-c.issuedAt>=2)this.acknowledge(c.id,c.parameters,world);
@@ -121,7 +159,7 @@ export class AirportTrafficController{
     for(const q of [...s.requests])if(q.status==='missed'){
       const u=world.units.find(u=>u.id===q.unitId);if(!u?.alive||u.surface?.phase!=='missed'){q.status='cancelled';continue;}
       if(!u.waypoints.length&&world.time-q.requestedAt>30){
-        if(s.communicationFailures.includes(u.id)){u.surface.towerHold=null;u.headingTarget=null;u.holdAltitude=u.surface.missedProcedure?.altitudeM??u.position[2];if(!u.surface.lostCommsHold){const h=Math.atan2(u.velocity[0],u.velocity[1]);u.orbit=[u.position[0]+Math.cos(h)*4000,u.position[1]-Math.sin(h)*4000];u.surface.lostCommsHold=true;}continue;}u.surface.lostCommsHold=false;
+        if(s.communicationFailures.includes(u.id)||s.guidanceMode==='player'||u.surface.clearanceInhibits?.approach||u.surface.clearanceInhibits?.land){u.surface.towerHold=null;u.headingTarget=null;u.holdAltitude=u.surface.missedProcedure?.altitudeM??u.position[2];if(!u.surface.lostCommsHold){const h=Math.atan2(u.velocity[0],u.velocity[1]);u.orbit=[u.position[0]+Math.cos(h)*4000,u.position[1]-Math.sin(h)*4000];u.surface.lostCommsHold=true;}continue;}u.surface.lostCommsHold=false;
         const current=this.ops.airport.runways.find(r=>r.designator===u.surface.runway);
         if(current&&(a.closed.includes(current.stripId)||a.closed.includes(current.designator)||!runwayWeatherLimits(a.weather,current,u.profile).valid)){this.ops.resolveRunwayUnavailable(u,world,'原跑道不可用');continue;}
         try{this.ops.apply(u,{intent:'land',runway:u.surface.runway,airportId:a.id,mode:u.surface.approachType??'ils',taxiways:[],gate:u.surface.arrivalGate??null,altitudeM:null},world);}
@@ -143,41 +181,49 @@ export class AirportTrafficController{
       if(s.communicationFailures.includes(u.id)){q.status='waiting';q.reason='通信中断，保持最后有效许可';return;}
       if(a.closed.includes(r.stripId)||a.closed.includes(r.designator)||!weather.valid){q.status='waiting';q.reason=weather.reason??'跑道关闭';this.ops.resolveRunwayUnavailable?.(u,world,q.reason);return;}
       if(q.kind==='departure'){
+        if(surface.phase==='taxi'&&this.state.guidanceMode==='player'&&!this.current(u,'taxi')){q.status='waiting';q.reason='等待玩家下达滑行许可';return;}
         if(['climb','airborne'].includes(surface.phase)){q.status='completed';return;}
+        const ahead=q.playerSequence&&requests.find(v=>v.q!==q&&v.q.kind==='departure'&&v.r.stripId===r.stripId&&v.q.priority>q.priority&&v.u.surface.grounded);
+        if(ahead){q.status='waiting';q.reason='按玩家排序等待前机'+ahead.u.callsign;return;}
         if(surface.phase==='holding'&&(surface.lineUp||surface.depart)){
           if(surface.station!=='tower'){
             this.issue(u,'contact',{station:'tower',frequencyMHz:AIRPORT_STATIONS.tower.frequencyMHz},world,{station:'ground'});q.reason='联系塔台，复诵频率后等待进入跑道许可';return;
           }
+          if(!this.playerAllows(u,'line_up')){q.status='waiting';q.reason='等待玩家下达进入跑道许可';return;}
+          if(!this.stageReported(u,'line_up')){q.status='waiting';q.reason='等待飞行员报告等待点并申请进入跑道';return;}
           if(this.runwayAvailable(r,u,world,'departure')){
             this.ops.leases[r.stripId]=u.id;this.issue(u,'line_up',base,world);q.status='cleared';q.reason=null;
           }else{q.status='waiting';q.reason=u.surface.performanceReason??(this.arrivalBlocks(r,world.units,u.id,world.time)?'进近交通优先，保持跑道外等待':'跑道占用或间隔尚未满足');}
         }
         if(surface.phase==='lined_up'&&surface.depart){
+          if(!this.playerAllows(u,'takeoff')){q.status='waiting';q.reason='等待玩家下达起飞许可';return;}
+          if(!this.stageReported(u,'takeoff')){q.status='waiting';q.reason='等待飞行员报告对正并申请起飞';return;}
           if(this.runwayAvailable(r,u,world,'departure')){this.issue(u,'takeoff',{...base,initialAltitudeM:surface.climbAltitude,departureProcedure:runwayProcedure(a,r).sid.id},world);q.status='cleared';}
           else{q.status='waiting';q.reason='等待进近交通或跑道间隔';}
         }
       }else if(q.kind==='arrival'){
         if(surface.grounded){q.status='completed';return;}
-        if(surface.phase==='approach'&&!this.current(u,'approach'))this.issue(u,'approach',{...base,procedure:surface.procedure?.id??`${a.id}-${r.designator}`,approachType:surface.approachType??'ils',initialAltitudeM:surface.procedure?.points?.[0]?.[2]??a.elevation+1200},world,{station:'approach'});
+        if(surface.phase==='approach'&&!this.current(u,'approach')&&this.playerAllows(u,'approach'))this.issue(u,'approach',{...base,procedure:surface.procedure?.id??`${a.id}-${r.designator}`,approachType:surface.approachType??'ils',initialAltitudeM:surface.procedure?.points?.[0]?.[2]??a.elevation+1200},world,{station:'approach'});
         if(q.etaSec<120&&surface.station!=='tower'){this.issue(u,'contact',{station:'tower',frequencyMHz:AIRPORT_STATIONS.tower.frequencyMHz},world,{station:'approach'});q.reason='转交塔台获取着陆许可';return;}
         const earlier=requests.some(v=>v.q!==q&&v.q.kind==='arrival'&&v.r.stripId===r.stripId&&(v.q.priority>q.priority||v.q.priority===q.priority&&v.q.etaSec<q.etaSec));
-        if(surface.landingRequested&&!earlier&&q.etaSec<180&&surface.station==='tower'&&this.runwayAvailable(r,u,world,'arrival')){
+        if(surface.phase==='final'&&this.stageReported(u,'land')&&surface.landingRequested&&this.playerAllows(u,'land')&&!earlier&&q.etaSec<180&&surface.station==='tower'&&this.runwayAvailable(r,u,world,'arrival')){
           this.ops.leases[r.stripId]=u.id;this.issue(u,'land',base,world);q.status='cleared';q.reason=null;
-        }else{q.status='waiting';q.reason=u.surface.performanceReason??(earlier?'按到达次序保持进近间隔':'继续进近，等待跑道可用');}
+        }else{q.status='waiting';q.reason=u.surface.performanceReason??(earlier?'按到达次序保持进近间隔':surface.phase==='final'?'最后进近，等待着陆许可':'继续获准进近，最后进近报告后申请着陆许可');}
       }
       if(q.reason&&world.time-(q.lastReportAt??-Infinity)>=25){q.lastReportAt=world.time;this.notice(u,world,`${q.reason}，本场排序${q.sequence}`,`STANDBY, TRAFFIC SEQUENCE ${q.sequence}. ${q.kind==='arrival'?'CONTINUE APPROACH, EXPECT LANDING CLEARANCE':'HOLD POSITION, EXPECT DEPARTURE CLEARANCE'}.`);}
     });
   }
   snapshot(world){
     const a=this.ops.airport,s=this.state;
-    return {airportId:a.id,revision:s.revision,time:world.time,atis:atisInformation(a,world.time),frequencies:a.frequencies,closed:[...a.closed],
+    const pendingPilotRequests=world.units.filter(u=>u.alive).flatMap(u=>Object.values(u.surface?.pilotStageRequests??{}).filter(p=>p.status==='reported'&&p.phase===u.surface.phase&&p.runway===u.surface.runway&&!this.permitted(u,p.clearance)).map(p=>({unitId:u.id,callsign:u.callsign,...structuredClone(p)}))).sort((x,y)=>(y.reportedOrder??0)-(x.reportedOrder??0));
+    return {airportId:a.id,guidanceMode:s.guidanceMode??'assisted',revision:s.revision,time:world.time,pendingPilotRequests,atis:atisInformation(a,world.time),frequencies:a.frequencies,closed:[...a.closed],
       taxiways:[...new Set(a.edges.map(e=>e.name))],groundNetwork:{nodes:structuredClone(a.nodes),edges:structuredClone(a.edges)},
       runways:a.runways.map(r=>({designator:r.designator,stripId:r.stripId,headingDeg:r.headingDeg,lengthM:r.length,widthM:r.width,
         ownerId:this.ops.leases[r.stripId]??null,lastUse:s.lastUse[r.stripId]??null,procedure:runwayProcedure(a,r)})),
       traffic:world.units.filter(u=>u.alive&&u.surface?.runway).map(u=>({unitId:u.id,callsign:u.callsign,position:[...u.position],groundVelocity:u.groundVelocity??u.velocity,
         speedMps:u.speed,phase:u.surface.phase,runway:u.surface.runway,groundNode:u.surface.node??null,route:[...(u.surface.route??[])],
         etaSec:Number.isFinite(arrivalEta(u,a.runways.find(r=>r.designator===u.surface.runway)))?arrivalEta(u,a.runways.find(r=>r.designator===u.surface.runway)):null,
-        emergency:u.surface.emergency===true,fuelStatus:u.fuel?.status??'normal',fuelKg:u.fuel?.massKg??null,massKg:u.profile.mass,storesMassKg:u.storesMassKg??0,performance:this.ops.performance(u,a.runways.find(r=>r.designator===u.surface.runway),u.surface.grounded?'departure':'arrival'),receiver:u.navReceiver??null,station:u.surface.station??(u.surface.grounded?'ground':'approach'),lastModelError:u.surface.lastATCError??null})),
-      queue:s.requests.filter(q=>['pending','waiting','cleared'].includes(q.status)).map(q=>structuredClone(q)),clearances:s.clearances.filter(active).map(c=>structuredClone(c))};
+        emergency:u.surface.emergency===true,fuelStatus:u.fuel?.status??'normal',fuelKg:u.fuel?.massKg??null,massKg:u.profile.mass,storesMassKg:u.storesMassKg??0,performance:this.ops.performance(u,a.runways.find(r=>r.designator===u.surface.runway),u.surface.grounded?'departure':'arrival'),receiver:u.navReceiver??null,pilotRequest:u.surface.pilotStageRequests?.[PILOT_STAGE_CLEARANCES[u.surface.phase]]??null,station:u.surface.station??(u.surface.grounded?'ground':'approach'),lastModelError:u.surface.lastATCError??null})),
+      queue:s.requests.filter(q=>['pending','waiting','cleared','missed'].includes(q.status)).map(q=>structuredClone(q)),clearances:s.clearances.filter(active).map(c=>structuredClone(c))};
   }
 }
