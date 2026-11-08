@@ -1,4 +1,5 @@
 import {getUnitSystem,formatDistance} from './units.js';
+import {navigationEnvelope} from './energy.js';
 import {planHeadingRoute} from './navigation.js';
 import {callsignAliases,radioReadback} from './radio.js';
 import {AIRPORT_INTENTS} from './airport.js';
@@ -124,7 +125,7 @@ export function commandContext(world,selectedId,mapPoint=null,radioStyle='pla') 
     airports:world.airportOps?[{id:world.airportOps.airport.id,name:world.airportOps.airport.name,runways:world.airportOps.airport.runways.map(r=>r.designator),taxiways:[...new Set(world.airportOps.airport.edges.map(e=>e.name))],stands:world.airportOps.airport.stands}]:[],
     airportTraffic:world.airportOps?.traffic.snapshot(world)??null,
     units:world.units.map((u,i)=>({id:u.id,callsign:u.callsign,number:i+1,aliases:callsignAliases(u,i),radioNumber:u.radioNumber||String(101+i),
-      position:[...u.position],headingDeg:(Math.atan2(u.velocity[0],u.velocity[1])*180/Math.PI+360)%360,
+      position:[...u.position],velocity:[...u.velocity],navigationEnvelope:navigationEnvelope(u),headingDeg:(Math.atan2(u.velocity[0],u.velocity[1])*180/Math.PI+360)%360,
       speedMps:u.speed,targetAltitudeM:u.headingRoute?.targetAltitudeM??u.targetAltitude,targetSpeedMps:u.targetSpeed,maxG:u.profile.maxG,
       alive:u.alive!==false,task:u.formation?'formation':u.headingRoute||u.headingTarget!=null?'heading':u.waypoints.length?'waypoints':'orbit',
       grounded:u.surface?.grounded===true,surfacePhase:u.surface?.phase??'airborne',
@@ -136,7 +137,7 @@ export function commandContext(world,selectedId,mapPoint=null,radioStyle='pla') 
 }
 
 // 先完整校验再执行，保证非法批次不会只改动一部分飞机。
-export function preparePilotPlan(world,plan,expectedRevision,{radioStyle='pla',pilotProcedures={}}={}) {
+export function preparePilotPlan(world,plan,expectedRevision,{radioStyle='pla',pilotProcedures={},aiRoutes=[]}={}) {
   validatePlan(plan,world.units);
   if(world.revision!==expectedRevision) fail('指令分析期间已有新操作，本次结果已作废，请重新下令');
   if(plan.status!=='accepted') return {world,plan,expectedRevision,radioStyle,status:'not_executable'};
@@ -175,6 +176,16 @@ export function preparePilotPlan(world,plan,expectedRevision,{radioStyle='pla',p
     if(t.action==='fly_heading'){
       const headingPlan=planHeadingRoute(world,unit,t.headingDeg,t.altitudeM??route.altitude,t.distanceM);
       headingPlans.set(index,headingPlan);route.points=headingPlan.points;
+    }
+    const ai=aiRoutes.find(r=>r.unitId===t.unitId),lastNavigation=plan.tasks.findLastIndex(x=>x.unitId===t.unitId&&['fly_heading','fly_to'].includes(x.action));
+    if(ai&&index===lastNavigation){
+      if(!Array.isArray(ai.waypoints)||!ai.waypoints.length||ai.waypoints.length>12||ai.waypoints.some(p=>!Array.isArray(p)||p.length!==3||!p.every(Number.isFinite)))fail('AI三维航点无效');
+      if(ai.relative&&(!Array.isArray(ai.referencePosition)||ai.referencePosition.length!==3||!ai.referencePosition.every(Number.isFinite)))fail('AI预测机位无效');
+      // Heading instructions are relative to the execution origin; geographic destinations stay fixed.
+      const points=ai.waypoints.map(p=>p.map((v,k)=>v+(ai.relative&&k<2?unit.position[k]-ai.referencePosition[k]:0)));
+      const first=plan.tasks.find(x=>x.unitId===t.unitId&&['fly_heading','fly_to'].includes(x.action));
+      route.points=first.action==='fly_to'&&first.append?[...unit.waypoints.map(p=>p.slice(0,3)),...points]:points;
+      if(t.action==='fly_heading')headingPlans.get(index).points=route.points;
     }
     if(t.action==='orbit'&&t.eastM!==null){
       const orbitCheck=world.checkRoute?.(t.unitId,[[t.eastM,t.northM,route.altitude]]);

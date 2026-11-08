@@ -20,9 +20,9 @@ function pathAim(u,w,V,envelope){
   let futureEnvelope=envelope,lastHeight=u.position[2];
   for(let j=1;j<nodes.length-1&&along<V*30;j++){
     const a=nodes[j-1],b=nodes[j],c=nodes[j+1],la=Math.hypot(...b.map((v,k)=>v-a[k])),lb=Math.hypot(...c.map((v,k)=>v-b[k]));along+=la;
-    if(Math.abs(b[2]-lastHeight)>150){futureEnvelope=energyEnvelope(u.profile,b[2],V);lastHeight=b[2];}
+    if(Math.abs(b[2]-lastHeight)>150){futureEnvelope=energyEnvelope(u.profile,b[2],V,u);lastHeight=b[2];}
     const bankG=u.profile.controlLimits?.bankRad?1/Math.cos(u.profile.controlLimits.bankRad):Infinity;
-    const normalG=Math.max(u.profile.category==='transport'?1.02:1.3,Math.min(2.6,futureEnvelope.sustainableMaxG*.9,bankG*.97)),curvature=curvatureAt(a,b,c);
+    const normalG=Math.max(1.001,Math.min(futureEnvelope.budgetG,futureEnvelope.sustainableMaxG*.9,bankG*.97)),curvature=curvatureAt(a,b,c);
     if(curvature>.00001){const turnSpeed=Math.sqrt(G*Math.sqrt(normalG*normalG-1)/curvature);limit=Math.min(limit,Math.sqrt(turnSpeed*turnSpeed+2*1.2*along));}
     if(along<V*Math.max(2,(u.profile.engine?.responseSeconds??1)+1)){
       u.navigationLoadPreview=Math.max(u.navigationLoadPreview,Math.min(envelope.budgetG,Math.hypot(1,V*V*curvature/G)));
@@ -134,7 +134,7 @@ export function updatePilot(u,dt=.1) {
   const request=add(mul(tangent,turnAcceleration),mul(normalGravity,-1));
   const {lift}=basis(u),right=norm([f[1],-f[0],0]),vertical=norm(add([0,0,1],mul(f,-f[2])));
   const sideways=dot(request,right),upward=dot(request,vertical);
-  const bankLimit=Math.min(p.controlLimits?.bankRad??1.36,Math.acos(1/Math.max(1.02,safeG)));
+  const bankLimit=Math.min(p.controlLimits?.bankRad??Math.acos(1/Math.max(1,p.maxG)),Math.acos(1/Math.max(1,safeG)));
   const requestedBank=energyLimited?0:upward<0&&Math.abs(sideways)<.05?0:clamp(Math.atan2(sideways,upward),-bankLimit,bankLimit);
   const guidance=u.guidance??={bank:u.bank,n:u.loadFactor??1};
   const bankSlew=p.controlLimits?.bankSlewRadS??.5;guidance.bank+=clamp(requestedBank-guidance.bank,-bankSlew*dt,bankSlew*dt);const bank=guidance.bank;
