@@ -40,7 +40,13 @@ export function militarySchemaFor(context){
   order.parameters.properties.targetId.enum=[null,...new Set([...ids,...context.units.flatMap(u=>[...(u.radar?.contacts??[]),...(u.weapons?.contacts??[])].map(c=>c.id))])];
   const global=structuredClone(item),unit=structuredClone(item);
   global.properties.intent.enum=['pause','resume'];global.properties.unitIds.maxItems=0;
-  unit.properties.intent.enum=COMMAND_CATALOG.map(c=>c.id).filter(id=>!['pause','resume',...ATC_INTENTS].includes(id));unit.properties.unitIds.minItems=1;
+  const navigationFields={fly_heading:['altitudeM','speedMps','headingDeg','distanceM'],fly_to:['altitudeM','speedMps','eastM','northM','bearingDeg','rangeM'],cruise:['altitudeM','speedMps','headingDeg','distanceM'],set_flight:['altitudeM','speedMps'],orbit:['altitudeM','speedMps','eastM','northM'],clear_waypoints:[],report_status:[]};
+  unit.properties.intent.enum=COMMAND_CATALOG.map(c=>c.id).filter(id=>!['pause','resume',...ATC_INTENTS,...Object.keys(navigationFields)].includes(id));unit.properties.unitIds.minItems=1;
+  const navigation=Object.entries(navigationFields).map(([intent,allowed])=>{
+    const branch=structuredClone(item);branch.properties.intent.enum=[intent];branch.properties.unitIds.minItems=1;
+    const p=branch.properties.parameters.properties;for(const key of numbers)if(!allowed.includes(key))p[key]={type:'null'};
+    if(intent!=='fly_to')p.append={const:false};return branch;
+  });
   const atc=ATC_INTENTS.map(intent=>{
     const branch=structuredClone(item);branch.properties.intent.enum=[intent];branch.properties.unitIds.minItems=1;
     const p=branch.properties.parameters.properties,allowed=new Set(['runway','airportRef','constraints',...(intent==='atc_sequence'?['quantity','mode','targetId','targetRef']:['atc_clearance','atc_cancel_clearance','change_runway'].includes(intent)?['mode']:intent==='atc_hold'?['durationSec']:[])]);
@@ -49,7 +55,7 @@ export function militarySchemaFor(context){
     if(['atc_clearance','atc_cancel_clearance'].includes(intent))p.mode={enum:[null,'taxi','line_up','takeoff','approach','land',...(intent==='atc_cancel_clearance'?['all']:[])]};
     return branch;
   });
-  schema.properties.orders.items={anyOf:[global,unit,...atc]};
+  schema.properties.orders.items={anyOf:[global,unit,...atc,...navigation]};
   return schema;
 }
 export function normalizeMilitaryInterpretation(value,{instruction=''}={}){

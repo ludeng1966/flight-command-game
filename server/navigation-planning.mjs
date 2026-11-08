@@ -13,7 +13,10 @@ export function navigationSchema(schema,context){
 export function navigationOutput(value,context){
   if(!context.decisionTiming&&!Object.hasOwn(value??{},'navigationPlans'))return {interpretation:value,validate:()=>[]};
   const {navigationPlans,latencyPredictionSec,...interpretation}=value;
-  return {interpretation,latencyPredictionSec,validate:plan=>validateAiNavigation(navigationPlans,plan,context,latencyPredictionSec)};
+  return {interpretation,latencyPredictionSec,validate:plan=>{
+    if(plan.status!=='accepted'&&navigationPlans?.length)throw Error('当前意图未编译为可执行导航：'+plan.summary+'。请修正意图参数；fly_heading的eastM/northM必须null，坐标只放navigationPlans。确实无法执行时navigationPlans=[]。');
+    return validateAiNavigation(navigationPlans,plan,context,latencyPredictionSec);
+  }};
 }
 export function parseDecisionTiming(timing,units){
   if(timing===undefined)return undefined;

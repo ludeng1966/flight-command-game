@@ -135,6 +135,8 @@ export function createQwenClient(config,fetchImpl=fetch) {
           }
           const hasExplicitCondition=/(如果.+(?:则|就|立即|，|,)|遭到.+时|\bif\b.+\bthen\b)/i.test(input.instruction);
           if(hasExplicitCondition&&interpretation.status==='understood'&&!interpretation.orders.some(o=>o.timing==='on_condition'))throw Error('遗漏了原始命令的触发条件');
+          const compiled=compileMilitaryInterpretation(interpretation,context);
+          if(compiled.plan.status==='needs_clarification'&&/动作与参数不匹配/.test(compiled.plan.summary))throw Error('动作与参数不匹配：fly_heading只给headingDeg/altitudeM/speedMps/distanceM，eastM和northM必须为null；坐标不能混入航向指令。请按原话修正参数，不改变任务。');
           break;
         }catch(error){
           if(attempt)throw new ApiError(502,'AI 返回的军事口令未通过校验，飞机未收到本次指令，请重新表述');

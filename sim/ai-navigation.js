@@ -26,7 +26,7 @@ export function validateAiNavigation(navigationPlans,plan,context,latencyPredict
     if(last.action==='fly_heading'){
       if(tasks.length!==1)throw Error('同机航向与其他导航请分次下达');
       const span=last.distanceM??20000,angle=last.headingDeg*Math.PI/180,target=[origin[0]+Math.sin(angle)*span,origin[1]+Math.cos(angle)*span,last.altitudeM??unit.targetAltitudeM];
-      if(!near(route.waypoints.at(-1),target,10))throw Error('航向航路终点必须按预测机位、指定航向与距离计算；未给距离前视20000米');
+      if(!near(route.waypoints.at(-1),target,10))throw Error('航向航路终点必须按预测机位、指定航向与距离计算，当前选定输出时刻的正确终点为'+JSON.stringify(target.map(n=>Math.round(n*100)/100))+'；保留中间点规划并修正终点。未给距离前视20000米');
     }
     result.push({unitId:unit.id,waypoints:route.waypoints.map(p=>[...p]),referencePosition:[...origin],relative:last.action==='fly_heading',latencyPredictionSec});
   }
