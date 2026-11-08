@@ -259,6 +259,19 @@ function installCommandUi(t,onFetch){
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 const instantRadio=()=>({radio:{transmit:async()=>{},phase(){},cancel(){},clear(){}},pause:async()=>{}});
 
+test('等待飞行员输出时手动暂停，重新按零延时规划且不恢复时钟',async t=>{
+  const w=world(),forecasts=[];let playing=true,calls=0,applied=0;
+  installCommandUi(t,async(url,options)=>{
+    if(url==='/api/health')return Response.json({service:'tactical-voice',commandReady:true,pilotAssistant:{commandPlanning:true}});
+    const input=JSON.parse(options.body),interpretation=military(militaryOrder('fly_heading',{headingDeg:0,altitudeM:6500,speedMps:180})),compiled=compileMilitaryInterpretation(interpretation,input.context);
+    if(url==='/api/tactical/interpret')return Response.json({requestId:input.requestId,revision:input.context.revision,simTimeSec:input.context.simTimeSec,interpretation,...compiled});
+    assert.equal(url,'/api/tactical/pilot/plan');calls++;if(calls===1)playing=false;
+    return Response.json({requestId:input.requestId,revision:input.context.revision,simTimeSec:input.context.simTimeSec,commanderMessageId:input.commanderMessage.id,latencyPredictionSec:input.context.decisionTiming.estimatedOutputSec,interpretation,...compiled});
+  });
+  const control=initVoiceCommands({...instantRadio(),getState:()=>({world:w,selectedId:'blue-1',playing,rate:1}),onApplied(){applied++;},onSimulation(){throw Error('不应改变暂停状态');},forecastCommand:async(_world,timing)=>{forecasts.push(timing);return timing;}});
+  try{await settle();const result=await control.issue('Alpha，航向洞洞洞，高度六千五百米');assert.equal(result.committed,true);assert.equal(calls,2);assert.equal(applied,1);assert.equal(playing,false);assert.equal(forecasts[0].playing,true);assert.equal(forecasts[1].estimatedOutputSec,0);assert.deepEqual(forecasts[1].horizonsSec,[0]);assert.equal(w.time,0);}finally{control.cancel();}
+});
+
 test('实际指挥通话完成后才发送飞行员规划，飞行员请求不含玩家原文',async t=>{
  const w=world(),events=[];let body;
  installCommandUi(t,async(url,options)=>{

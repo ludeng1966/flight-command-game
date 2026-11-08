@@ -257,7 +257,7 @@ export class PilotAssistant{
             if(signal?.aborted)throw new DOMException('检查已取消','AbortError');
             const value=response.value,check={unitId:fact.unitId,verdict:value?.verdict,readbackText:fact.requiredReadback+'，'+value?.resultText};
             try{if(value?.instructionReadback!==fact.requiredReadback||typeof value?.resultText!=='string'||value.resultText.length>160)throw Error('复述必须原样保留instruction，resultText只写本次结果');validateResultReadbacks({checks:[check]},[fact]);check.readbackTexts={zh:check.readbackText,en:englishResultReadback(fact,plan,context,input.interpretation)};answer.checks.push(check);break;}
-            catch(error){if(attempt)throw error;messages.push({role:'assistant',content:JSON.stringify(response.value)},{role:'user',content:`复述未通过核对：${error.message}。重新检查数据，保留instruction原文：${fact.requiredReadback}。本次结论必须表达“${({executing:'正在执行，尚未达到目标',reached:'已达到目标',blocked:'无法执行',mismatch:'装订不一致',reported:'状态已核实'})[fact.expectedVerdict]}”。不得声称未达到的目标已经完成。`});}
+            catch(error){if(attempt)throw error;const state=fact.expectedVerdict==='executing'&&fact.modelFacts.clockRunning===false?'已装订，模拟暂停，等待继续':({executing:'正在执行，尚未达到目标',reached:'已达到目标',blocked:'无法执行',mismatch:'装订不一致',reported:'状态已核实'})[fact.expectedVerdict];messages.push({role:'assistant',content:JSON.stringify(response.value)},{role:'user',content:`复述未通过核对：${error.message}。重新检查数据，保留instruction原文：${fact.requiredReadback}。本次结论必须表达“${state}”。不得声称未达到的目标已经完成。`});}
           }
         }
         const timing={role:'pilot',inferenceMs:timings.reduce((sum,item)=>sum+(item?.inferenceMs??0),0),perCall:timings};

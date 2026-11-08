@@ -34,7 +34,8 @@ export function englishResultReadback(fact,plan,context,interpretation){
   }
   if(!parts.length)for(const order of interpretation?.orders??[])if(order.unitIds.includes(fact.unitId))parts.push(label(order.intent));
   if(fact.departurePlan&&tasks.some(t=>t.action==='airport'&&needsDeparturePlan(t.airportOrder)))parts.push(departurePlanReadback(fact.departurePlan,system,'en'));
-  return [...parts,ENGLISH_VERDICTS[fact.expectedVerdict]].filter(Boolean).join('. ');
+  const outcome=fact.expectedVerdict==='executing'&&fact.modelFacts?.clockRunning===false?'Orders set. Simulation paused; awaiting resume.':ENGLISH_VERDICTS[fact.expectedVerdict];
+  return [...parts,outcome].filter(Boolean).join('. ');
 }
 import {weaponPhrase} from './weapons.js';
 import {defensePhrase} from './rwr-defense.js';
