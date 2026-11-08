@@ -1925,7 +1925,8 @@ export function renderLive(snapshot,dt=1/60){
     }
     obj.line.visible=liveDisplay.trails==='all'||(liveDisplay.trails==='selected'&&u.id===snapshot.selectedId);
     const pos=V3(...u.position);
-    const scale=aircraftVisualScale(cam,pos,cv.clientHeight);
+    const spec=obj.vis.im.userData.spec,markerScale=aircraftVisualScale(cam,pos,cv.clientHeight);
+    const scale=aircraftVisualScale(cam,pos,cv.clientHeight,{lengthM:spec.lengthM,wingspanM:spec.wingspanM});
     obj.vis.im.position.copy(pos);aircraftQuaternion(u.forward,u.up,obj.vis.im.quaternion);obj.vis.im.scale.setScalar(scale);
     if(u.surface?.grounded&&u.gearDown){const ground=liveTerrain?.heightAt(u.position[0],u.position[1]);if(ground!==null&&ground!==undefined)obj.vis.im.position.y=ground-obj.vis.im.userData.bounds.min[1]*scale;}
     obj.vis.im.userData.gear.visible=u.gearDown===true;
@@ -1946,7 +1947,7 @@ export function renderLive(snapshot,dt=1/60){
       const pilotPreview=snapshot.pilotPreview?.unitId===u.id?snapshot.pilotPreview:null;
       const routeWaypoints=pilotPreview?pilotPreview.points.slice(0,pilotPreview.count):airportRoutePoints(u,liveAirport);
       liveRouteUnit=pilotPreview||u.surface?.grounded?null:u;
-      liveSelection.position.copy(pos);liveSelection.scale.setScalar(scale/25);
+      liveSelection.position.copy(pos);liveSelection.scale.setScalar(markerScale/25);
       liveRoute.material.color.set(pilotPreview?'#ffca77':'#4da6ff');
       liveRoute.material.opacity=.85*(1-livePreviewAlpha*.65);liveWaypoints.material.opacity=1-livePreviewAlpha*.6;liveWaypointDrops.material.opacity=.65*(1-livePreviewAlpha*.65);
       const routeKey=JSON.stringify([u.id,routeWaypoints]);
