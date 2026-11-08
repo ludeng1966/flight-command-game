@@ -75,7 +75,7 @@ export class World {
     if(this.terrain?.checkPoint){for(const point of points){const check=this.terrain.checkPoint(point);if(!check.valid)return check;}return {valid:true,reason:''};}
     return this.terrain?.checkRoute(u.position,points)??{valid:true,reason:''};
   }
-  setAircraftType(id,profileId){return setAircraftType(this,id,profileId);}
+  setAircraftType(id,profileId,options){return setAircraftType(this,id,profileId,options);}
   setAirportWeather(patch){if(!this.airportOps)throw Error('本场景未配置机场');const result=updateWeather(this.airportOps.airport,patch,this.time);this.airportOps.weatherChanged?.(this);this.revision++;return result;}
   setAltimeter(id,qnhHpa){if(!Number.isFinite(qnhHpa)||qnhHpa<870||qnhHpa>1085)throw Error('气压设置无效');const u=this.units.find(u=>u.id===id);if(!u)throw Error('飞机不存在');u.qnhHpa=qnhHpa;this.revision++;}
   declareAirportEmergency(id,type='fuel'){

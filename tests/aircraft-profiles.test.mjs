@@ -67,3 +67,12 @@ test('只迁移明确登记的旧气动存档指纹，新存档写入当前版�
   let restored=false;const next=new AutoSave({storage,fingerprint:'current',compatibleFingerprints:['old'],capture:()=>({world:{revision:2}}),restore(){restored=true;}});
   assert(next.load().restored);assert(restored);next.save();assert([...values.values()].some(v=>JSON.parse(v).fingerprint==='current'));
 });
+
+test('旧外观专用存档迁移为对应机型，已坠毁的飞机仍可恢复且不会复活',()=>{
+  for(const alive of [true,false]){
+    const w=worldFor('f16'),u=w.units[0];u.visualModel='a320';u.alive=alive;if(!alive){u.velocity=[0,0,0];u.speed=0;u.flightState='crashed';}
+    const saved=captureWorld(w);delete saved.units[0].aircraftTypeVersion;const before=structuredClone({position:u.position,velocity:u.velocity});
+    const s=structuredClone(scenario);delete s.airport;s.units=s.units.slice(0,1);Object.assign(s.units[0],{profile:'f16',position:[0,0,8000],heading:0,speed:230});
+    const restored=restoreWorld(saved,s,profiles).units[0];assert.equal(restored.profileId,'a320');assert.equal(restored.profile.area,122.4);assert.equal(restored.alive,alive);assert.deepEqual({position:restored.position,velocity:restored.velocity},before);
+  }
+});

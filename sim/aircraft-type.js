@@ -6,9 +6,9 @@ import {createWeapons} from './weapons.js';
 import {createRwr} from './rwr.js';
 import {createRwrDefense} from './rwr-defense.js';
 import {leaveFormation} from './formation.js';
-export function setAircraftType(world,unitId,profileId){
+export function setAircraftType(world,unitId,profileId,{restoring=false}={}){
   const u=world.units.find(u=>u.id===unitId),profile=world.profiles[profileId];
-  if(!u||!profile)throw Error('未知机型');if(!u.alive)throw Error('飞机已坠毁，请重新开始后更换机型');
+  if(!u||!Object.hasOwn(world.profiles,profileId))throw Error('未知机型');if(!u.alive&&!restoring)throw Error('飞机已坠毁，请重新开始后更换机型');
   if(u.profileId===profileId){u.visualModel=profileId;return u;}
   leaveFormation(u,'更换机型，退出当前编队');
   u.weapons=createWeapons(profileId);u.radar=createRadar(profileId,profile.radar);u.rwr=createRwr(profileId,profile.rwr);u.rwrDefense=createRwrDefense();
@@ -22,5 +22,5 @@ export function setAircraftType(world,unitId,profileId){
   u.pilotPowerPlan=null;u.departurePowerPlan=null;u.pilotExecution=null;u.pilotMission=null;u.radarTask=null;u.attackTask=null;u.formationGuidance=null;
   u.navLegs=[];u.navCursor=0;u.navigationKey=null;u.navigationPending=false;u.navigationBlocked=null;u.navigationRetryAt=0;u.routeRevision=(u.routeRevision??0)+1;
   world.prediction={points:[],warnings:[]};world.pilotPreview=null;world.revision++;
-  u.lastIncident='已换装 '+profile.name+'，按新机型重新规划';return u;
+  if(u.alive)u.lastIncident='已换装 '+profile.name+'，按新机型重新规划';return u;
 }

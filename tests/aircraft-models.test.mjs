@@ -28,10 +28,10 @@ test('地图与缩略图共享几何但不共享材质，销毁缩略图不会�
   for(const id of ['b7478','a320']){const model=buildAircraft('#fff',id);assert.equal(model.userData.flame.children.length,0);assert.equal(model.userData.gear.visible,false);}
 });
 
-test('外观选择随现有进度保存恢复，不改变气动参数、位置和速度',async()=>{
+test('机型选择随现有进度保存恢复，外形与气动保持一致而不瞬移或补速',async()=>{
   const scenario=JSON.parse(await fs.readFile(new URL('../data/scenarios/demo.json',import.meta.url))),profiles=JSON.parse(await fs.readFile(new URL('../data/aircraft.json',import.meta.url)));
-  const world=new World(scenario,profiles),u=world.units[0],before=structuredClone({profile:u.profile,position:u.position,velocity:u.velocity});
-  u.visualModel='b7478';world.units[1].visualModel='j11';const restored=restoreWorld(captureWorld(world),scenario,profiles);
+  const world=new World(scenario,profiles),u=world.units[0],before=structuredClone({position:u.position,velocity:u.velocity});
+  world.setAircraftType(u.id,'b7478');world.setAircraftType(world.units[1].id,'j11');const restored=restoreWorld(captureWorld(world),scenario,profiles);
   assert.equal(aircraftModelId(restored.units[0]),'b7478');assert.equal(aircraftModelId(restored.units[1]),'j11');
-  assert.deepEqual({profile:u.profile,position:u.position,velocity:u.velocity},before);
+  assert.equal(restored.units[0].profile.area,554);assert.equal(restored.units[1].profile.engineCount,2);assert.deepEqual({position:u.position,velocity:u.velocity},before);
 });

@@ -113,7 +113,8 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
     unit.terrain=terrain;if(unit.navigationPending)unit.navigationKey=null;unit.navigationPending=false;
     if(unit.radarTask)unit.radarTask.pending=false;
     if(unit.attackTask)unit.attackTask.pending=false;
-    if(!state.aircraftTypeVersion&&state.visualModel&&state.visualModel!==profileId&&Object.hasOwn(profiles,state.visualModel))world.setAircraftType(unit.id,state.visualModel);
+    if(!state.aircraftTypeVersion&&state.visualModel&&state.visualModel!==profileId&&Object.hasOwn(profiles,state.visualModel))world.setAircraftType(unit.id,state.visualModel,{restoring:true});
+    else if(unit.profile.visualModel)unit.visualModel=unit.profile.visualModel;
   }
   if(world.airportOps){
     const savedOps=saved.airportOps;
