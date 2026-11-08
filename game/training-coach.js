@@ -24,7 +24,6 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
   const status=()=>walkthrough?.status??session?.status??'idle';
   const result=()=>walkthrough?walkthrough.result():session?.result();
   function highlight(selector){document.querySelectorAll('[data-training-focus]').forEach(el=>el.removeAttribute('data-training-focus'));if(selector)$(selector)?.setAttribute('data-training-focus','true');}
-  function pause(){onSimulation(false);}
   function visible(open){panel.hidden=!open;button.setAttribute('aria-expanded',String(open));if(open){if(matchMedia('(max-width:750px)').matches){stage.classList.remove('voice-open');$('#voice-toggle').setAttribute('aria-expanded','false');}update();}}
   button.onclick=()=>visible(panel.hidden||stage.classList.contains('voice-open'));
   function save(){if(saved||!session||status()==='active')return;saved=true;if(!recordResult(result()))commandError='浏览器没有允许保存结果；本次练习仍有效。';}
@@ -79,7 +78,7 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
     }
     return `<div class="coach-label">综合独立考核 / 不展示逐句口令</div><h2>独立指挥 Alpha</h2><p>从机位出发，建立稳定巡航，通过一个明确航点，再返场回机位。你来决定下令顺序。</p><ol class="coach-exam-list">${TRAINING_STAGES.map(s=>`<li data-stage="${s}">${session.completed[s]?'✓':'○'} ${EXAM_LABELS[s]}</li>`).join('')}</ol>${commandForm()}<div id="coach-live" class="coach-live"></div><div class="coach-observation"><button type="button" data-observe="1">1×</button><button type="button" data-observe="4">4×</button><button type="button" data-observe="8">8× 快进</button></div>`;
   }
-  function showMenu(){menuOpen=true;pause();highlight();lastKey='';update();}
+  function showMenu(){menuOpen=true;highlight();lastKey='';update();}
   function resume(){menuOpen=false;lastKey='';if(walkthrough?.phase==='working'||!walkthrough)onSimulation(true);update();}
   function render(){
     const state=status(),step=walkthrough?.step;
@@ -88,16 +87,16 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
     $p('#coach-close').onclick=()=>{visible(false);button.focus();};$p('#coach-brief').onclick=()=>stage.dispatchEvent(new Event('mission-open-brief'));
     if($p('#coach-menu'))$p('#coach-menu').onclick=showMenu;if($p('#coach-back-menu'))$p('#coach-back-menu').onclick=showMenu;if($p('#coach-resume'))$p('#coach-resume').onclick=resume;
     panel.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{if(b.dataset.level===walkthrough?.levelId&&status()==='active'&&menuOpen)resume();else start(b.dataset.start,b.dataset.level);});
-    if($p('#coach-end'))$p('#coach-end').onclick=()=>{reset('玩家结束本轮训练');pause();update();};
+    if($p('#coach-end'))$p('#coach-end').onclick=()=>{reset('玩家结束本轮训练');update();};
     if($p('#coach-next')){const busy=getCommandBusy()||demoPending;$p('#coach-next').disabled=busy;if(busy)$p('#coach-next').textContent='正在通联，请等待复述…';$p('#coach-next').onclick=next;}
     if($p('#coach-demo'))$p('#coach-demo').onclick=()=>void demonstrate(step.sample);
     if($p('#coach-observe'))$p('#coach-observe').onclick=()=>{if(walkthrough.observe()){onSimulation(true);lastKey='';update();}};
     const openRadio=()=>stage.dispatchEvent(new Event('mission-open-command'));
     if($p('#coach-open-radio'))$p('#coach-open-radio').onclick=openRadio;
-    panel.querySelectorAll('[data-control-mode]').forEach(b=>b.onclick=()=>{if(walkthrough.chooseControlMode(b.dataset.controlMode)){onExecutionMode(b.dataset.controlMode);pause();lastKey='';update();}});
-    if($p('#coach-handoff'))$p('#coach-handoff').onclick=()=>{if(walkthrough.handoff()){if(getWorld().executionMode==='strict')onHandoff(walkthrough.unit.id,step.targetOwner);onSimulation(true);lastKey='';update();}};
+    panel.querySelectorAll('[data-control-mode]').forEach(b=>b.onclick=()=>{if(walkthrough.chooseControlMode(b.dataset.controlMode)){onExecutionMode(b.dataset.controlMode);lastKey='';update();}});
+    if($p('#coach-handoff'))$p('#coach-handoff').onclick=()=>{if(walkthrough.handoff()){if(getWorld().executionMode==='strict')onHandoff(walkthrough.unit.id,step.targetOwner);lastKey='';update();}};
     if($p('#coach-open-route'))$p('#coach-open-route').onclick=()=>$('#route-edit').click();
-    panel.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{walkthrough.answer(b.dataset.answer);if(walkthrough.phase==='success'){pause();highlight();lastKey='';pendingFocus=true;update();}else $p('#coach-feedback').textContent=walkthrough.feedback;});
+    panel.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{walkthrough.answer(b.dataset.answer);if(walkthrough.phase==='success'){highlight();lastKey='';pendingFocus=true;update();}else $p('#coach-feedback').textContent=walkthrough.feedback;});
     if($p('#coach-hint'))$p('#coach-hint').onclick=()=>{hintShown=true;$p('#coach-example').hidden=false;};
     if($p('#coach-fill'))$p('#coach-fill').onclick=()=>{$('#command-text').value=step.sample;$('#command-text').dispatchEvent(new Event('input'));openRadio();};
     panel.querySelectorAll('[data-observe]').forEach(b=>b.onclick=()=>{onRate(Number(b.dataset.observe));onSimulation(true);update();});
