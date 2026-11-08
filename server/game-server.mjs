@@ -17,6 +17,7 @@ import {aviationTermStats,searchAviationTerms} from './aviation-terms.mjs';
 import {PilotAssistant} from './pilot-assistant.mjs';
 import {createCloudPilotRuntime} from './cloud-pilot-runtime.mjs';
 import {createTextTranslator} from './text-translator.mjs';
+import {createPlayerCredentials} from './player-credentials.mjs';
 import {DEFAULT_PILOT_MODEL,PILOT_MODELS,pilotModelInfo} from '../sim/pilot-models.js';
 import {COMMAND_CATALOG,CAPABILITIES,MILITARY_PROTOCOL_VERSION} from '../sim/military-commands.js';
 
@@ -55,7 +56,7 @@ async function body(req,max){
   for await(const chunk of req){size+=chunk.length;if(size>max)throw new ApiError(413,'请求内容过大');parts.push(chunk);}
   return Buffer.concat(parts);
 }
-export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=null,pilotAssistant=null}={}){
+export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=null,pilotAssistant=null,playerCredentials=true}={}){
   const flightDataApi=createFlightDataApi(root);
   const cloudClient=createQwenClient(config,fetchImpl),client=config.aiProvider==='local'?createLocalAiClient(localRuntime,cloudClient):cloudClient,tts=createInworldTts(config.tts,fetchImpl);let active=0,activeTts=0;
   const translator=createTextTranslator(cloudClient);let activeTranslations=0;
@@ -64,6 +65,10 @@ export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=
   const attackPilot=createAttackPilot(cloudClient);
   const towerAssistant=createTowerAssistant(cloudClient);
   pilotAssistant??=new PilotAssistant(root,{model:config.pilotModel||'qwen3.7-flash',provider:'cloud',runtimeFactory:()=>createCloudPilotRuntime(cloudClient)});
+  const players=playerCredentials?createPlayerCredentials(config,playerConfig=>{
+    const child=createGameServer(playerConfig,{fetchImpl,root,playerCredentials:false});
+    return {dispatch:child.listeners('request')[0],dispose:()=>child.emit('close')};
+  }):null;
   const pilotModels=PILOT_MODELS.map(item=>item.id==='flash'?{...item,model:config.pilotModel||item.model}:item);
   const validatePilotModel=input=>{
     const id=input?.pilotModel??DEFAULT_PILOT_MODEL,model=pilotModelInfo(id);
@@ -75,6 +80,24 @@ export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=
       const host=req.headers.host||'';
       if(!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(host))throw new ApiError(403,'仅允许本机访问');
       const url=new URL(req.url,`http://${host}`);
+      if(url.pathname.startsWith('/api/')&&(req.headers['sec-fetch-site']==='cross-site'||req.headers.origin&&req.headers.origin!==`http://${host}`))throw new ApiError(403,'请从游戏页面配置密钥或下达指令');
+      if(players&&['/api/player/credentials','/api/player/credentials/test'].includes(url.pathname)){
+        if(url.pathname==='/api/player/credentials'&&req.method==='GET')return json(res,200,players.status(req));
+        if(url.pathname==='/api/player/credentials'&&req.method==='DELETE')return json(res,200,players.clear(req,res));
+        if(req.method!=='POST')throw new ApiError(405,'不支持该请求方法');
+        if((req.headers['content-type']||'').split(';')[0]!=='application/json')throw new ApiError(415,'请使用 JSON 配置');
+        const raw=await body(req,16*1024);let input;try{input=JSON.parse(raw.toString('utf8'));}catch{throw new ApiError(400,'配置 JSON 无效');}
+        if(url.pathname==='/api/player/credentials')return json(res,200,players.update(req,res,input));
+        // Connection tests make one small, billable request using saved player keys.
+        if(active>=2)throw new ApiError(429,'正在测试连接，请稍后重试');active++;
+        const controller=new AbortController();res.once('close',()=>{if(!res.writableEnded)controller.abort();});
+        try{
+          const result=await players.test(req,input?.provider,fetchImpl,controller.signal);
+          if(result.audio){res.writeHead(200,{'Content-Type':result.contentType,'Content-Length':result.audio.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(result.audio);return;}
+          return json(res,200,result);
+        }finally{active--;}
+      }
+      if(players&&url.pathname.startsWith('/api/')){const runtime=players.runtime(req);if(runtime)return await runtime.dispatch(req,res);}
       if(url.pathname==='/api/health'&&req.method==='GET'){
         const local=config.aiProvider==='local',ai=local?localRuntime?.health():null;
         return json(res,200,{service:'tactical-voice',version:1,provider:config.aiProvider||'cloud',commandReady:local?ai?.status==='ready':!!config.apiKey,voiceReady:!!(config.asrKey||config.apiKey),
@@ -155,7 +178,7 @@ export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=
       else res.end();
     }
   });
-  server.once('close',()=>void pilotAssistant.stop?.());
+  server.once('close',()=>{players?.close();void pilotAssistant.stop?.();});
   return server;
 }
 
