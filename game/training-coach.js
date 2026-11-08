@@ -39,11 +39,11 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
       const level=mode==='guided'?trainingLevel(levelId):null;if(mode==='guided'&&!level)throw Error('没有这个教学关卡');
       restartGround(level?.entry??'stands');const world=getWorld(),unit=world.units[0];
       if(level){walkthrough=new TrainingWalkthrough(world,unit.id,{levelId:level.id});session=walkthrough.flight;}else session=new FlightTrainingSession(world,unit.id,{mode:'exam'});
-      saved=false;lastKey='';commandError='';hintShown=false;stage.classList.add('training-active');onRate(1);pause();
+      saved=false;lastKey='';commandError='';hintShown=false;stage.classList.add('training-active');onRate(1);
       if(walkthrough)enterStep();else{onSimulation(true);highlight();}update();
     }catch(error){commandError=error.message;menuOpen=!session;lastKey='';update();}
   }
-  function enterStep(){hintShown=false;commandError='';lastKey='';pause();highlight(walkthrough.step?.target);onStep(walkthrough.step,walkthrough.unit);pendingFocus=true;}
+  function enterStep(){hintShown=false;commandError='';lastKey='';highlight(walkthrough.step?.target);onStep(walkthrough.step,walkthrough.unit);pendingFocus=true;}
   function next(){if(walkthrough?.next()){if(walkthrough.status==='passed'){save();highlight();stage.classList.remove('training-active');}else enterStep();}update();}
   async function demonstrate(instruction){
     if(demoPending)return;const current=session,token=++submission;commandError='';demoPending=true;lastKey='';update();
@@ -126,17 +126,17 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
   function tick(){
     if(!session||status()!=='active')return;const before=walkthrough?.phase;
     if(walkthrough)walkthrough.tick(getWorld());else session.tick(getWorld());
-    if(walkthrough?.phase==='working'&&before!=='working'&&!menuOpen)onSimulation(true);
-    if(walkthrough?.phase==='brief'&&before==='working'){pause();lastKey='';}
-    if(walkthrough?.phase==='success'&&before!=='success'){pause();highlight();lastKey='';pendingFocus=true;}
-    if(['passed','failed','invalid'].includes(status())){pause();save();highlight();lastKey='';}
+    if(walkthrough?.phase==='brief'&&before==='working'){lastKey='';}
+    if(walkthrough?.phase==='success'&&before!=='success'){highlight();lastKey='';pendingFocus=true;}
+    if(['passed','failed','invalid'].includes(status())){save();highlight();lastKey='';}
   }
-  function onSelect(id){if(!walkthrough||status()!=='active'||menuOpen)return;const before=walkthrough.phase;walkthrough.select(id);if(walkthrough.phase==='success'&&before!=='success'){pause();highlight();lastKey='';pendingFocus=true;update();}}
-  function onWaypoint(point){if(!menuOpen&&walkthrough?.waypoint(point)){commandError='';onSimulation(true);lastKey='';update();}}
+  function onSelect(id){if(!walkthrough||status()!=='active'||menuOpen)return;const before=walkthrough.phase;walkthrough.select(id);if(walkthrough.phase==='success'&&before!=='success'){highlight();lastKey='';pendingFocus=true;update();}}
+  function onWaypoint(point){if(!menuOpen&&walkthrough?.waypoint(point)){commandError='';lastKey='';update();}}
   function onCommandCommitted(interpretation,{demo=false}={}){
     if(!session||status()!=='active')return;
     if(walkthrough)walkthrough.observeExecuted(interpretation,{demo});else if(interpretation?.orders?.some(o=>o.speechAct==='directive'&&!['pause','resume','report_status'].includes(o.intent)&&(o.unitIds.length!==1||o.unitIds[0]!==session.unitId)))session.fail('已向其他飞机下达操作，本轮应独立指挥 Alpha。');
-    menuOpen=false;if(walkthrough?.phase==='success'||status()!=='active'){pause();pendingFocus=true;highlight();}else if(interpretation?.orders?.some(o=>!['pause','report_status','report_event'].includes(o.intent)))onSimulation(true);
+    // Training observes the command; only explicit player controls change the simulation clock.
+    menuOpen=false;if(walkthrough?.phase==='success'||status()!=='active'){pendingFocus=true;highlight();}
     lastKey='';update();stage.dispatchEvent(new Event('training-command-issued'));
   }
   if(['guided','exam'].includes(new URLSearchParams(location.search).get('training')))visible(true);

@@ -21,7 +21,7 @@ export function radioPause(ms,signal){
 
 // Routine orders are handled by the computer pilot without model review.
 // Event-driven judgment runs independently and never stalls continuous flight.
-export async function runCommandSession({world,reply,expectedRevision,selectedUnitId=null,style='pla',radio,signal,onPreview=()=>{},onCommitted=()=>{},onSimulation=()=>{},pause=radioPause,assertCurrent=()=>{},assertWorldCurrent=()=>{},reviewPilot=null,checkPilotResult=null,planPilotCommand=null,pilotLabel='AI',enforceAuthority=false}){
+export async function runCommandSession({world,reply,expectedRevision,selectedUnitId=null,style='pla',radio,signal,onPreview=()=>{},onCommitted=()=>{},onSimulation=()=>{},pause=radioPause,assertCurrent=()=>{},assertWorldCurrent=()=>{},reviewPilot=null,checkPilotResult=null,planPilotCommand=null,preparePlan=preparePilotPlan,pilotLabel='AI',enforceAuthority=false}){
   let {plan,interpretation,execution}=reply;const language=style==='nato'?'en-US':'zh-CN';
   const throughTower=plan.status==='accepted'&&towerTask(reply,world),airport=world.airportOps?.airport.id??'BAY';
   let towerStation='tower';
@@ -121,10 +121,11 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
     const commands=plan.tasks.filter(t=>t.unitId===pilot.unitId);verifyReadback(commands,pilot.tasks);
     radio.phase('readback',`${pilot.callsign} · 复诵关键参数`);await send('pilot',pilot.readbackText,pilot.unitId);check();
   }
-  radio.phase('planning',checkPilotResult?`程序正在规划并装订，随后由${pilotLabel} 检查结果`:'复诵核对通过 · 电脑飞行员正在规划航路');await pause(40,signal);check();
+  radio.phase('planning',checkPilotResult?`飞行员已拟定航点 · 后台校验可飞性，随后由${pilotLabel} 检查结果`:'复诵核对通过 · 后台规划航路');await pause(40,signal);check();
   let draft;
   try{
-    draft=preparePilotPlan(world,plan,expectedRevision,{radioStyle:style,pilotProcedures:reply.pilotProcedures});check();
+    const prepare=()=>preparePlan(world,plan,expectedRevision,{radioStyle:style,pilotProcedures:reply.pilotProcedures,aiRoutes:reply.pilotCommandPlanning?.pilotNavigationPlans??[]},signal);
+    draft=await prepare();check();
     for(const preview of draft.previews){
       for(let count=1;count<=preview.points.length;count++){
         check();world.pilotPreview={...preview,requestId:reply.requestId,count};onPreview(world.pilotPreview);
@@ -132,7 +133,14 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
         await pause(320,signal);
       }
     }
-    check();const result=commitPilotPlan(draft);world.pilotPreview=null;
+    check();
+    // Preview/model latency never freezes flight. Revalidate/recompute from live state before installation.
+    let result;
+    for(let attempt=0;attempt<3;attempt++){
+      if(draft.backgroundPrepared&&world.time-draft.sampledAt>.5){draft=await prepare();check();}
+      try{result=commitPilotPlan(draft);break;}catch(error){if(error.code!=='FLIGHT_STATE_CHANGED'||attempt===2)throw error;draft=await prepare();check();}
+    }
+    world.pilotPreview=null;
     if(result.simulation)onSimulation(result.simulation==='resume');
     onCommitted(result,draft);
     if(checkPilotResult){

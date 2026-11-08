@@ -7,6 +7,7 @@ import {basis} from '../sim/flight.js';
 import {initVoiceCommands} from './voice-command.js';
 import {initRouteEditor} from './route-editor.js';
 import {PlannerClient} from './planner-client.js';
+import {CommandPlanner} from './command-planner.js';
 import {RouteReplanner} from './route-replanner.js';
 import {showSoft,hideSoft} from './ui-motion.js';
 import {PilotSupervisor} from './pilot-supervisor.js';
@@ -107,7 +108,7 @@ function updateUI(){
   $('#pause').innerHTML=playing?'暂停 <kbd>SPACE</kbd>':'继续 <kbd>SPACE</kbd>';
   $('#status').textContent=`${playing?'运行':'已暂停'} · ${rate}×`;
 }
-function toggle(){world.revision++;playing=!playing;acc=0;updateUI();}
+function toggle(){playing=!playing;acc=0;updateUI();}
 async function boot(){
   await Promise.all([initLanguages(),loadAircraftModels()]);
   const [scenario,profiles,terrain,landmask,heightfield,aircraftRuntime]=await Promise.all([read('../data/scenarios/demo.json'),read('../data/aircraft.json'),read('../terrain/air_skyscraper_city_contours.json'),read('../terrain/air_skyscraper_city_landmask.json'),TerrainHeight.load('../terrain/air_skyscraper_city'),read('../data/aircraft-runtime.json')]);
@@ -118,13 +119,13 @@ async function boot(){
   const formFields=['command-style','command-auto','command-text','append-waypoint','airport-runway','airport-gate','airport-taxiways'];
   const autosave=new AutoSave({storage:{getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)},fingerprint:saveFingerprint(scenario,profiles),compatibleFingerprints:aircraftRuntime.compatibleSaveFingerprints,
     capture:()=>({world:captureWorld(world),training:trainingCoach?.snapshot()??null,
-      ui:{selectedId,rate,mapPoint,view:getLiveView(),form:Object.fromEntries(formFields.map(id=>{const el=$('#'+id);return [id,el?.type==='checkbox'?el.checked:el?.value??''];}))}}),
+      ui:{selectedId,playing,rate,mapPoint,view:getLiveView(),form:Object.fromEntries(formFields.map(id=>{const el=$('#'+id);return [id,el?.type==='checkbox'?el.checked:el?.value??''];}))}}),
     restore:state=>{
       const next=restoreWorld(state.world,scenario,profiles,heightfield);restoreTraining(next,state.training);
       if(!state.ui||!next.units.some(u=>u.id===state.ui.selectedId)||![1,2,4,8].includes(state.ui.rate))throw Error('界面进度无效');
       world=next;selectedId=state.ui.selectedId;spawnMode=world.spawnMode;mode=world.executionMode;rate=state.ui.rate;
       try{const saved=localStorage.getItem('flight-execution-mode');if(['strict','relaxed'].includes(saved))world.executionMode=mode=saved;}catch{}
-      playing=false;mapPoint=Array.isArray(state.ui.mapPoint)&&state.ui.mapPoint.length===3&&state.ui.mapPoint.every(Number.isFinite)?state.ui.mapPoint:null;
+      playing=state.ui.playing!==false;mapPoint=Array.isArray(state.ui.mapPoint)&&state.ui.mapPoint.length===3&&state.ui.mapPoint.every(Number.isFinite)?state.ui.mapPoint:null;
       let preferredUnits;try{preferredUnits=localStorage.getItem('flight-unit-system');}catch{}
       setUnitSystem(['metric','imperial'].includes(preferredUnits)?preferredUnits:world.unitSystem??getUnitSystem());restoredState=state;
     },onStatus:state=>{
@@ -133,6 +134,8 @@ async function boot(){
     }});
   const loaded=autosave.load();if(loaded.blocked)playing=false;
   planner=new PlannerClient(heightfield);
+  const commandPlanner=new CommandPlanner(heightfield);
+  window.addEventListener('pagehide',()=>commandPlanner.cancel());
   replanner=new RouteReplanner({getWorld:()=>world,planner});
   const configureWorld=()=>{
     world.deferNavigation=u=>{
@@ -150,7 +153,7 @@ async function boot(){
     };
   };configureWorld();
   const focusSpawn=()=>spawnMode==='stands'?focusLive([{position:[...world.airportOps.airport.center,world.airportOps.airport.elevation]}],.25):focusLive(world.units);
-  const restart=()=>{trainingCoach?.reset();setFollowLive(null);voiceControl?.reset();pilotSupervisor?.reset();radarPilot?.reset();attackPilot?.reset();endPlacement();mapPoint=null;world=new World(scenario,profiles,heightfield,{spawnMode,mode});configureWorld();playing=true;acc=0;select(world.units[0].id);focusSpawn();autosave.newGame();};
+  const restart=()=>{trainingCoach?.reset();setFollowLive(null);voiceControl?.reset();commandPlanner.cancel();pilotSupervisor?.reset();radarPilot?.reset();attackPilot?.reset();endPlacement();mapPoint=null;world=new World(scenario,profiles,heightfield,{spawnMode,mode});configureWorld();playing=true;acc=0;select(world.units[0].id);focusSpawn();autosave.newGame();};
   const runways=(terrain.airfields||[]).filter(r=>['t1_airfield','t2_airfield'].includes(r.name)).map(r=>({x1:r.ends[0][0],y1:r.ends[0][1],x2:r.ends[1][0],y2:r.ends[1][1],altM:r.altM,z1:r.altM,z2:r.altM}));
   initLive(canvas,{terrain,landmask,runways,units:world.units,heightfield,airport:world.airportOps?.airport});
   for(const u of world.units){const el=document.createElement('div');el.id=u.id;el.className='unit';el.tabIndex=0;el.setAttribute('role','button');el.innerHTML=`<div class="unit-title">${u.callsign}<span>${u.profile.name}</span></div><div class="metrics"></div>`;el.onclick=()=>select(u.id);el.onkeydown=e=>{if(e.key==='Enter')select(u.id);};$('#roster').appendChild(el);}
@@ -197,9 +200,10 @@ async function boot(){
   canvas.addEventListener('contextmenu',e=>e.preventDefault());
   document.addEventListener('keydown',e=>{if(editing(e.target))return;if(e.key==='Escape'){endPlacement();$('#controls-help').open=false;$('#stage').classList.remove('voice-open');$('#voice-toggle').setAttribute('aria-expanded','false');return;}if(e.code==='Space'){e.preventDefault();toggle();}if(e.key==='1')select(world.units[0].id);if(e.key==='2')select(world.units[1].id);});
   // 便于外部工具读取当前局；状态和命令均使用同一飞行内核。
-  window.ACEGame={get world(){return world;},select,command:(id,p,append)=>world.command(id,p,append),pause:()=>{world.revision++;playing=false;updateUI();},play:()=>{world.revision++;playing=true;updateUI();},get playing(){return playing;},get rate(){return rate;}};
+  window.ACEGame={get world(){return world;},select,command:(id,p,append)=>world.command(id,p,append),pause:()=>{playing=false;acc=0;updateUI();},play:()=>{playing=true;acc=0;updateUI();},get playing(){return playing;},get rate(){return rate;}};
   const settingsMemory=initSettingsMemory({legacyForm:restoredState?.ui.form});
-  voiceControl=initVoiceCommands({allowAutomaticHandoff:u=>trainingCoach?.allowsAutomaticHandoff(u.id)??true,getState:()=>({world,selectedId,playing,mapPoint:routeEditor?.previewPoint??mapPoint}),
+  voiceControl=initVoiceCommands({allowAutomaticHandoff:u=>trainingCoach?.allowsAutomaticHandoff(u.id)??true,getState:()=>({world,selectedId,playing,rate,mapPoint:routeEditor?.previewPoint??mapPoint}),
+    prepareCommand:(w,p,r,o,s)=>commandPlanner.prepare(w,p,r,o,s),forecastCommand:(w,t,s)=>commandPlanner.forecast(w,t,s),
     onCommandCommitted:({reply,source})=>{
       trainingCoach?.onCommandCommitted(reply.interpretation,{demo:source==='training-demo'});
       const tasks=reply.plan.tasks.filter(t=>['sensor_task','attack_task'].includes(t.action));

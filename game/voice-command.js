@@ -3,6 +3,7 @@ import {formatAltitude,formatSpeed,formatDistance,getUnitSystem} from '../sim/un
 import {commandContext} from '../sim/orders.js';
 import {planningModeLabel} from '../sim/command-planning.js';
 import {runCommandSession} from './command-session.js';
+import {DecisionLatency,sameDecisionClock} from '../sim/decision-timing.js';
 import {createRadioConsole} from './radio-console.js';
 import {AirportRadio} from './airport-radio.js';
 import {RadarRadio} from './radar-radio.js';
@@ -18,7 +19,9 @@ import {needsDeparturePlan,departureOptions,evaluateDeparturePlan} from '../sim/
 import {setPilotInstruction} from '../sim/pilot-execution.js';
 import {PilotExecutionRadio} from './pilot-execution-radio.js';
 
-export function initVoiceCommands({getState,onApplied,onSimulation,onPilotPreview=()=>{},onPilotModelChanged=()=>{},onCommandCommitted=()=>{},radio:providedRadio,pause,allowAutomaticHandoff=()=>true}){
+export function initVoiceCommands({getState,onApplied,onSimulation,onPilotPreview=()=>{},onPilotModelChanged=()=>{},onCommandCommitted=()=>{},radio:providedRadio,pause,prepareCommand,forecastCommand,allowAutomaticHandoff=()=>true}){
+  const decisionLatency=new DecisionLatency();
+  const clock=()=>({playing:getState().playing===true,rate:getState().rate??1});
   const $=s=>document.querySelector(s),text=$('#command-text'),mic=$('#command-mic'),send=$('#command-send'),cancel=$('#command-cancel');
   const status=$('#command-status'),badge=$('#command-connection'),history=$('#command-history');
   const radio=providedRadio||createRadioConsole({getWorld:()=>getState().world});
@@ -104,7 +107,8 @@ export function initVoiceCommands({getState,onApplied,onSimulation,onPilotPrevie
   async function interpret(instruction,ref,token,signal,source='radio'){
     assertCurrent(ref);const context=commandContext(ref.world,ref.selectedId,ref.mapPoint,ref.radioStyle),requestId=crypto.randomUUID();
     say(health?.provider==='local'?'本地指挥官正在理解口令…':'正在理解军事口令…');showUnderstanding(null,null);
-    const reply=await post('/api/tactical/interpret',JSON.stringify({requestId,instruction,context}),'application/json',signal);
+    const commanderStarted=performance.now(),reply=await post('/api/tactical/interpret',JSON.stringify({requestId,instruction,context}),'application/json',signal);
+    if(!decisionLatency.samples.length)decisionLatency.record((performance.now()-commanderStarted)/1000);
     if(token!==serial||signal.aborted)return;
     assertCurrent(ref);
     if(reply.requestId!==requestId||reply.revision!==context.revision||reply.simTimeSec!==context.simTimeSec)throw Error('指令响应不匹配，请重新下令');
@@ -119,21 +123,29 @@ export function initVoiceCommands({getState,onApplied,onSimulation,onPilotPrevie
       if(Math.abs(Math.atan2(Math.sin(angle*Math.PI/180),Math.cos(angle*Math.PI/180)))>Math.PI/6)throw Error('分析期间飞机航向变化较大，请重新下达转向指令');
     }
     say(health?.pilotAssistant?.enabled?`指挥台正在下令，程序执行后由 ${ref.pilotLabel} 检查并复述…`:'指挥台正在下令，等待飞行员复诵与规划…');
-    const result=await runCommandSession({world:ref.world,reply,pilotLabel:ref.pilotLabel,expectedRevision:ref.revision,selectedUnitId:ref.selectedId,style:ref.radioStyle,radio,signal,pause,enforceAuthority:true,
+    const result=await runCommandSession({world:ref.world,reply,pilotLabel:ref.pilotLabel,expectedRevision:ref.revision,selectedUnitId:ref.selectedId,style:ref.radioStyle,radio,signal,pause,preparePlan:prepareCommand,enforceAuthority:true,
       planPilotCommand:health?.pilotAssistant?.commandPlanning?async({commanderMessage})=>{
         assertCurrent(ref);say(ref.pilotLabel+' 飞行员正在处理收到的指挥通话…');
-        const snapshot=commandContext(ref.world,ref.selectedId,ref.mapPoint,ref.radioStyle);
-        const planned=await post('/api/tactical/pilot/plan',JSON.stringify({requestId,pilotModel:ref.pilotModel,commanderMessage,context:snapshot}),'application/json',signal);
-        if(token!==serial||signal.aborted)throw new DOMException('通联已取消','AbortError');assertCurrent(ref);
-        if(planned.requestId!==requestId||planned.revision!==snapshot.revision||planned.simTimeSec!==snapshot.simTimeSec||planned.commanderMessageId!==commanderMessage.id)throw Error('飞行员接令响应不匹配');
-        showUnderstanding(planned.interpretation,planned.execution);return planned;
+        for(let attempt=0;attempt<3;attempt++){
+          const sampledClock=clock(),snapshot=commandContext(ref.world,ref.selectedId,ref.mapPoint,ref.radioStyle);
+          if(forecastCommand)snapshot.decisionTiming=await forecastCommand(ref.world,decisionLatency.timing(sampledClock),signal);
+          if(!sameDecisionClock(sampledClock,clock()))continue;
+          const started=performance.now(),planned=await post('/api/tactical/pilot/plan',JSON.stringify({requestId,pilotModel:ref.pilotModel,commanderMessage,context:snapshot}),'application/json',signal);
+          decisionLatency.record((performance.now()-started)/1000);
+          if(token!==serial||signal.aborted)throw new DOMException('通联已取消','AbortError');assertCurrent(ref);
+          if(planned.requestId!==requestId||planned.revision!==snapshot.revision||planned.simTimeSec!==snapshot.simTimeSec||planned.commanderMessageId!==commanderMessage.id)throw Error('飞行员接令响应不匹配');
+          if(!sameDecisionClock(sampledClock,clock())){say('时钟状态已改变，飞行员正在按当前机位重新规划…');continue;}
+          showUnderstanding(planned.interpretation,planned.execution);return planned;
+        }
+        throw Error('规划期间连续切换时钟，请保持当前状态后重新下令');
       }:null,
       reviewPilot:async({commanderMessage})=>{
         for(const task of reply.plan.tasks.filter(t=>t.action==='airport'&&needsDeparturePlan(t.airportOrder))){
           assertCurrent(ref);const unit=ref.world.units.find(u=>u.id===task.unitId),options=departureOptions(ref.world,unit,task.airportOrder);
           say(`${ref.pilotLabel} 正在选择推力与离场航路…`);
-          const planned=await post('/api/tactical/pilot/plan-departure',JSON.stringify({requestId,pilotModel:ref.pilotModel,commanderMessage,unitId:unit.id,context,order:task.airportOrder,options}),'application/json',signal);
-          assertCurrent(ref);if(planned.requestId!==requestId||planned.revision!==context.revision||planned.simTimeSec!==context.simTimeSec||planned.unitId!==unit.id)throw Error('飞行员起飞方案已经过期');
+          const currentContext=commandContext(ref.world,ref.selectedId,ref.mapPoint,ref.radioStyle);
+          const planned=await post('/api/tactical/pilot/plan-departure',JSON.stringify({requestId,pilotModel:ref.pilotModel,commanderMessage,unitId:unit.id,context:currentContext,order:task.airportOrder,options}),'application/json',signal);
+          assertCurrent(ref);if(planned.requestId!==requestId||planned.revision!==currentContext.revision||planned.simTimeSec!==currentContext.simTimeSec||planned.unitId!==unit.id)throw Error('飞行员起飞方案已经过期');
           if(planned.decision!=='execute')throw Error(planned.message||'飞行员未找到可行离场方案');
           const selected=planned.customPlan?evaluateDeparturePlan(ref.world,unit,task.airportOrder,planned.customPlan):options.find(o=>o.id===planned.optionId);if(!selected)throw Error('飞行员方案未通过实际推力、跑道或航路校验，本次不执行');
           (reply.pilotProcedures??={})[unit.id]=selected;reply.pilotPlanning=planned;
