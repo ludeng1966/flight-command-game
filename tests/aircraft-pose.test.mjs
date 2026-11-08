@@ -60,6 +60,22 @@ test('实际左右转弯的低翼与侧向加速度、航向变化同向',()=>{
   }
 });
 
+test('飞行员实际执行左右航向指令时，倾斜方向与转弯轨迹一致',()=>{
+  for(const sign of [-1,1]){
+    const world=new World({...scenario,units:[scenario.units[0]]},profiles),u=world.units[0];
+    u.headingTarget=sign*rad(60);u.holdAltitude=u.position[2];u.waypoints=[];
+    let samples=0;
+    for(let frame=0;frame<600;frame++){
+      world.step(1/60);
+      if(Math.abs(u.bank)<rad(5))continue;
+      const snapshot=world.snapshot(u.id,{forecast:false}).units[0];
+      const q=aircraftQuaternion(snapshot.forward,snapshot.up),wing=axis(q,1,0,0);
+      assert(sign*u.bank>0);assert(sign*wing[2]<0);samples++;
+    }
+    assert(u.alive);assert(samples>300);assert(sign*Math.atan2(u.velocity[0],u.velocity[1])>rad(15));
+  }
+});
+
 test('换向指令不会让模型提前翻滚，持续跟随当前滚转并平滑通过平翼',()=>{
   const world=new World(scenario,profiles),u=world.units[0];
   u.bank=rad(40);u.control={bank:-rad(40),cl:u.cl,throttle:.7};
