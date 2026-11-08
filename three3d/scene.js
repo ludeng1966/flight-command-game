@@ -16,6 +16,7 @@ import {formatAltitude} from '../sim/units.js';
 import * as THREE from 'three';
 import {buildAircraft,disposeAircraft} from './aircraft.js';
 import {aircraftModelId} from './aircraft-catalog.js';
+import {aircraftQuaternion} from './aircraft-pose.js';
 import { ribbonWindow, missileVisibleStart, TRAIL_FADE_DEAD, MISSILE_FADE } from './trail-window.js';
 import { OrbitControls } from '../vendor/three/OrbitControls.js';
 import {CAMERA_DISTANCE,cameraMotionScale,installCameraFocus,terrainFocusPoint} from './camera-focus.js';
@@ -1923,13 +1924,9 @@ export function renderLive(snapshot,dt=1/60){
       state.scene.remove(obj.vis.im);disposeAircraft(obj.vis.im);obj.vis.im=buildAircraft(u.color,u);obj.vis.im.userData.unitId=u.id;state.scene.add(obj.vis.im);
     }
     obj.line.visible=liveDisplay.trails==='all'||(liveDisplay.trails==='selected'&&u.id===snapshot.selectedId);
-    const pos=V3(...u.position),forward=V3(...u.forward).normalize(),up=V3(...u.up).normalize();
-    const right=new THREE.Vector3().crossVectors(forward,up).normalize();
-    up.crossVectors(right,forward).normalize();
-    const rot=new THREE.Matrix4().makeBasis(right,up,forward.negate());
-    const quat=new THREE.Quaternion().setFromRotationMatrix(rot);
+    const pos=V3(...u.position);
     const scale=aircraftVisualScale(cam,pos,cv.clientHeight);
-    obj.vis.im.position.copy(pos);obj.vis.im.quaternion.copy(quat);obj.vis.im.scale.setScalar(scale);
+    obj.vis.im.position.copy(pos);aircraftQuaternion(u.forward,u.up,obj.vis.im.quaternion);obj.vis.im.scale.setScalar(scale);
     if(u.surface?.grounded&&u.gearDown){const ground=liveTerrain?.heightAt(u.position[0],u.position[1]);if(ground!==null&&ground!==undefined)obj.vis.im.position.y=ground-obj.vis.im.userData.bounds.min[1]*scale;}
     obj.vis.im.userData.gear.visible=u.gearDown===true;
     const flame=obj.vis.im.userData.flame;flame.visible=obj.vis.im.userData.spec.afterburner&&u.alive!==false&&u.afterburner>.03;flame.scale.set(1,1,.4+u.afterburner*.9);
