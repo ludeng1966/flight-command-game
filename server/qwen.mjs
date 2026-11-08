@@ -64,7 +64,7 @@ export function validateContext(c) {
 export function createQwenClient(config,fetchImpl=fetch) {
   async function complete(body,audio=false,signal) {
     const key=audio?(config.asrKey||config.apiKey):config.apiKey;
-    if(!key)throw new ApiError(503,'尚未配置百炼 API Key，请在项目根目录 .env 中设置 DASHSCOPE_API_KEY 后重启服务');
+    if(!key)throw new ApiError(503,'尚未配置百炼 API Key，请在设置 → API 接入中填写，或在本机 .env 中设置 DASHSCOPE_API_KEY 后重启服务');
     const base=audio?config.asrBaseUrl:config.baseUrl;
     try {
       const response=await fetchImpl(`${base.replace(/\/$/,'')}/chat/completions`,{

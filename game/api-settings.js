@@ -2,7 +2,7 @@ export function initApiSettings({doc=globalThis.document,fetchImpl=globalThis.fe
   const $=id=>doc.getElementById(id),form=$('api-credentials');if(!form)return null;
   const status=$('api-credentials-status'),summary=$('api-credentials-summary');let busy=false,player=null,audioUrl=null;
   const say=(text,error=false)=>{status.textContent=text;status.dataset.error=String(error);};
-  const stopAudio=()=>{if(player){player.pause();player.removeAttribute('src');player=null;}if(audioUrl){urlApi.revokeObjectURL(audioUrl);audioUrl=null;}};
+  const stopAudio=()=>{if(player){player.onended=player.onerror=null;player.pause();player.removeAttribute('src');player=null;}if(audioUrl){urlApi.revokeObjectURL(audioUrl);audioUrl=null;}};
   const refreshGame=()=>{$('command-cancel')?.click();$('command-connection')?.click();};
   async function request(path,options={}){
     const response=await fetchImpl(path,{cache:'no-store',...options});
