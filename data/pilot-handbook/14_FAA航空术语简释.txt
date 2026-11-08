@@ -1,0 +1,4683 @@
+FAA Pilot/Controller Glossary · 网页版本：Effective 7/9/26, Change 3
+来源：https://www.faa.gov/air_traffic/publications/atpubs/pcg_html/index.html
+共1560条中文简释。条目仅解释含义，不代表游戏已实现对应能力。
+
+AAM / 先进空中交通
+利用电动或垂直起降等先进技术，在国家空域内运输人员和货物的系统。
+
+AAR / 机场到达率；适配航路
+机场或空域每小时可接受的进港航班数量参数；经终端区计算机适配的离场或进场航路，用于协调和确保飞行数据正确显示。
+
+ABBREVIATED IFR FLIGHT PLANS / 简化IFR飞行计划
+管制员授权仅提交必要的IFR信息（如呼号、位置、请求），常用于已起飞求进近或地面求VFR顶飞的情况。
+
+ABEAM / 侧方/正横
+目标点位于飞机航迹左右约90度方向，表示大致相对位置而非精确点。
+
+ABORT / 中止/终止
+终止预定的飞机机动动作，例如中止起飞。
+
+ABRR / 空中改航
+流量管理系统中用于及时制定并实施空中飞机战术改航的能力，将特定改航方案传输给区域自动化系统执行。
+
+AC / 咨询通告
+FAA发布的非监管性质的建议和描述性出版物。
+
+ACC [ICAO] / 区域管制中心
+主要提供IFR航路阶段管制服务的设施，美国对应机构为ARTCC。
+
+ACCELERATE‐STOP DISTANCE AVAILABLE / 加速停止可用距离
+跑道加停止道长度，适用于飞机中止起飞时的加速和减速。
+
+ACCELERATE‐STOP DISTANCE AVAILABLE [ICAO] / 加速停止可用距离[ICAO]
+起飞滑跑可用长度加上提供的停止道长度。
+
+ACDO / 航空承运人地区办公室
+FAA现场办公室，负责指定区域的航空公司认证和运行事务。
+
+ACKNOWLEDGE / 确认收悉
+告知对方已收到并理解该消息。
+
+ACL / 航空器列表
+EDST工具中显示当前或预测在特定扇区空域的航空器视图，包含文本格式飞行数据。
+
+ACLS / 自动舰载降落系统
+美国海军最后进近设备，结合精密跟踪雷达和数据链路，提供连续信息和备份进近系统。
+
+ACROBATIC FLIGHT / 特技飞行
+故意进行的涉及姿态突变、异常姿态或加速度且非正常飞行必需的机动。
+
+ACROBATIC FLIGHT [ICAO] / 特技飞行[ICAO]
+故意进行的涉及姿态突变、异常姿态或速度异常变化的机动。
+
+ACTIVE RUNWAY / 使用中的跑道
+当前用于起飞或着陆的任何跑道；多跑道使用时均为活动跑道；计量中指选定的落地配置。
+
+ACTUAL NAVIGATION PERFORMANCE (ANP) / 实际导航性能
+当前估计的导航性能测量值，也称估计位置误差。常与RNP概念关联，指在规定空域内运行的必要导航性能。
+
+ADAPTED ROUTES / 适配航路
+在ARTCC计算机中适配的离场/进场航路，用于协调和确保飞行数据显示。包括适配进场航路(AAR)、适配离场航路(ADR)及两者间航路(ADAR)。
+
+ADAR / 适配离场进场航路
+两个终端之间或相邻终端间的航路，类似首选IFR航路但不同。属于适配航路的一种，用于区域间协调。
+
+ADDITIONAL SERVICES / 附加服务
+ATC提供的咨询信息，如交通提示、偏航警告、天气等。受限于管制员能力和负荷，不保证提供。
+
+ADF / 自动定向仪
+感知并指示到NDB地面发射台方向的无线电导航系统，显示磁方位或相对方位。
+
+ADIZ / 防空识别区
+需对除国防和执法外的所有航空器进行身份识别、定位和控制的空域，以保障国家安全。
+
+ADLY / 到达延误
+指定时间内不对指定机场的到达航空器进行计量的参数。
+
+ADMINISTRATOR / 管理局
+指联邦航空局局长或其在此事项中授权的任何人员。
+
+ADR / 适配离场航线
+见ADAPTED ROUTES；从机场或终端区到航路点的特定离场路线，用于流量控制协调，通常包含仪表离场程序或部分标准仪表进场路线。
+
+ADS [ICAO] / 自动相关监视
+见ICAO术语AUTOMATIC DEPENDENT SURVEILLANCE；ADS-R功能将一种频率接收的信息翻译并重发至另一种频率，使不同链路的飞机能互相看到。
+
+ADS-B / 广播式自动相关监视
+见AUTOMATIC DEPENDENT SURVEILLANCE-BROADCAST。
+
+ADS-C / 合同式自动相关监视
+由地面站控制的通信位置报告系统，当发生特定事件或达到特定时间间隔时，自动与飞机 avionics 建立合同。
+
+ADVANCED AIR MOBILITY (AAM) / 先进空中交通
+使用先进技术（如电动或电动垂直起降飞机）在管制和非管制空域运输人员和财产的空中交通系统。
+
+ADVISE INTENTIONS / 告知意图
+告诉管制员你计划做什么。
+
+ADVISORY / 咨询信息
+为协助飞行员安全飞行和飞机移动而提供的建议和情报。
+
+ADVISORY CIRCULAR (AC) / 咨询通告
+FAA发布的具有咨询和描述性质的出版物，不具备法规效力。
+
+ADVISORY FREQUENCY / 咨询频率
+用于机场咨询服务（如UNICOM）的适当频率。
+
+ADVISORY SERVICE / 咨询服务
+设施为协助飞行员安全飞行和飞机移动而提供的建议和情报，包括雷达咨询、安全警报等。
+
+ADW / 起降窗口
+见ARRIVAL/DEPARTURE WINDOW；管制显示图上用于防止跑道起降冲突的标记，标识离场飞机必须开始起飞的位置点。
+
+AERIAL REFUELING / 空中加油
+军事程序中用于在空中将燃料从一个飞机转移到另一个飞机的操作。
+
+AERODROME / 机场
+陆地或水面上定义的区域，包括建筑物、设施和装备，旨在全部或部分用于飞机的到达、出发和移动。
+
+AERODROME BEACON [ICAO] / 机场导航灯塔
+用于从空中指示机场位置的航空信标灯。
+
+AERODROME CONTROL SERVICE [ICAO] / 机场管制服务
+为机场交通提供的空中交通管制服务。
+
+AERODROME CONTROL TOWER [ICAO] / 机场管制塔台
+设立用于向机场交通提供空中交通管制服务的单位。
+
+AERODROME ELEVATION [ICAO] / 机场标高
+着陆区域最高点的海拔高度。
+
+AERODROME TRAFFIC CIRCUIT [ICAO] / 机场交通航线
+在机场附近运行的飞机应飞行的指定路径。
+
+AERONAUTICAL BEACON / 航空信标灯
+通过闪烁白色和/或彩色灯光来指示机场、直升机坪、地标、航路点或障碍物位置的视觉导航设备。
+
+AERONAUTICAL CHART / 航空图
+包含地形特征、危险物、导航设施、航路、空域和机场等信息的地图，用于航空导航。
+
+AERONAUTICAL CHART [ICAO] / 航空图
+地球部分区域、人文和地形的表示，专门设计以满足航空导航需求。
+
+AERONAUTICAL INFORMATION MANUAL (AIM) / 航空情报手册
+FAA主要出版物，指导美国国家空域系统的运行，提供基本飞行信息、ATC程序及健康、安全等一般信息。
+
+AERONAUTICAL INFORMATION PUBLICATION (AIP) [ICAO] / 航空情报出版物
+由国家发布或授权的出版物，包含对航空导航至关重要的持久性航空情报。
+
+AERONAUTICAL INFORMATION SERVICES (AIS) / 航行情报服务
+联邦航空局在马里兰州银泉设立的机构，负责收集、验证和发布航空数据，以支持政府、行业和航空界的活动。
+
+AFFIRMATIVE / 确认/是
+用于回应询问或指令的肯定答复，意为“是”或“确认”。
+
+AFIS / 自动飞行信息服务
+参见阿拉斯加固定航线空中交通服务站专用的自动飞行信息服务。
+
+AFP / 空域流量程序
+由空管系统指挥中心管理的交通管理流程，通过分配预计放行时间来管理特定空域的容量和需求，以缓解航路限制的影响。
+
+AHA / 航空危险区
+空中交通管制用于将航空交通与发射载具、再入飞行器、业余火箭及其碎片隔离的区域，通常通过NOTAM指定为临时飞行限制或固定高度限制空域。
+
+AIM / 航行情报手册
+联邦航空局的主要出版物，旨在指导飞行员在美国国家空域系统中的运行，提供基本飞行信息、ATC程序和一般安全指导。
+
+AIP [ICAO] / 航行情报出版物
+国际民航组织术语，指各国发布的包含航空必需信息的官方出版物。
+
+AIR CARRIER DISTRICT OFFICE / 航空承运人地区办公室
+联邦航空局的地区办事处，配备飞行标准人员，处理定期航空承运人及其他大型飞机运行的认证和操作事宜。
+
+AIR DEFENSE EMERGENCY / 防空紧急状态
+由指定当局宣布的军事紧急条件，当认为对美国、阿拉斯加、加拿大或格陵岛的美军设施发动攻击可能、迫在眉睫或正在发生时存在。
+
+AIR DEFENSE IDENTIFICATION ZONE (ADIZ) / 防空识别区
+陆地或水域上空需要识别、定位和控制所有民用航空器的空域，以维护国家安全。具体要求见14 CFR第99部分。
+
+AIR NAVIGATION FACILITY / 空中导航设施
+用于辅助空中导航的任何设施，包括着陆区、灯光、气象信息发布装置、无线电定向设备、通信设备及引导飞行的其他结构。
+
+AIR ROUTE SURVEILLANCE RADAR / 航路监视雷达
+主要用于在终端区之间检测并显示飞机位置的航路交通控制中心雷达，使管制员能在其覆盖范围内提供雷达管制服务。
+
+AIR ROUTE TRAFFIC CONTROL CENTER (ARTCC) / 航路交通控制中心
+向受控空域内按仪表飞行规则飞行的飞机提供空中交通管制服务的设施，主要在航路阶段运行，有时也向目视飞行规则飞机提供咨询。
+
+AIR TAXI / 空中滑行
+直升机或垂直起降飞机在地面上方（通常不超过100英尺）进行的移动，可通过悬停或超过20节的速度进行，由飞行员全权负责选择安全速度。
+
+AIR TRAFFIC / 空中交通
+在空中运行或在机场机动区（不含停机坪和停车区）上的飞机。
+
+AIR TRAFFIC [ICAO] / 空中交通[ICAO]
+国际民航组织术语，指所有在飞或在机场机动区运行的航空器。
+
+AIR TRAFFIC CLEARANCE / 空中交通管制许可
+管制员为防止已知飞机间碰撞而发出的授权，允许飞机在受控空域内按指定条件飞行。飞行员不得随意偏离，除非出于安全考虑或紧急情况。
+
+AIR TRAFFIC CONTROL / 空中交通管制
+由适当当局运营的服务，旨在促进空中交通的安全、有序和高效流动。
+
+AIR TRAFFIC CONTROL CLEARANCE [ICAO] / 空中交通管制许可[ICAO]
+国际民航组织术语，指空中交通管制单位发出的允许航空器按指定条件继续飞行的授权，可前缀表示起飞、离场等具体阶段。
+
+AIR TRAFFIC CONTROL SERVICE / 空中交通管制服务
+参见空中交通管制，即由适当当局运营以促进空中交通安全、有序和高效流动的服务。
+
+AIR TRAFFIC CONTROL SERVICE [ICAO] / 空中交通管制服务[ICAO]
+国际民航组织术语，旨在防止航空器之间及航空器与障碍物之间的碰撞，并加速和维持有序的空中交通流。
+
+AIR TRAFFIC CONTROL SPECIALIST / 空中交通管制员
+被授权提供空中交通管制服务的人员。
+
+AIR TRAFFIC CONTROL SYSTEM COMMAND CENTER (ATCSCC) / 空管系统指挥中心
+负责监控和管理整个国家空域系统交通流的战术操作设施，下设中央高度预留功能、机场预留办公室、NOTAM办公室和天气单元等职能。
+
+AIR TRAFFIC SERVICE / 空中交通服务
+通用术语，包括飞行情报服务、告警服务、空中交通咨询服务以及区域、进近和机场管制服务。
+
+AIR TRAFFIC ORGANIZATION (ATO)  / 空中交通组织 (ATO)
+FAA下属业务部门，负责在国家空域系统中提供安全高效的空中导航服务。
+
+AIR TRAFFIC SERVICE (ATS) ROUTES  / 空中交通服务航路
+统称包括VOR联邦航路、彩色联邦航路、喷气机航路和RNAV航路在内的美国航路结构类型，非具体替换名称。
+
+AIRBORNE / 航空器在空中
+航空器所有部件均离开地面的状态。
+
+AIRBORNE DELAY / 空中等待延误
+在航空器空中等待期间预计遭遇的延误量。
+
+AIRBORNE REROUTE (ABRR) / 空中改航 (ABRR)
+流量管理系统中用于及时制定和实施空中飞机战术改航的能力，将特定改航方案电子传输至ERAM由扇区管制员执行。
+
+AIRCRAFT / 航空器
+用于或拟用于空中飞行的装置，含飞行机组；包括飞机、滑翔机、轻于空气飞行器、倾转旋翼机和旋翼机等。
+
+AIRCRAFT [ICAO] / 航空器 [ICAO]
+任何能从空气中获得除对地表面反作用力以外的空气反作用力来支撑的大气内机器。
+
+AIRCRAFT APPROACH CATEGORY / 进近类别
+基于着陆构型最大重量失速速度1.3倍的速度分组；若机动速度超上限，需使用对应更高类别标准。
+
+AIRCRAFT CLASSES / 航空器分类
+按起飞重量划分的尾流间隔类别：超级(A380)、重型(≥30万磅)、大型(>4.1万至<30万磅)和小型(≤4.1万磅)。
+
+AIRCRAFT CONFLICT / 航空器冲突
+EDST预测的两航空器间或航空器与空域间的潜在冲突；红警≤5海里，黄警5-12海里，蓝警涉及预定义空域。
+
+AIRCRAFT HAZARD AREA (AHA) / 航空器危险区 (AHA)
+ATC用于隔离发射物、再入飞行器、火箭及碎片等活动的区域，通常通过NOTAM指定为TFR或固定ALTRV。
+
+AIRCRAFT LIST (ACL) / 航空器列表 (ACL)
+EDST中显示当前或预测位于特定扇区空域的航空器视图，包含文本飞行数据并可排序。
+
+AIRCRAFT SURGE LAUNCH AND RECOVERY / 航空器快速发射与回收 (ASLAR)
+美国空军基地在IFR条件下提高发射和回收率的程序，基于减少间隔并在特定点应用MARSA原则。
+
+AIRCRAFT WAKE CATEGORIES / 终端尾流类别
+终端区尾流间隔最小值分类：A(超级), B-D(重型), E(B757), F-G(大型), H-I(小型)。
+
+AIRMEN'S METEOROLOGICAL INFORMATION (AIRMET) / 飞行员气象情报 (AIRMET)
+描述可能影响飞行安全但强度低于SIGMET标准的航路天气现象，如中度湍流、低空风切变、中度积冰等。
+
+AIRPLANE / 飞机
+重于空气的动力驱动固定翼航空器，依靠机翼与空气的动态反作用力获得升力。
+
+AIRPORT / 机场
+供航空器起飞和降落使用的陆地或水域区域，包括其建筑物和设施。
+
+AIRPORT ADVISORY AREA / 机场咨询区
+无塔台或塔台未运行机场周围十英里内有航行情报服务站所在的区域。
+
+AIRPORT ARRIVAL RATE (AAR) / 机场到达率 (AAR)
+指定机场或空域每小时能从ARTCC接收的 arriving 航空器数量的动态参数，用于计算到达间隔。
+
+AIRPORT DEPARTURE RATE (ADR) / 机场离场率 (ADR)
+指定机场和空域每小时能接受的 departing 航空器数量的动态参数。
+
+AIRPORT ELEVATION / 机场标高
+机场可用跑道最高点相对于平均海平面的高度（英尺）。
+
+AIRPORT LIGHTING / 机场灯光
+安装在机场的各种灯光助航设施，包括进近灯光系统、跑道边灯、接地带灯等，提供视觉引导。
+
+AIRPORT MARKING AIDS / 机场标志
+用于跑道和滑行道上识别特定跑道、入口、中心线、等待线等的标记。
+
+AIRPORT REFERENCE POINT (ARP) / 机场基准点 (ARP)
+所有可用跑道表面的近似几何中心。
+
+AIRPORT RESERVATION OFFICE / 机场时刻办公室
+负责监控实行时刻控制的机场运行，接收并处理此类机场的临时航班申请。
+
+AIRPORT ROTATING BEACON / 机场旋转信标灯
+视觉导航设备。民用机场交替闪烁白绿光；军用机场在绿色闪光间增加双速白色闪光以示区别。
+
+AIRPORT SURFACE DETECTION EQUIPMENT (ASDE) / 机场表面探测设备
+用于检测机场地表飞机、车辆等目标并在塔台显示的设备，辅助目视观察。包括ASDE-3雷达、ASDE-X及ASSC系统。
+
+AIRPORT SURVEILLANCE RADAR / 机场监视雷达
+进近管制雷达，用于终端区探测和显示飞机位置。提供距离和方位信息，无高度数据，覆盖范围可达60英里。
+
+AIRPORT TAXI CHARTS / 机场滑行图
+参见航空图表。航空图表是为满足空中导航需求而专门指定的地球部分、其文化和地形的表示。
+
+AIRPORT TRAFFIC CONTROL SERVICE / 机场交通管制服务
+由塔台为在活动区和机场附近运行的飞机提供的服务。参见活动区、塔台及ICAO机场管制服务。
+
+AIRPORT TRAFFIC CONTROL TOWER / 机场交通管制塔台
+参见塔台。终端设施，利用通信和视觉信号提供ATC服务，授权起降或穿越D类空域，也可提供进近管制服务。
+
+AIRSPACE CONFLICT / 空域冲突
+预测到的飞机与活跃的特殊使用空域之间的潜在冲突。
+
+AIRSPACE FLOW PROGRAM (AFP) / 空域流量计划
+由ATCSCC管理的交通管理流程，通过分配预计放行时间来管理特定空域的容量和需求，以缓解航路限制影响。
+
+AIRSPACE HIERARCHY / 空域层级
+空域重叠时存在优先权层级：A类优于B类，B优于C，C优于D，D优于E，E优于G类。
+
+AIRSPEED / 空速
+飞机相对于周围空气的速度。未加限定指指示空速（通讯常用）或真空速（飞行计划用）。
+
+AIRSPACE RESERVATION / 空域保留
+海洋ATC术语，指按预定条件使用的空域，通常用于大规模飞机移动或其他特殊用户需求。分为移动型和静止型。
+
+AIRSTART / 空中启动
+飞机在空中启动发动机，通常发生在训练中的发动机关闭后或实际发动机故障后。
+
+AIRWAY / 航路
+一种E类空域走廊，其中线由无线电导航辅助设备定义。参见联邦航路及ICAO航路定义。
+
+AIRWAY [ICAO] / 航路[ICAO]
+建立为配备无线电导航辅助设备的走廊形式的管制区域或其部分。
+
+AIRWAY BEACON / 航路信标灯
+用于标记偏远山区航路段。灯光闪烁莫尔斯电码以识别信标站点。
+
+AIS / AIS
+参见航空信息服务。FAA设立的中央机构，负责收集、验证和发布航空数据，支持政府、行业和航空社区活动。
+
+AIT / AIT
+参见自动化信息传递。通过全数据块信息在非语音协调下完成高度或雷达识别移交的过程。
+
+ALERFA (Alert Phase) [ICAO] / 警报阶段[ICAO]
+对飞机及其乘员安全存在担忧的情况。
+
+ALERT / 警报
+通知席位存在飞机间或飞机与空域间的冲突，由自动问题检测系统发现。
+
+ALERT AREA / 警报区
+参见特殊使用空域。可能包含高频率飞行员训练或不寻常空中活动的空域，非参与飞行员需注意避让。
+
+ALERT NOTICE (ALNOT) / 搜寻通知
+由飞行服务站或区域中心发起的请求，进行广泛通信搜索以查找迟到、未报告或失踪的飞机。
+
+ALERTING SERVICE / 告警服务
+向相关组织通知需要搜救援助的飞机，并按需协助这些组织的服。
+
+ALNOT / ALNOT
+参见搜寻通知。由FSS或ARTCC发起的广泛通信搜索请求，用于查找迟到、未报告或失踪的飞机。
+
+ALONG-TRACK DISTANCE (ATD) / 沿航迹距离(ATD)
+航空器当前位置与导航定位点之间的水平距离，由区域导航系统测量且不受斜距误差影响。
+
+ALPHANUMERIC DISPLAY / alphanumeric显示(字母数字显示)
+雷达屏幕上用于显示目标识别、高度、应答机代码及其他信息的字母和数字组合。
+
+ALTERNATE AERODROME [ICAO] / 备降机场[ICAO]
+当无法或不宜飞往预定目的地时，航空器可前往的机场。起飞机场也可作为途中或目的地备降场。
+
+ALTERNATE AIRPORT / 备降机场
+当在预定机场降落变得不可取时，航空器可以降落的机场。参见ICAO术语备降机场。
+
+ALTIMETER SETTING / 高度表拨正值
+用于修正气压高度计以适应大气压力变化，或设置为标准高度表拨正值(29.92)的气压读数。
+
+ALTITUDE / 高度
+以英尺为单位测量的水平面、点或物体相对于地面(AGL)或平均海平面(MSL)的高度。包括指示高度等类型。
+
+ALTITUDE [ICAO] / 高度[ICAO]
+从平均海平面(MSL)测量的水平面、点或视为点的物体的垂直距离。
+
+ALTITUDE READOUT / 高度报告
+通过Mode C应答机功能传输并通过具备报告能力的雷达屏幕以100英尺增量可视显示航空器的高度。
+
+ALTITUDE RESERVATION (ALTRV) / 高度保留(ALTRV)
+在特定条件下使用空域，通常用于大批量航空器移动或其他特殊用户需求。分为“移动”或“静止”两类，需FAA批准。
+
+ALTITUDE RESTRICTION / 高度限制
+按飞行顺序指定的必须在到达特定点或时间前保持的高度。可能因交通、地形或空域考虑由ATC发布。
+
+ALTITUDE RESTRICTIONS ARE CANCELED / 取消高度限制
+在爬升或下降过程中，不再需要遵守之前施加的高度限制。
+
+ALTRV / ALTRV
+参见高度保留(ALTRV)。指在特定条件下使用空域以满足特殊需求，需FAA批准并分类为移动或静止。
+
+AMVER / AMVER
+自动互助船舶救援系统。可在短时间内提供潜在或实际搜救区域内船只的表面图像(SURPIC)、预测位置和特征。
+
+APB / APB
+自动问题检测边界。设施边界外定义EDST执行冲突探测的空域适应距离。参见航路决策支持工具。
+
+APD / APD
+自动问题检测。一种自动化处理能力，通过比较轨迹来预测冲突。
+
+APDIA / APDIA
+自动问题检测抑制区。终端区周围的空域，在此空域内对所有航班抑制APD功能。
+
+APPROACH CLEARANCE / 进近许可
+ATC授权飞行员进行仪表进近的许可。如需，许可中会说明进近类型及相关信息。参见仪表进近程序。
+
+APPROACH CONTROL FACILITY / 进近管制设施
+在终端区内提供进近管制服务的终端ATC设施。参见进近管制服务。
+
+APPROACH CONTROL SERVICE / 进近管制服务
+由进近管制设施为到达和离开的VFR/IFR航空器提供的空中交通管制服务，偶尔也包括航路航空器。
+
+APPROACH CONTROL SERVICE [ICAO] / 进近管制服务[ICAO]
+为到达或离开的受控航班提供的空中交通管制服务。
+
+APPROACH GATE / 进近门
+ATC用于引导航空器至最后进近航道的虚拟点。位于最后进近定位点外侧1英里处，距着陆入口至少5英里。
+
+APPROACH/DEPARTURE HOLD AREA / 进近/离场等待区
+跑道进近或离场区域滑行道上的指定位置，用于保护落地或起飞的航空器，由标志和标记标识。
+
+APPROACH LIGHT SYSTEM / 进近灯光系统
+机场灯光设施，通过定向光束提供视觉引导，帮助飞行员在最后进近阶段将飞机对准跑道中心线。有多种类型如ALSF、MALSR等。
+
+APPROACH RUNWAY VERIFICATION / 进近跑道验证
+STARS的一项功能，当航空器在最后进近航道但未对准指定着陆跑道或跑道关闭时，向塔台或进近控制器发出视听警报。
+
+APPROACH SEQUENCE / 进近顺序
+飞机在进近过程中或等待进近许可时的排列次序。
+
+APPROACH SEQUENCE [ICAO] / 进近顺序[ICAO]
+两个或多个获准进近着陆的航空器被批准的先后次序。
+
+APPROACH SPEED / 进近速度
+飞行员在进近着陆时依据飞机手册推荐的飞行速度，随进近阶段、重量及构型变化而不同。
+
+APPROACH WITH VERTICAL GUIDANCE (APV) / 带垂直引导的进近(APV)
+提供水平和垂直引导的RNAV进近程序，但不符合精密进近的要求。
+
+APPROPRIATE ATS AUTHORITY [ICAO] / 相关空中交通服务当局[ICAO]
+负责提供相关空域空中交通服务的指定国家当局。在美国指空中交通规划与程序项目主任。
+
+APPROPRIATE AUTHORITY / 相关当局
+公海上空飞行时为登记国；非公海上空飞行时为领空主权国。
+
+APPROPRIATE OBSTACLE CLEARANCE MINIMUM ALTITUDE / 相关障碍物最低高度
+参见：航路IFR最低高度、IFR最低高度、最低障碍 clearance 高度、最小雷达引导高度。
+
+APPROPRIATE TERRAIN CLEARANCE MINIMUM ALTITUDE / 相关地形最低高度
+参见：航路IFR最低高度、IFR最低高度、最低障碍 clearance 高度、最小雷达引导高度。
+
+APRON / 停机坪
+机场内供上下客货、加油、停放或维修飞机的指定区域。水上飞机通过滑道进入。
+
+APRON [ICAO] / 停机坪[ICAO]
+陆上机场内供上下客货、加油、停放或维修飞机的指定区域。
+
+ARC / 弧线
+航空器参照DME保持恒定距离飞行时在地面的轨迹。
+
+AREA CONTROL CENTER [ICAO] / 区域管制中心[ICAO]
+主要负责航路阶段IFR飞机管制的设施。美国对应机构为航路交通管制中心(ARTCC)。
+
+AREA NAVIGATION (RNAV) / 区域导航(RNAV)
+允许航空器在导航台覆盖范围或机载设备能力范围内沿任意期望路径飞行的方法。包含基于性能的导航及其他操作。
+
+AREA NAVIGATION (RNAV) APPROACH CONFIGURATION: STANDARD T / 标准T形RNAV进近构型
+允许直飞三个初始进近定位点的RNAV设计，无需程序转弯。含标准T形、修正T形、标准I形及终端到达区(TAA)等变体。
+
+AREA NAVIGATION (RNAV) GLOBAL POSITIONING SYSTEM (GPS) PRECISION RUNWAY MONITORING (PRM) APPROACH / GPS精密跑道监控(PRM)进近
+需垂直引导的GPS进近，用于平行跑道间距小于4300英尺且大于等于3000英尺的同时进近，或替代ILS PRM进行偏移进近。
+
+ARMY AVIATION FLIGHT INFORMATION BULLETIN / 陆军航空情报简报
+提供陆军、国民警卫队及预备役航空活动数据的情报简报。
+
+ARO / ARO
+参见机场预留办公室：负责监控航班时刻控制机场运营，处理未安排航班请求的机构。
+
+ARRESTING SYSTEM / 拦阻系统
+由捕获和能量吸收装置组成的安全设备，用于防止飞机因无法停止而冲出跑道，适用于尾钩或非尾钩飞机。
+
+ARRIVAL CENTER / 进场管制中心
+对受影响机场拥有管辖权的航路交通管制中心(ARTCC)。
+
+ARRIVAL DELAY / 进场延误
+指定时间段内，不向指定机场的进场飞机发送流量控制指令的参数。
+
+ARRIVAL/DEPARTURE WINDOW (ADW) / 进场/离场窗口(ADW)
+管制员用于防止跑道进出冲突的显示标识，指明 departing 飞机必须开始起飞的时间点。
+
+ARRIVAL SECTOR (En Route) / 进场扇区(航路)
+包含一个或多个位于TRACON边界附近测距点的运行控制扇区。
+
+ARRIVAL TIME / 到达时间
+飞机着陆触地时的时间。
+
+ARSR / ARSR
+参见航路监视雷达：主要用于检测并显示终端区之间航路阶段飞机位置的ARTCC雷达。
+
+ARTCC / 航路交通管制中心
+指航路交通管制中心，为管制空域内执行IFR飞行计划的航空器提供空中交通管制服务，主要在航路阶段运行。
+
+ASDA / 加速停止可用距离
+起飞滑跑可用长度加上若提供的停止道长度。用于评估中断起飞时的可用距离。
+
+ASDA [ICAO] / 加速停止可用距离[ICAO]
+国际民航组织术语，指起飞滑跑可用长度加上若提供的停止道长度。
+
+ASDE / 机场表面探测设备
+专门用于探测机场表面飞机、车辆及其他物体的监视设备，在塔台显示图像以辅助目视观察跑道和滑行道的活动。
+
+ASLAR / 快速起降程序
+美国空军基地在仪表条件下提高起降率的程序。基于缩小航空器间隔，以DRAG点为参考点应用MARSA原则进行间隔管理。
+
+ASR / 机场监视雷达
+进近管制雷达，用于检测并显示终端区内航空器的位置，提供范围和方位信息但不提供高度数据，覆盖范围可达60英里。
+
+ASR APPROACH / 监视进近
+一种仪表进近，管制员根据雷达显示的航空器方位和距离发出指令。若飞行员请求，可提供最后进近的推荐高度。
+
+ASSOCIATED / 关联目标
+显示包含航班识别和高度信息的数据块的雷达目标。与未关联目标相对。
+
+ATC / 空中交通管制
+由适当当局运行的服务，旨在促进空中交通的安全、有序和高效流动。参见ICAO术语空中交通管制服务。
+
+ATC ADVISES / ATC告知
+当非管制员向航空器转达非管制类信息时，用于消息前缀的用语。参见咨询。
+
+ATC ASSIGNED AIRSPACE / ATC指定空域
+由ATC指定的具有明确垂直/水平限制的空域，旨在将指定活动与其他IFR交通分离。参见特殊使用空域。
+
+ATC CLEARANCE / ATC许可
+为防止已知航空器碰撞而授权航空器在管制空域内按特定条件飞行的许可。飞行员不得偏离许可规定，除非紧急情况或获得修改许可。
+
+ATC CLEARS / ATC许可（转达）
+当非管制员向航空器转达ATC许可时，用于消息前缀的用语。
+
+ATC INSTRUCTIONS / ATC指令
+由空中交通管制发出的指令，要求飞行员采取特定行动，如“左转航向250”、“复飞”、“脱离跑道”。
+
+ATC PREFERRED ROUTE NOTIFICATION / ATC优选路线通知
+EDST通知相应管制员需确定是否应用基于目的地机场的ATC优选路线。参见路线行动通知。
+
+ATC PREFERRED ROUTES / ATC优选路线
+不由Host系统自动应用的优选路线。
+
+ATC REQUESTS / ATC请求（转达）
+当非管制员向航空器转达ATC请求时，用于消息前缀的用语。
+
+ATC SECURITY SERVICES / ATC安全服务
+ATC设施为国土安全部、国防部等联邦安全部门提供的通信和安全跟踪服务，仅限指定区域适用，不包含基本雷达服务。
+
+ATC SECURITY SERVICES POSITION / ATC安全服务岗位
+负责提供ATC安全服务的岗位。不提供ATC、IFR间隔或VFR飞行跟随服务，但负责指定空域内的安全服务，可与控制岗位合并。
+
+ATC SECURITY TRACKING / ATC安全跟踪
+ATC设施为国家安全目的，使用雷达或其他手段连续跟踪航空器移动，不提供基本雷达服务或其他ATC服务。
+
+ATS SURVEILLANCE SERVICE [ICAO] / ATS监视服务[ICAO]
+表示通过ATS监视系统直接提供的服务。
+
+ATC SURVEILLANCE SOURCE / ATC监视源
+ATC用于建立识别、控制和间隔的目标来源，包括雷达、ADS-B或WAM，需满足相关安全标准。
+
+ATS SURVEILLANCE SYSTEM [ICAO] / ATS监视系统[ICAO]
+泛指ADS-B、PSR、SSR或任何可同等实现航空器识别的地面系统。
+
+ATCAA / ATC指定空域
+由ATC指定的具有明确垂直/水平限制的空域，旨在将指定活动与其他IFR交通分离。参见特殊使用空域。
+
+ATCRBS / 航空器交通管制雷达系统
+即雷达。利用无线电波探测目标，提供距离、方位和/或高度信息。分为使用反射信号的主用雷达和使用应答机信号的次用雷达。
+
+ATCSCC / 空中交通管制系统指挥中心
+负责监控和管理国家空域交通流的战术运行设施，旨在安全有序地疏导交通并最小化延误。内设高度预留功能、机场预订办公室、NOTAM办公室及气象部门等。
+
+ATCT / 塔台
+终端设施，利用空地通信和视觉信号为机场附近或活动区的航空器提供管制服务。授权航空器起降或穿越D类空域，也可提供进近管制服务。
+
+ATD / 沿航迹距离
+航空器当前位置与导航定位点之间的水平距离，由区域导航系统测量，不受斜距误差影响。
+
+ATIS / 自动终端情报服务
+通过连续重复广播，向到达和离港航空器提供当前常规信息的程序。
+
+ATIS [ICAO] / 自动终端情报服务
+通过连续重复广播，向到达和离港航空器提供当前常规信息的程序。
+
+ATO / 空中交通组织
+美国联邦航空管理局下属负责空中交通服务的组织结构。
+
+ATPA / 自动化终端接近警报
+监控最后进近航道上的航空器间隔，检测潜在间隔丧失时显示图形通知。警告锥在预测间隔丧失前45秒显示，警报锥在24秒时显示。
+
+ATS ROUTE [ICAO] / 空中交通服务航路
+为提供空中交通服务而设计的指定航路，用于引导交通流。可指航路、咨询航路、受控或不受控航路以及进场或离场航线。
+
+ATTENTION ALL USERS PAGE (AAUP) / 全体用户注意页
+向飞行员提供特定操作（如PRM进近或RNAV离场）的额外信息页面。
+
+AUTOLAND APPROACH / 自动着陆进近
+自动驾驶子系统在精密仪表进近中控制飞机系统，至少至决断高度，有时直至接地及滑跑阶段。自动驾驶仪向其发送指令并监控其性能。
+
+AUTOMATED EMERGENCY DESCENT / 紧急下降模式
+自动系统感知缺氧条件（如座舱失压）。若激活，系统将飞机转向最大90度并下降至较低高度平飞，为飞行员恢复争取时间。
+
+AUTOMATED INFORMATION TRANSFER (AIT) / 自动化信息移交
+预先协调的过程，管制员利用全数据块中的信息，在不进行口头协调的情况下完成高度控制权或雷达识别的移交。
+
+AUTOMATED MUTUAL‐ASSISTANCE VESSEL RESCUE SYSTEM / 自动化互助船舶救援系统
+能在几分钟内提供潜在或实际搜救区域内船只的表面图像，包括其预测位置和特征。
+
+AUTOMATED PROBLEM DETECTION (APD) / 自动化问题探测
+一种自动化处理能力，通过比较飞行轨迹来预测冲突。
+
+AUTOMATED PROBLEM DETECTION BOUNDARY (APB) / 自动化问题探测边界
+设施边界外延伸的距离，定义该空域内执行冲突探测的范围。参见航路决策支持工具。
+
+AUTOMATED PROBLEM DETECTION INHIBITED AREA (APDIA) / 自动化问题探测抑制区
+终端区周围的空域，在此区域内对所有航班抑制自动化问题探测功能。
+
+AUTOMATED SERVICES / 自动化服务
+通过自动系统（无需人工干预）提供的服务，如飞行计划、NOTAM、交互式地图、文本转语音消息、短信或电子邮件。
+
+AUTOMATED TERMINAL PROXIMITY ALERT (ATPA) / 自动化终端接近警报
+监控最后进近航道上的航空器间隔，检测潜在间隔丧失时显示图形通知。警告锥在预测间隔丧失前45秒显示，警报锥在24秒时显示。
+
+AUTOMATED WEATHER SYSTEM / 自动化天气系统
+收集机场天气数据并通过无线电或有线网络发布信息的自动化传感器平台，主要包括自动化地面观测系统和自动化天气观测系统。
+
+AUTOMATED UNICOM / 自动化UNICOM
+在UNICOM频率上完全自动化提供天气、无线电检查能力和机场咨询信息的系统，通常可通过麦克风点击选择功能。
+
+AUTOMATIC ALTITUDE REPORT / 自动高度报告
+通过Mode C应答机功能传输的航空器高度，在有读取能力的雷达屏幕上以100英尺增量可视显示。
+
+AUTOMATIC ALTITUDE REPORTING / 自动高度报告功能
+应答机响应Mode C询问的功能，以100英尺增量传输航空器高度。
+
+AUTOMATIC CARRIER LANDING SYSTEM / 自动舰载着陆系统
+美国海军最后进近设备，由精密跟踪雷达耦合计算机数据链路组成，向航空器提供连续信息，供飞行员监控并作为备份进近系统。
+
+AUTOMATIC DEPENDENT SURVEILLANCE (ADS) [ICAO] / 自动相关监视(ADS)
+航空器通过数据链自动发送机载导航系统生成的位置、识别及四维坐标等数据，供地面或空中接收的监视技术。
+
+AUTOMATIC DEPENDENT SURVEILLANCE / 广播式自动相关监视(ADS-B)
+航空器装备数据链发射机，定期广播基于GNSS的位置、身份和速度等信息，由地面或空间接收机处理显示，也供其他装备飞机接收。
+
+AUTOMATIC DEPENDENT SURVEILLANCE-BROADCAST IN (ADS / 入向广播式自动相关监视(ADS-In)
+机载设备具备直接接收其他航空器ADS-B Out信号以及地面站传输的交通或气象信息的能力。
+
+AUTOMATIC DEPENDENT SURVEILLANCE-BROADCAST OUT (ADS / 出向广播式自动相关监视(ADS-Out)
+航空器或地面车辆上定期广播其基于GNSS的位置及身份、高度、速度等所需信息的发射装置。
+
+AUTOMATIC DEPENDENT SURVEILLANCE-CONTRACT (ADS-C) / 合同式自动相关监视(ADS-C)
+由地面站控制的数据链位置报告系统，在特定事件发生或时间间隔到达时，自动与航空器航电建立合同进行报告。
+
+AUTOMATIC DEPENDENT SURVEILLANCE / 转发式自动相关监视(ADS-R)
+ADS-B地面系统的链路翻译功能，用于兼容978MHz和1090MHz两种频率，将一种频率的消息转换并重发至另一种频率，实现跨链路交通感知。
+
+AUTOMATIC DIRECTION FINDER / 自动定向仪(ADF)
+探测并指示航空器相对于无方向性信标台(NDB)方向的无线电导航系统，显示为磁方位或相对方位。
+
+AUTOMATIC FLIGHT INFORMATION SERVICE (AFIS)  / 自动飞行信息服务(AFIS)
+仅限阿拉斯加：由FSS在提供本地机场咨询服务的机场连续广播记录的例行非管制信息，如天气、风向、气压等。
+
+AUTOMATIC TERMINAL INFORMATION SERVICE / 终端自动情报服务(ATIS)
+在选定终端区连续广播记录的非管制信息，旨在提高管制效率并缓解频率拥塞，包含天气、跑道使用等例行内容。
+
+AUTOMATIC TERMINAL INFORMATION SERVICE [ICAO] / 终端自动情报服务[ICAO]
+全天或指定时段内，通过连续和重复广播向进近和离场航空器提供当前例行信息的程序。
+
+AUTOROTATION / 自转(Autorotation)
+旋翼机在无动力状态下，依靠上升气流驱动旋翼飞行的状态。包括自转着陆、低空自转战术机动及180度自转。
+
+AVAILABLE LANDING DISTANCE (ALD) / 可用着陆距离(ALD)
+批准执行LAHSO（同时着陆和滑行）的航空器可用于着陆和滑跑的跑道部分，从着陆入口量至等待短停点。
+
+AVIATION WATCH NOTIFICATION MESSAGE / 航空监视通知消息(SAW)
+风暴预测中心发布的区域威胁警报，告知预报可能产生龙卷风、大冰雹或强对流风的有组织雷暴区域及主要危害。
+
+AVIATION WEATHER SERVICE / 航空气象服务
+国家气象局和FAA提供的服务，收集并向飞行员、运营商和ATC分发相关天气报告和预报。
+
+B4UFLY / B4UFLY应用
+一款免费应用程序，允许操作者在飞行前检查空域限制和本地通告。
+
+BACK‐TAXI / 逆向滑行(Back-Taxi)
+管制员指令航空器在跑道上逆着交通流向滑行，通常是为了起飞准备或在到达跑道末端前退出跑道。
+
+BASE LEG / 五边(Base Leg)
+交通模式中垂直于进近端跑道的一段飞行路径，通常从下风边延伸至跑道延长线与下风边的交点。
+
+BEACON / 信标(Beacon)
+指航空信标、机场旋转信标、航路信标、指点信标或无方向信标等视觉或无线电导航设施。
+
+BEARING / 方位(Bearing)
+指向或背离某点的水平方向，通常从真北、磁北或其他参考点顺时针测量0至360度。
+
+BELOW MINIMUMS / 低于最低标准(Below Minimums)
+天气条件低于法规规定的特定行动（如着陆或起飞）所需的最低标准。
+
+BEYOND VISUAL LINE OF SIGHT (BVLOS) / 超视距运行(BVLOS)
+无人机操作超出机组成员（远程机长、操控手、观察员）肉眼可视范围的操作，不借助除矫正眼镜外的任何设备。
+
+BLAST FENCE / 防吹板(Blast Fence)
+用于偏转或消散喷气或螺旋桨 blast 的屏障。
+
+BLAST PAD / 防吹坪(Blast Pad)
+位于跑道两端 adjacent 的表面，用于减少喷气 blast 和螺旋桨洗流对地面的侵蚀效应。
+
+BLIND SPEED / 盲速(Blind Speed)
+目标相对于雷达天线的接近或远离速率，导致动目标指示电路抵消主雷达目标信号，造成信号减弱或丢失。
+
+BLIND SPOT / 盲区
+无法接收无线电传输或雷达回波的区域；也指从塔台无法看到的机场部分。
+
+BLIND TRANSMISSION / 盲发
+参见“盲发传输”。在无法建立双向通信但预计被叫方能接收时进行的传输。
+
+BLIND VELOCITY [ICAO] / 盲速
+目标径向速度使装有固定回波抑制的主雷达无法显示该移动目标的特定速度。
+
+BLIND ZONE / 盲区
+参见“盲区”。无法接收无线电或雷达回波的区域，或塔台不可见的机场部分。
+
+BLOCKED / 阻塞
+用语，表示因多重同时无线电传输导致无线电传输失真或中断。
+
+BOTTOM ALTITUDE / 最低高度
+指STAR或跑道过渡程序公布的 altitude restrictions 中授权的最低高度。
+
+BOUNDARY LIGHTS / 边界灯
+参见“机场灯光”。机场安装的各类照明辅助设施，包括进近灯系统、跑道边灯等。
+
+ / 刹车效应报告
+报告活动区条件及预期刹车质量（好、中好、中、中差、差、无）。参见跑道状况读数/报告。
+
+BRAKING ACTION ADVISORIES / 刹车效应咨询
+当收到中、差、无刹车报告或天气易致恶化时生效。ATIS广播此状态，ATC向起降飞机发布最新报告。
+
+BREAKOUT / 脱离编队
+将飞机引出进场流的技术。在并行独立运行中，用于引导受威胁飞机远离偏离航迹的飞机。
+
+BROADCAST / 广播
+发送信息，不期待回复。参见ICAO术语“广播”。
+
+BROADCAST [ICAO] / 广播 [ICAO]
+与空中航行有关的信息传输，未针对特定电台或电台群。
+
+BUFFER AREA / 缓冲区域
+应用于MVA/MIA图时，为隔离显示障碍物而建立的3或5海里半径扇区。包含扇区多边形边界。
+
+BVLOS / 超视距
+参见“超视距飞行(UVLOS)”。无人机操作超出机组目视能力的范围。
+
+CALCULATED LANDING TIME / 计算落地时间
+可用于替代预估或实际计算落地时间的术语。
+
+CALIBRATED AIRSPEED (CAS)  / 校准空速
+修正位置和设备误差后的指示空速。在海平面标准大气下等于真空速。
+
+CALL FOR RELEASE / 请求释放
+上级ARTCC要求终端设施发起口头协调，以获得将离场航空器放行至航路环境的批准。
+
+CALL UP / 呼叫
+设施与航空器间首次语音联系，使用被叫单位识别码和主叫单位识别码。
+
+CANADIAN MINIMUM NAVIGATION PERFORMANCE SPECIFICATION AIRSPACE / 加拿大最小导航性能空域
+加拿大国内可应用MNPS间隔的空域部分。
+
+CARDINAL ALTITUDES / 基准高度
+奇数或偶数千英尺高度或飞行高度层，如5,000、FL 250。参见高度、飞行高度层。
+
+CARDINAL FLIGHT LEVELS / 基准飞行高度层
+参见“基准高度”。奇数或偶数千英尺高度或飞行高度层。
+
+CAT / 晴空湍流
+参见“晴空湍流(CAT)”。无云空气中遇到的湍流，常与风切变和急流相关。
+
+CATCH POINT / 捕获点
+作为从高空航路导航结构过渡到进场程序(STAR)或低空陆基导航结构的定位点/航路点。
+
+CBO / 社区组织
+参见“社区组织(CBO)”。旨在促进模型航空的会员制实体。
+
+CCF / 综合控制设施
+结合航路交通管制中心与雷达进近管制功能的空中交通设施。
+
+CEILING / 云底高
+低于地面的最低云层或遮蔽现象高度，报告为疏开、覆盖或遮蔽，非薄或局部。
+
+CEILING [ICAO] / 云底高(国际民航)
+地面或水面上方6000米以下，覆盖天空一半以上的最低云层底部高度。
+
+CENTER / 航管中心
+为管制空域内IFR飞行提供服务的设施，主要服务航路阶段；条件允许时可为VFR提供咨询。
+
+CENTER'S AREA / 中心区域
+航管中心提供空中交通管制和咨询服务的指定空域范围。
+
+CENTER WEATHER ADVISORY / 中心气象建议
+由中心气象服务单位发布的不定期气象建议，用于警告未来两小时内现有或预期的不利天气。
+
+CENTRAL EAST PACIFIC / 中太平洋
+连接美国西海岸与夏威夷的有组织航路系统。
+
+CEP / 中太平洋航路
+连接美国西海岸与夏威夷的有组织航路系统。
+
+CERTIFICATE OF WAIVER OR AUTHORIZATION (COA) / 豁免或授权证书
+FAA对特定飞行操作、空域授权或豁免颁发的批准文件。
+
+CERTIFIED TOWER RADAR DISPLAY (CTRD) / 认证塔台雷达显示
+经FAA认证可在国家空域系统中使用的雷达显示设备。
+
+CFR / 请求放行
+上层航管中心要求终端设施发起口头协调，以获取将离场飞机释放至航路环境的批准。
+
+CHA / 应急危险区
+ATC使用的空域，在发射或再入操作前预先定义并分发，因故障而激活。
+
+CHAFF / 箔条
+不同长度和频率响应的金属反射器，从飞机投放后飘降，在雷达上形成大目标回波。
+
+CHART SUPPLEMENT / 航图补编
+FAA每56天发行的民用/军用飞行信息出版物系列，包括美国、阿拉斯加和太平洋补编。
+
+CHART SUPPLEMENT ALASKA / 阿拉斯加航图补编
+包含所有公众机场数据及导航设施的飞行信息出版物，支持阿拉斯加独特的地理运行条件。
+
+CHART SUPPLEMENT PACIFIC / 太平洋航图补编
+包含机场数据及仪表进近程序等，支持太平洋海洋区域独特地理运行条件的飞行信息出版物。
+
+CHART SUPPLEMENT U.S. / 美国航图补编
+包含本土及波多黎各等地所有公众机场数据的飞行信息出版物，按地理区域分七卷发行。
+
+CHARTED VFR FLYWAYS / 标绘VFR航线
+推荐用于避开大型涡轮动力飞机密集区域的飞行路径，飞行员自愿遵守相关高度。
+
+CHARTED VISUAL FLIGHT PROCEDURE APPROACH / 目视飞行程序进近
+IFR计划下，经ATC授权通过地标目视飞向机场的进近方式，需满足图表规定的天气标准。
+
+CHASE / 跟随
+为观察另一架飞机在训练或测试中的性能而在其附近飞行的飞机。
+
+CHASE AIRCRAFT / 跟随飞机
+为观察另一架飞机在训练或测试中的性能而在其附近飞行的飞机。
+
+CHOP / 颠簸
+轻度颠簸：轻微快速颠簸，高度姿态无显著变化；中度颠簸：强度更大，引起快速颠簸或冲击。
+
+CIRCLE‐TO‐LAND MANEUVER / 盘旋着陆机动
+当无法或不适宜直线进近时，飞行员为对准跑道着陆而进行的机动，需ATC授权及目视参考。
+
+CIRCLE TO RUNWAY (RUNWAY NUMBER) / 盘旋至跑道
+ATC通知飞行员必须盘旋着陆，因为使用跑道与仪表进近程序对齐的跑道不同，并指定方向。
+
+CIRCLING APPROACH / 盘旋进近
+见“圈到着陆机动”。指飞行员为对准跑道进行着陆而启动的机动，通常用于无法或不希望直线进近时。需塔台许可及建立目视参考。
+
+CIRCLING MANEUVER / 盘旋机动
+见“圈到着陆机动”。指飞行员为对准跑道进行着陆而启动的机动，通常用于无法或不希望直线进近时。需塔台许可及建立目视参考。
+
+CIRCLING MINIMA / 盘旋最低标准
+参见“受控空域”。ICAO术语：指在特定空域内提供空中交通服务（ATS）的空域类别，涵盖A、B、C、D和E类空域。此处作为参考条目指向受控空域定义。
+
+CIVIL AIRCRAFT OPERATION (CAO) / 民用航空器运行
+除公共用途之外的航空器运行活动。
+
+CLASS A AIRSPACE / A类空域
+参见“受控空域”。ICAO术语：指在特定空域内提供空中交通服务的空域类别，涵盖A、B、C、D和E类空域。此处作为参考条目指向受控空域定义。
+
+CLASS B AIRSPACE / B类空域
+参见“受控空域”。ICAO术语：指在特定空域内提供空中交通服务的空域类别，涵盖A、B、C、D和E类空域。此处作为参考条目指向受控空域定义。
+
+CLASS C AIRSPACE / C类空域
+参见“受控空域”。ICAO术语：指在特定空域内提供空中交通服务的空域类别，涵盖A、B、C、D和E类空域。此处作为参考条目指向受控空域定义。
+
+CLASS D AIRSPACE / D类空域
+参见“受控空域”。ICAO术语：指在特定空域内提供空中交通服务的空域类别，涵盖A、B、C、D和E类空域。此处作为参考条目指向受控空域定义。
+
+CLASS E AIRSPACE / E类空域
+参见“受控空域”。ICAO术语：指在特定空域内提供空中交通服务的空域类别，涵盖A、B、C、D和E类空域。此处作为参考条目指向受控空域定义。
+
+CLASS G AIRSPACE / G类空域
+未被指定为A、B、C、D或E类的受控空域即为G类（非受控）空域。
+
+CLEAR AIR TURBULENCE (CAT) / 晴空湍流
+在无云空气中遇到的湍流，常与高空风切变相关，多出现在急流附近。
+
+CLEAR OF THE RUNWAY / 脱离跑道
+滑行接近跑道的航空器，其所有部分均停在适用的跑道等待位置标记之前时，视为已脱离跑道。出港或穿越跑道的航空器，当所有部分超出跑道边缘且无移动限制时，也可视为已脱离。
+
+CLEARANCE / 放行许可
+见“空中交通管制放行许可”。指ATC为防止已知航空器相撞，授权其在受控空域内按指定交通条件飞行的许可。机长不得偏离许可，除非紧急情况或获得修改许可。
+
+CLEARANCE LIMIT / 放行限制点
+发出空中交通管制放行许可时，授权航空器飞至的定点、位置或地标。
+
+CLEARANCE LIMIT [ICAO] / 放行限制点[ICAO]
+授予空中交通管制放行的航空器被允许飞达的点。
+
+CLEARANCE VOID IF NOT OFF BY (TIME) / 若未在...前起飞许可作废
+ATC告知航空器，若未在指定时间前起飞，则离场许可自动取消。这并不取消IFR飞行计划，但撤销了IFR离场的权限，直到收到新的离场许可。
+
+CLEARANCE VOID TIME [ICAO] / 放行失效时间[ICAO]
+由空中交通管制单位指定的时间，在此时间之后，除非航空器已采取行动遵守该许可，否则许可不再有效。
+
+CLEARED APPROACH / 许可进近
+ATC授权航空器执行该机场的任何标准或特殊仪表进近程序。通常授权特定的仪表进近程序。
+
+CLEARED (Type of) APPROACH / 许可（特定类型）进近
+ATC授权航空器执行前往机场的特定仪表进近程序；例如：“许可执行三六跑道ILS进近”。
+
+CLEARED AS FILED / 按申报航路许可
+指授权航空器按照飞行计划中申报的航路飞行。此许可不包括高度、DP（精密进近程序）或DP过渡。
+
+CLEARED FOR TAKEOFF / 许可起飞
+ATC授权航空器离场。基于已知的交通状况和已知的机场物理条件。
+
+CLEARED FOR THE OPTION / 许可选择方式
+ATC授权航空机长在自行判断下执行复飞、低空通场、落地后重飞或全停着陆等动作。通常用于训练以评估学员表现。
+
+CLEARED THROUGH / 许可通过
+ATC授权航空器在前往放行限制点的途中，在指定机场进行中停，而无需重新提交飞行计划。
+
+CLEARED TO LAND / 许可着陆
+ATC授权航空器着陆。基于已知的交通状况和已知的机场物理条件。
+
+CLEARWAY / 净空道
+跑道端外由机场当局控制的区域，其地形或固定障碍物高度不得超过规定限制。用于特定涡轮动力航空器起飞，尺寸和坡度依认证时间而异。
+
+CLIMB TO VFR / 爬升至目视飞行规则
+管制授权航空器在B、C、D、E类空域内爬升至目视气象条件，仅限能见度受限情况。爬升过程中必须保持云外。参考特殊目视飞行条件。
+
+CLIMBOUT / 初始爬升段
+飞行操作中从起飞到初始巡航高度之间的阶段。
+
+CLIMB VIA / 沿程序爬升
+简化的ATC许可，要求遵守指定航路或程序的横向路径、关联速度限制及高度限制。
+
+CLOSE PARALLEL RUNWAYS / 平行跑道
+两条平行跑道中心线延长线间距小于4,300英尺且至少3,000英尺（SOIA为750英尺），允许实施同时独立进近。需双通信、特殊训练及监控。
+
+CLOSED LOOP CLEARANCE / 闭环许可
+包含返回航路点并更新系统以准确反映预期航路的向量或改航许可。例如预估向量长度并包含连接后续航路的下一个定位点。
+
+CLOSED RUNWAY / 关闭跑道
+不可用于航空器运行的跑道。仅机场管理或军事运行办公室有权关闭跑道。
+
+CLOSED TRAFFIC / 循环交通
+连续进行的起飞、着陆或低通操作，航空器不脱离交通模式。
+
+CLOUD / 云
+大气中可见的微小水滴和/或冰晶积聚物。与地面雾的区别在于后者接触地表。
+
+CLT / 预计落地时间
+参见CALCULATED LANDING TIME。可替代暂定或实际计算落地时间的术语。
+
+CLUTTER / 杂波
+雷达操作中因降水、箔条、地形、多目标或其他现象导致的雷达回波接收与显示。可能限制或阻碍基于雷达的服务提供。
+
+CMNPS / 加拿大最小导航性能规范空域
+参见CANADIAN MINIMUM NAVIGATION PERFORMANCE SPECIFICATION AIRSPACE。适用于MNPS间隔加拿大国内空域部分。
+
+COA / 豁免或授权证书
+参见CERTIFICATE OF WAIVER OR AUTHORIZATION (COA)。FAA对特定飞行操作或空域授权或豁免的批准授予。
+
+COASTAL FIX / 沿海定位点
+航空器在国内航路结构与海洋航路结构之间转换时的导航台或交叉点。
+
+CODES / 应答机代码
+分配给二次雷达特定脉冲应答信号传输的数字。参见离散代码。
+
+COLD TEMPERATURE CORRECTION / 低温修正
+基于机场高度和温度的英尺修正值，加至指示高度以抵消低温对真实高度的影响。
+
+COLLABORATIVE TRAJECTORY OPTIONS PROGRAM (CTOP) / 协同轨迹选项计划
+由ATCSCC管理的交通管理程序，通过约束空域管理需求，并在轨迹选项集中考虑运营商对路线和延误的偏好。
+
+COMBINED CONTROL FACILITY (CCF) / 联合管制设施
+结合航路交通管制中心与雷达进近管制设施功能的空中交通管制设施。
+
+COMMON POINT / 共同点
+两个或多个航空器报告飞越或已飞越的重要点，随后沿相同或发散航迹飞行。用于建立纵向间隔，控制器可确定未在原飞行计划中的点。
+
+COMMON PORTION / 公共段
+参见COMMON ROUTE。北美航路中内陆导航台与沿海定位点之间的区段。或参见SID/STAR的区段。
+
+COMMON ROUTE / 公共航路
+北美航路中内陆导航台与沿海定位点之间的区段。或参见SID/STAR的区段。
+
+COMMON TRAFFIC ADVISORY FREQUENCY (CTAF) / 通用交通咨询频率
+在无塔台机场运行期间执行机场 advisory 实践的专用频率。可为UNICOM、Multicom、FSS或塔台频率，见相关航空出版物。
+
+COMMUNITY-BASED ORGANIZATION (CBO) / 社区组织
+依据美国法典第501(a,c)节描述的会员制实体，使命是推动模型航空发展。
+
+COMPASS LOCATOR / 罗标台
+安装在仪表着陆系统外或中指点标处的低功率L/MF无线电信标。可用于约15英里导航。分为外罗标台和中罗标台。
+
+COMPASS ROSE / 罗盘玫瑰
+印有或标记在机场地面的度数圆圈，用作真北或磁北方向的参考基准。
+
+COMPLY WITH RESTRICTIONS / 遵守限制
+管制指令，要求被引导加入进离场程序的航空器遵守程序上所有高度和/或速度限制，可替代重复宣读剩余限制。
+
+COMPOSITE FLIGHT PLAN / 混合飞行计划
+指定部分航程按目视飞行规则（VFR）、部分按仪表飞行规则（IFR）执行的飞行计划，主要用于军事行动。
+
+COMPULSORY REPORTING POINTS / 强制报告点
+必须向管制报告的点，通常由导航台或定位点定义。获知雷达联系后应停止在此类点的位置报告。
+
+COMPUTER NAVIGATION FIX (CNF) / 计算机导航定位点 (CNF)
+由经纬度定义的点，支持基于性能的导航（PBN）。仅用于机载导航，ATC不识别、不使用，禁止用于直飞或通讯。
+
+CONDITIONS NOT MONITORED / 未监测条件
+机场运营商因人员或运营原因无法监控活动区或场地表面状况时发布的NOTAM信息。
+
+CONFIDENCE MANEUVER / 信心机动
+通过转弯、升降或其他动作，验证机长能否接收并遵守管制指令的测试性机动。
+
+CONFLICT ALERT / 冲突告警
+自动化系统功能，提示雷达管制员注意已跟踪目标间存在或潜在的冲突，需立即关注或采取行动。
+
+CONFLICT RESOLUTION / 冲突解脱
+确保雷达识别且联络中的航空器目标不接触，以解决潜在冲突。适用时需发布相关交通咨询， mosaic雷达不可用。
+
+CONFORMANCE / 符合性
+航空器实际位置位于根据其当前飞行计划轨迹构建的符合性区域内时的状态。
+
+CONFORMANCE REGION / 符合性区域
+航空器必须在特定时间处于其中的三维空间体积，以满足当前计划轨迹的侧向、垂直和纵向符合性边界。
+
+CONNECTION / 连接
+地面系统与航空器之间用于交换CPDLC消息的虚拟连接。
+
+CONSOLAN / 康索兰导航台
+一种低频远程导航设施，主要用于跨洋航行。
+
+CONSTRAINT SATISFACTION POINT (CSP) / 约束满足点 (CSP)
+由TBFM主动调度的计量参考元素。当航班预计到达时间符合所有CSP调度约束时，即实现约束满足。
+
+CONTACT / 建立联系
+与指定设施建立通信；或指飞行员通过目视参考地表确认姿态并导航的飞行状态。参见雷达联系。
+
+CONTACT APPROACH / 联系进场
+IFR飞行员请求并经许可，在云外且能见度至少1英里时，偏离仪表程序，凭目视参考飞向目的地的进场方式。
+
+CONTAMINATED RUNWAY / 污染跑道
+跑道表面存在积水、冰、雪、融雪、霜、重橡胶沉积物或其他降低摩擦力的物质。
+
+CONTERMINOUS U.S. / 美国本土48州
+指北美大陆上相邻的48个州及华盛顿特区。
+
+CONTINENTAL UNITED STATES / 美国大陆
+指位于北美大陆的49个州及华盛顿特区。
+
+CONTINGENCY HAZARD AREA (CHA) / 应急危险区 (CHA)
+管制使用的空域，预先定义并在发射或再入操作失败时激活。参见飞机危险区。
+
+CONTINUE / 继续
+管制指令用语，后接具体动作说明，如“继续滑行”、“继续下降”，指示飞行员执行后续预期动作。
+
+CONTROL AREA [ICAO] / 控制区 [ICAO]
+从地球某指定上限向上延伸的受控空域。
+
+CONTROL SECTOR / 管制扇区
+具有明确水平及垂直范围的空域，由管制员负责，基于流量、高度层和工作负荷划分。
+
+CONTROL SLASH / 控制斜线
+代表航空器实际位置的雷达应答斜线，通常最接近询问站。窄带模式下转换为目标符号。
+
+CONTROLLED AIRSPACE / 管制空域
+具有明确界限的空域，在此范围内根据空域分类向IFR和VFR航班提供空中交通管制服务。涵盖A至E类空域，进入该区域需遵守特定资质、规则和装备要求，IFR飞行必须提交计划并获得许可。
+
+CONTROLLED AIRSPACE [ICAO] / 管制空域（ICAO）
+具有明确界限的空域，在此范围内根据空域分类向IFR和VFR航班提供空中交通服务。这是一个通用术语，涵盖ATS空域的A、B、C、D和E类。
+
+CONTROLLED TIME OF ARRIVAL / 预定到达时间
+在交通管理计划中分配的到达时间。由于调整或用户选项，该时间可能会进行修改。
+
+CONTROLLER / 管制员
+参见“空中交通管制专员”。指被授权提供空中交通管制服务的人员。
+
+CONTROLLER [ICAO] / 管制员（ICAO）
+被授权提供空中交通管制服务的人员。
+
+CONTROLLER PILOT DATA LINK COMMUNICATIONS (CPDLC) / CPDLC
+一种双向数字通信系统，通过地面或基于卫星的无线电中继站，在管制员和飞行员之间传输文本形式的空中交通管制消息。
+
+CONVECTIVE SIGMET / 对流SIGMET
+关于对航空安全有重要意义的对流天气的气象警告。针对龙卷风、雷暴线、任意强度的嵌入雷暴、覆盖面积大于等于40%且强度达VIP 4级以上的雷暴区，以及直径大于等于3/4英寸的冰雹发布。
+
+CONVECTIVE SIGNIFICANT METEOROLOGICAL INFORMATION / 对流重要气象信息
+参见“对流SIGMET”。关于对航空安全有重要意义的对流天气的气象警告。针对龙卷风、雷暴线、任意强度的嵌入雷暴、覆盖面积大于等于40%且强度达VIP 4级以上的雷暴区，以及直径大于等于3/4英寸的冰雹发布。
+
+COOPERATIVE SURVEILLANCE / 协同监视
+任何依赖被检测飞行器上装有特定设备的监视系统，如二次监视雷达、广域多点定位或ADS-B。参见自动相关监视广播和非协同监视。
+
+COORDINATES / 坐标
+参考线的交点，通常用经纬度的度/分/秒表示，用于确定位置或地点。
+
+COORDINATION FIX / 协调点
+设施据此进行移交、转移飞机控制权或协调飞行进度数据的点。对于终端设施，它也可作为到达飞机的许可点。
+
+COPTER / 旋翼机
+参见“直升机”。
+
+CORRECTION / 更正
+发送中出现错误，随后跟随正确版本。
+
+COUPLED APPROACH / 耦合进近
+由飞机自动驾驶仪执行的仪表进近，接收机载导航设备的位置信息或转向指令。非精密进近通常在低于最低下降高度50英尺AGL时手动飞行；精密进近在低于50英尺AGL时需手动飞行，除非获准执行自动着陆。
+
+COUPLED SCHEDULING (CS)/ EXTENDED METERING (XM) / 耦合调度/扩展计量
+为受计量限制的飞机在其航路上增加额外的约束满足点。这允许合并计量点上游的流量，使延误分布更优，提高计量列表准确性及到达计量点的交付精度。
+
+COURSE / 航迹
+水平面上预期的飞行方向，从北方起算的角度。ILS航向台信号模式通常指定为前航迹或后航迹。参见方位角和径向线。
+
+CPDLC / CPDLC
+参见“控制器飞行员数据链通信”。一种双向数字通信系统，通过地面或基于卫星的无线电中继站在管制员和飞行员之间传输文本形式的空中交通管制消息。
+
+CPL [ICAO] / 当前飞行计划（ICAO）
+包括后续许可带来的任何变更在内的飞行计划。
+
+CREWMEMBER (UAS) / 机组成员（UAS）
+被指派执行操作任务的人员。无人机机组成员包括远程机长、操纵控制的人员和目视观察员，也可能包括其他为确保安全运行所需的人员，如传感器操作员或地面控制站操作员。
+
+CRITICAL ENGINE / 关键发动机
+一旦失效，会对飞机性能或操纵特性产生最不利影响的那个发动机。
+
+CROSS (FIX) AT (ALTITUDE) / 在（高度）穿越（点）
+管制员使用此术语，表示要求在指定的航路点达到特定的高度限制。
+
+CROSS (FIX) AT OR ABOVE (ALTITUDE) / 在或高于（高度）穿越（点）
+管制员使用此术语，表示要求在指定的航路点有高度限制。允许以更高的高度穿越，但不得违反后续的高度限制或分配。
+
+CROSS (FIX) AT OR BELOW (ALTITUDE) / 在或低于（高度）穿越（点）
+管制员使用此术语，表示要求在特定的航路点有最大穿越高度限制。允许以更低的高度穿越，但不得低于IFR最低高度。
+
+CROSSWIND / 侧风
+在交通模式中意为“侧风边”。在与风况相关时，指不平行于跑道或飞机路径的风。
+
+CROSSWIND COMPONENT / 侧风分量
+垂直于跑道纵轴方向测量的风速分量。
+
+CRUISE / 巡航许可
+授权在最低IFR高度至指定高度间飞行，飞行员可自主决定爬升或下降及中间高度；包含进近批准，但不含低于IFR最低高度的IFR下降许可。
+
+CRUISE CLIMB / 巡航爬升
+保持恒定推力，随飞机重量减轻而自然增加高度的爬升技术。
+
+CRUISING ALTITUDE / 巡航高度
+航路平飞阶段维持的固定高度或飞行高度层，区别于巡航许可。
+
+CRUISING LEVEL / 巡航高度层
+见巡航高度。指航路平飞期间维持的固定高度或飞行高度层。
+
+CRUISING LEVEL [ICAO] / 巡航高度层[ICAO]
+飞行过程中大部分时间所维持的高度层。
+
+CSP / 约束满足点
+由TBFM主动调度的计量参考元素。当航班预计到达时间符合所有相关CSP的调度约束时，即视为满足约束。
+
+CT MESSAGE / CT报文
+ATCSCC生成的EDCT时刻以调节到达机场交通。通常自动传输至NAS并显示为EDCT，通信故障时可由流量管理人员手动输入。
+
+CTA / 受控到达时间
+交通管理计划中分配的到达时间，可根据调整或用户选项进行修改。
+
+CTAF / 通用交通咨询频率
+在无塔台机场运行时用于执行机场咨询的频率，可为UNICOM、Multicom、FSS或塔台频率，见于航图资料。
+
+CTOP / 协同轨迹选项程序
+ATCSCC管理的交通项目，在考虑运营商对路线和延误偏好（定义于轨迹选项集）的同时，管理受限空域内的需求。
+
+CTRD / 认证塔台雷达显示器
+经FAA认证用于国家空域系统（NAS）的雷达显示器。
+
+CURRENT FLIGHT PLAN [ICAO] / 当前飞行计划[ICAO]
+包括后续许可带来的任何变更在内的飞行计划。
+
+CVFP APPROACH / 图示目视进近程序
+IFR飞行计划下，授权飞行员沿图表所示地标和目视信息，在云外目视飞向机场的进近，需ATC授权且符合天气标准。
+
+CWA / 中心天气警告
+参见中心天气警告和天气警告。
+
+CWT / 综合尾流湍流
+综合尾流湍流。
+
+D-ATIS / 数字自动终端信息服务
+通过有线和数据链向超出传统ATIS范围的机组提供文本或合成语音信息的服务，利用本地气象数据生成标准内容。
+
+D-ATIS [ICAO] / 数据链自动终端信息服务[ICAO]
+通过数据链提供的ATIS服务。
+
+DA [ICAO] / 决断高度/高[ICAO]
+参见决断高度/高。
+
+DAIR / 直接高度与识别输出
+直接高度与识别输出。
+
+DANGER AREA [ICAO] / 危险区[ICAO]
+规定范围内可能危及飞行安全的区域，特定时间生效。美国及其领土不使用此术语。
+
+DAS / 延误分配
+基于交通管理参数将延误分配给航班，按15分钟增量计算，显示于TFMS表格中。
+
+DATA BLOCK / 数据块
+雷达显示器上显示目标身份、高度、应答机代码等信息的字母数字显示。
+
+DATA LINK AUTOMATIC TERMINAL INFORMATION SERVICE (D-ATIS) [ICAO] / 数据链自动终端信息服务[ICAO]
+通过数据链提供ATIS服务。
+
+DCL / 离场许可申请
+见离场许可申请条目。
+
+DCT / 延迟倒计时
+指飞机在到达计量参考点前必须吸收的延迟时间，以符合预达时刻。计算方式为冻结预达时刻与预计到达时刻之差。
+
+DEAD RECKONING / 推测导航
+仅基于空速、航向、风向风速、地速和经过时间的计算来进行航空器导航的方法。
+
+DEBRIS RESPONSE AREA (DRA) / 碎片响应区
+空中交通管制使用的空域，用于应对国家空域系统中计划外的坠落碎片事件而激活。
+
+DECISION ALTITUDE/DECISION HEIGHT [ICAO Annex 6] / 决断高度/决断高
+精密进近中规定的特定高度或高；若此时未建立所需的目视参考，必须开始复飞。决断高（DH）基于跑道入口标高，用于CAT II/III类仪表进近；决断高通过无线电高度表评估。
+
+DECISION ALTITUDE (DA) / 决断高度
+仪表进近程序中的特定海拔高度（MSL）。若飞行员在此高度未看到所需的目视参考，必须决定继续进近还是立即执行复飞。
+
+DECISION HEIGHT (DH) / 决断高
+在执行ILS或PAR仪表进近期间，必须做出继续进近或执行复飞决策的高度。参见ICAO术语决断高度/决断高。
+
+DECODER / 解码器
+用于解读来自ATCRBS应答机的信号，并将其显示为选定代码的设备。参见代码、雷达。
+
+DEFENSE AREA / 防区
+美国本土内非防空识别区的任何空域，出于国家安全原因需要对航空器进行管制。
+
+DEFENSE VISUAL FLIGHT RULES / 防御性目视飞行规则
+适用于在防空识别区内按照14 CFR第91部分进行的目视飞行的规则。参见防空识别区。
+
+DELAY ASSIGNMENT (DAS) / 延误分配
+根据交通管理计划参数将延误分配给航空器。延误分配按15分钟增量计算，并在交通流量管理系统中以表格形式显示。
+
+DELAY COUNTDOWN TIMER (DCT) / 延迟倒计时
+指飞机在到达计量参考点前必须吸收的延迟时间，以符合预达时刻。计算方式为冻结预达时刻与预计到达时刻之差。
+
+DELAY INDEFINITE (REASON IF KNOWN) EXPECT FURTHER CLEARANCE (TIME) / 无限期延误
+管制员通知飞行员暂时无法确定准确延误时间和原因时使用的通报，例如跑道上有故障飞机、终端区饱和或天气低于着陆最低标准等。
+
+DEPARTURE CENTER / 离场中心
+对产生飞往受影响机场的航班空域拥有管辖权的区域管制中心。
+
+DEPARTURE CLEARANCE (DCL) APPLICATION / 离场许可申请
+该应用程序提供最多九个可选字段，供塔台管制员输入所有其他许可信息。
+
+DEPARTURE CONTROL / 离场管制
+进近管制设施的一项功能，为离场的IFR和某些条件下的VFR航空器提供空中交通管制服务。参见进近管制设施。
+
+DEPARTURE SEQUENCING PROGRAM / 离场排序程序
+旨在协助实现离场航空器在共同点上达到指定间隔的程序。
+
+DEPARTURE TIME / 离场时间
+航空器升空的时刻。
+
+DEPARTURE VIEWER / 离场监视器
+交通流量管理系统中的功能，提供按检查点和离场机场监控离场的组合显示。人员可自定义显示内容，查看资源需求、航班列表及历史，并可进行航线修订。
+
+DESCEND VIA / 沿下降路线
+一种简化的管制许可，要求遵守公布的程序横向路径及相关速度限制，并允许飞行员自主下降以符合公布的高度限制。
+
+DESCENT SPEED ADJUSTMENTS / 下降速度调整
+为确定准确的预计到达时间而进行的减速计算。这些计算从过渡点开始，使用到达速度段直至顶点。
+
+DESIGNATED COMMON TRAFFIC ADVISORY FREQUENCY (CTAF) AREA / 指定通用交通咨询频率区域
+在阿拉斯加，除用于无塔台机场的机场咨询外，CTAF还可指定用于在高密度VFR交通区域内进行操作时的咨询实践。
+
+DESIRED COURSE / 期望航迹
+真北：测量的预定期望航向方向（相对于真北的角度）。磁北：测量的预定期望航向方向（相对于当地磁北的角度）。
+
+DESIRED TRACK / 期望航路
+两个航路点之间计划或预期的航路。测量自磁北或真北的角度。沿大圆航路的瞬时角度可能在点与点之间变化。
+
+DETRESFA (DISTRESS PHASE) [ICAO] / 遇险阶段
+ICAO紧急代码，指有合理确信航空器及其人员面临严重且迫在眉睫的危险，或需要立即援助的紧急阶段。
+
+DEVIATION / 偏航
+偏离当前许可，如为避开天气或湍流进行的机动。在法规授权且飞行员请求时，ATC可允许偏离特定规定。
+
+DH / 决断高度
+ILS或精密进近中必须做出继续进近或复飞决定的高度。参考DECISION ALTITUDE/DECISION HEIGHT。
+
+DH [ICAO] / 决断高/决断高度
+ICAO术语，指仪表进近中决定继续着陆或复飞的高度参考点。参见DECISION ALTITUDE/DECISION HEIGHT。
+
+DIGITAL‐AUTOMATIC TERMINAL INFORMATION SERVICE (D‐ATIS) / 数字自动终端信息服务
+通过数据链和线路向超出常规范围的用户提供文本或合成语音信息的ATIS服务，含本地气象数据。
+
+DIGITAL TARGET / 数字目标
+基于一次雷达回波或应答机回复，在数字显示器上生成的代表航空器位置的计算机符号。
+
+DIGITAL TERMINAL AUTOMATION SYSTEM (DTAS) / 数字终端自动化系统
+在数字显示器上呈现雷达和应答机数据，并实时监控系统性能的操作程序系统。
+
+DIGITIZED TARGET / 数字化目标
+由一次雷达回波或应答机回复在模拟雷达显示器上生成的计算机指示信号。
+
+DIRECT / 直飞
+两个导航台、定位点或组合之间的直线飞行。非航路直飞段点默认为强制报告点，除非处于雷达监控下。
+
+DIRECTLY BEHIND / 正后方
+航空器沿前机实际地面航迹飞行。应用尾流间隔标准时除外。
+
+DISCRETE BEACON CODE / 离散应答码
+ATCRBS系统中除末尾两位为零外的Mode 3/A应答码（如1201）。非离散码（如1200）用于无解码能力设施或特殊用途。
+
+DISCRETE CODE / 离散代码
+ATCRBS中Mode 3/A应答码，排除末尾两位为零的代码（如0010, 1201）。非离散码保留给特定设施或紧急情况。
+
+DISCRETE FREQUENCY / 专用频率
+用于飞行员与管制员直接通信的独立无线电频率，旨在减少拥堵。通常按扇区指定，列于航图补充资料。
+
+DISPLACED THRESHOLD / 内移跑道入口
+位于跑道起点以外的跑道入口位置。参考THRESHOLD。
+
+DISTANCE MEASURING EQUIPMENT (DME) / 测距设备
+测量航空器与DME导航台斜距（海里）的地空设备。参见TACAN和VORTAC。
+
+DISTRESS / 遇险状态
+受严重且/或迫在眉睫危险威胁，并要求立即援助的状况。
+
+DIVE BRAKES / 下降减速板
+即SPEED BRAKES，飞机上用于降低下降和着陆期间空速的可动空气动力装置。
+
+DIVERSE VECTOR AREA / 多样化向量区域
+雷达环境下，无需预定离场路线即可避障的区域。在此区域内可按标准向下发随机雷达向量以避开障碍物。
+
+DIVERSION (DVRSN) / 备降
+因超出飞行员或公司控制的原因（如恶劣天气），航班被迫在未计划目的地降落。
+
+DME / DME
+DISTANCE MEASURING EQUIPMENT的缩写，即测距设备，用于测量航空器与导航台的斜距。
+
+DME FIX / DME定位点
+由提供距离和方位信息的导航台确定的地理点，定义为特定距离（海里）及径向线、方位角或航道。
+
+DME SEPARATION / DME间隔
+基于测距设备（DME）确定的距离（海里）来保持航空器间的纵向间隔。
+
+DoD FLIP / 国防部飞行信息出版物
+NGA为全球使用制作的飞行计划、航路和终端操作信息。包含美国国家空域系统的图表。
+
+DOMESTIC AIRSPACE / 国内空域
+覆盖美国本土大陆、夏威夷及美国领土的空域，延伸至海岸线外12英里。
+
+DOMESTIC NOTICE / 国内通知
+包含图形或文本的特别通知，涉及美国境内军事训练区、大型活动、空中表演及机场信息等航空各方面内容。
+
+DOWNBURST / 下击暴流
+强烈的下沉气流导致地面附近产生破坏性辐散风，风速可达120节，持续5至30分钟，常造成广泛破坏。
+
+DOWNLINK / 下行链路
+通过CPDLC从驾驶舱发送给空中交通管制（ATC）的消息。
+
+DOWNWIND LEG / 顺风段
+与着陆跑道平行且方向相反的飞行路径；通常位于侧风段和基线进场之间。参见TRAFFIC PATTERN。
+
+DP / 仪表离场程序
+为飞行员发布的计划仪表离场程序，提供从终端区到航路结构的障碍清除，分为障碍物离场程序和标准仪表离场。参见INSTRUMENT DEPARTURE PROCEDURE。
+
+DRA / 碎片响应区
+空中交通管制使用的空域区域，用于应对国家空域系统中不可预见的坠落碎片事件。参见DEBRIS RESPONSE AREA。
+
+DRAG CHUTE / 减速伞
+安装在特定飞机上，在着陆滑跑时展开以协助减速的降落伞装置。
+
+DROP ZONE / 跳伞区
+预定供跳伞者或物体在有意跳伞或投掷后着陆的区域。
+
+DSP / 离场排序程序
+旨在帮助实现离场飞机在共同点上达到指定间隔的程序。参见DEPARTURE SEQUENCING PROGRAM。
+
+DTAS / 数字终端自动化系统
+在数字显示器上呈现数字雷达和信标数据，并实时监控系统性能的系统。参见DIGITAL TERMINAL AUTOMATION SYSTEM。
+
+DUE REGARD / 适当注意
+国家运营飞机的机长承担将其飞机与其他所有飞机保持间隔责任的飞行阶段。
+
+DUTY RUNWAY / 运行跑道
+当前用于起飞或降落的任何跑道；多跑道使用时均为活跃跑道。指代着陆配置或交通流向的选择项。参见RUNWAY IN USE/ACTIVE RUNWAY/DUTY RUNWAY。
+
+DVA / 多样化矢量区
+雷达环境中无需指定唯一离场路线即可避开障碍物的区域，可在此向离场飞机发布随机雷达矢量。参见DIVERSE VECTOR AREA。
+
+DVFR / 国防目视飞行规则
+适用于防空识别区内按目视飞行规则飞行的规则。参见DEFENSE VISUAL FLIGHT RULES。
+
+DVFR FLIGHT PLAN / DVFR飞行计划
+为计划在需要识别、定位和控制飞机的空域内运行的目视飞行规则飞机提交的飞行计划。
+
+DVRSN / 改航
+因超出飞行员或公司控制的原因（如恶劣天气），必须降落在非原定目的地的航班。参见DIVERSION。
+
+DYNAMIC / 动态
+为满足需求而进行的持续审查、评估和变更。
+
+DYNAMIC RESTRICTIONS / 动态限制
+当地设施根据“需要”施加的限制，以管理不可预测的交通需求波动。
+
+E‐MSAW / 航路最低安全高度警告
+EAS的功能，当追踪飞机低于或预计将低于预设最低IFR高度时，为管制员提供警报。参见EN ROUTE MINIMUM SAFE ALTITUDE WARNING。
+
+EAS / 航路自动化系统
+由情境显示、监视、飞行数据处理及相关通信设备组成的复杂集成环境，用于控制航路IFR飞机。参见EN ROUTE AUTOMATION SYSTEM。
+
+EDCT / 预计放行时间
+交通管理项目中分配给飞机的跑道释放时间，显示在飞行进程单上。参见EXPECT DEPARTURE CLEARANCE TIME。
+
+EDST / 航路决策支持工具
+为选定航路设施的雷达助理席位提供的自动化工具，利用飞行和雷达数据确定轨迹并提供增强型管理。参见EN ROUTE DECISION SUPPORT TOOL。
+
+EFC / 预计进一步许可时间
+预计给予进一步许可的时间。参见EXPECT FURTHER CLEARANCE (TIME)。
+
+ELIGIBILITY / 资格
+指定哪个扇区有资格与特定飞机交换CPDLC消息。
+
+ELT / 应急定位发射机 (ELT)
+参见应急定位发射机。
+
+EMBEDDED ROUTE TEXT / 嵌入式航路文本
+通知已应用ADR/ADAR/AAR的EDST。航路字段中，适应航路或嵌入更改以青色显示并用括号括起。参见航路决策支持工具。
+
+EMERGENCY / 紧急状况
+指遇险或紧急条件。
+
+EMERGENCY AUTOLAND SYSTEM / 应急自动着陆系统
+激活后确定最佳机场、规划航线、广播意图并自动降落关机。管制员应假设不会收到飞机回复。
+
+EMERGENCY DESCENT MODE / 应急下降模式
+感应缺氧条件（如失压）后，飞机自动转弯90度并下降到较低高度平飞，为飞行员争取恢复时间。
+
+EMERGENCY LOCATOR TRANSMITTER (ELT) / 应急定位发射机
+附着于机身的无线电发射机，使用自身电源在121.5和243.0 MHz工作。通过每秒2-4次向下扫描音频音调协助定位坠机，事故后无需人工操作即可工作。
+
+ENHANCED FLIGHT VISION SYSTEM (EFVS) / 增强飞行视景系统 (EFVS)
+利用成像传感器电子显示前方外部场景地形。包括显示器、传感器等。经授权可在预报天气低于最低标准时执行进近。
+
+ENHANCED SPECIAL REPORTING SERVICE (eSRS) / 增强型特殊报告服务 (eSRS)
+用于加强搜救的自动化服务，向阿拉斯加飞行服务专家提供来自飞机注册跟踪设备的直接信息。
+
+EN ROUTE AIR TRAFFIC CONTROL SERVICES / 航路空中交通管制服务
+通常由中心为IFR航班提供的ATC服务，适用于离场与目的地终端区之间的运行。条件允许时可为VFR提供咨询辅助。
+
+EN ROUTE AUTOMATION SYSTEM (EAS) / 航路自动化系统 (EAS)
+包含态势显示、监视、飞行数据处理等的复杂集成环境，是自动化IFR管制的核心，用于控制航路IFR飞机。
+
+EN ROUTE CHARTS / 航路图
+参见航图。
+
+EN ROUTE DECISION SUPPORT TOOL (EDST) / 航路决策支持工具 (EDST)
+选定航路设施雷达助理席位提供的自动化工具，利用飞行和雷达数据确定现时及未来轨迹，增强飞行数据管理。
+
+EN ROUTE DESCENT / 航路下降
+沿飞行航迹从航路巡航高度进行的下降过程。
+
+EN ROUTE HIGH ALTITUDE CHARTS / 高空航路图
+参见航图。
+
+EN ROUTE LOW ALTITUDE CHARTS / 低空航路图
+参见航图。
+
+EN ROUTE MINIMUM SAFE ALTITUDE WARNING (E-MSAW) / 航路最低安全高度警告 (E-MSAW)
+EAS的功能，当追踪飞机低于或预测将低于预定最低IFR高度(MIA)时，协助管制员发出警报。
+
+EN ROUTE TRANSITION / 航路过渡段
+参见SID/STAR航段。连接航路与SID/STAR的航段。定义该过渡段开始的导航台/定位点称为航路过渡点。
+
+EN ROUTE TRANSITION WAYPOINT / 航路过渡点
+参见SID/STAR航段。定义SID/STAR航路过渡段开始位置的导航台、定位点或航路点。
+
+eSRS  / 增强型特殊报告服务
+参见增强型特殊报告服务。
+
+EST / 预计 (EST)
+NOTAM缩写，表示状况有望在到期前恢复服务。提示可能提前恢复，但NOTAM仍会在指定时间自动过期。
+
+ESTABLISHED / 已建立
+稳定或固定在高度、航迹、航段、航向、仪表进近或离场程序等状态。
+
+ESTABLISHED ON RNP (EoR) CONCEPT / RNP建立概念 (EoR)
+一套授权的仪表进近、ATC程序、监视和通信要求，允许飞机在建立于公布程序的PBN航段后，按批准的缩小间隔标准安全运行。
+
+ESTIMATED (EST) / 预计 (EST)
+NOTAM缩写，表示状况有望在到期前恢复服务。提示可能提前恢复，但NOTAM仍会在指定时间自动过期。
+
+ESTIMATED ELAPSED TIME [ICAO] / 估计经过时间
+从一个显著点到另一个显著点所需的估计时间。参见总估计经过时间。
+
+ESTIMATED OFF‐BLOCK TIME [ICAO] / 预计撤轮档时间
+飞机开始移动以准备离港的估计时间。
+
+ESTIMATED POSITION ERROR (EPE) / 预计位置误差
+当前导航性能的估算度量；即实际导航性能。指RNP相关术语，表示在规定空域内操作所需的导航精度。
+
+ESTIMATED TIME OF ARRIVAL / 预计到达时间
+航班估计到达登机口（定期运营商）或实际跑道落地时间（非定期运营商）。
+
+ESTIMATED TIME EN ROUTE / 预计航程时间
+从起飞点到目的地的估计飞行时间（升空到接地）。
+
+ETA / ETA
+见“预计到达时间”。指航班估计到达登机口或实际跑道落地的时间。
+
+ETE / ETE
+见“预计航程时间”。指从起飞点到目的地的估计飞行时间。
+
+EXECUTE MISSED APPROACH / 执行复飞
+指令仪表进近飞行员继续飞向复飞点并执行复飞程序。收到ASR/PAR指令时立即执行。
+
+EXPECT (ALTITUDE) AT (TIME) or (FIX) / 预计（高度）在（时间）或（定位点）
+提供通信失效时应使用的高度，并辅助飞行计划。
+
+EXPECT DEPARTURE CLEARANCE TIME (EDCT) / 预计放行许可时间
+交通管理项目中分配给飞机的跑道释放时间，显示在飞行进程单上。
+
+EXPECT FURTHER CLEARANCE (TIME) / 预计进一步许可（时间）
+飞行员预计获得许可限制以外进一步许可的时间。
+
+EXPECT FURTHER CLEARANCE VIA (AIRWAYS, ROUTES OR FIXES) / 预计进一步许可经由
+通知飞行员若短程许可限制外的航路不同于申报时的预期航路。
+
+EXPEDITE / 尽快
+ATC要求迅速遵守以避免紧急情况。爬/降通常指最佳率，不要求异常操纵。
+
+FAA-RECOGNIZED IDENTIFICATION AREA (FRIA) / FAA认可识别区
+允许无人机在无远程识别下运行的地理区域，需保持目视接触。
+
+FAF / 最后进近定位点
+执行最后进近的起始点。非精密进近用马耳他十字标识，精密进近用电击符号。
+
+FALLEN HERO / 陨落英雄
+美军阵亡成员遗体运送航班。可在飞行计划备注中标注或通讯中提及，优先处理。
+
+FAST FILE / 快速提交
+通过电话提交飞行计划并由FSS转录传输的系统（仅限阿拉斯加）。
+
+FAWP / FAWP
+最后进近航路点。
+
+FEATHERED PROPELLER / 顺桨螺旋桨
+叶片旋转至与飞行路径平行以最小阻力和发动机旋转，通常用于故障停机。
+
+FEDERAL AIRWAYS / 联邦航路
+见“低空航路结构”。服务于18,000英尺MSL以下但不包括该高度的航路网络。
+
+FEEDER FIX / 进场定位点
+仪表进近图上标示的进场路线起始点定位点。
+
+FEEDER ROUTE / 进场航线
+仪表进近图上标示的从航路结构飞往初始进近定位点的路线。
+
+FERRY FLIGHT / 调机飞行
+为返回基地、交付、维修转移等目的的飞行，可能适用特殊飞行许可证。
+
+FIELD ELEVATION / 场地标高
+见“机场标高”。可用跑道最高点的海拔高度。
+
+FILED / 已提交
+通常与飞行计划连用，表示已向ATC提交飞行计划。
+
+FILED EN ROUTE DELAY / 航路预编延误
+指沿飞行航线上特定地点或区域预先计划的延误，需特殊飞行计划处理。包括终端区活动、特殊使用空域及空中加油作业引起的延误。
+
+FILED FLIGHT PLAN / 已提交飞行计划
+飞行员或其代表向空中交通服务单位提交的飞行计划，且未进行后续修改或许可变更的状态。
+
+FINAL / 最终进近
+指航空器位于最后进近航迹上或与着陆区对齐的状态；参见“最后进近航迹”、“IFR最后进近”及“仪表进近程序阶段”。
+
+FINAL APPROACH [ICAO] / 最后进近（ICAO）
+仪表进近程序中从最后进近定位点开始至机场附近可着陆或开始复飞点的部分。若无指定点，则从程序转弯结束或截获最后航迹处开始。
+
+FINAL APPROACH COURSE / 最后进近航迹
+指向跑道或跑道延长中心线的仪表进近方位/径向线/航迹，不考虑距离因素。
+
+FINAL APPROACH FIX / 最后进近定位点
+执行最后进近并标识最后进近段开始的定位点。非精密进近用马耳他十字表示，精密进近用闪电符号表示；若ATC指令低于公布值的下滑道截获高度，则为实际截获点。
+
+FINAL APPROACH‐IFR / IFR最后进近
+航空器沿最后仪表进近航迹飞向机场的飞行路径，始于最后进近定位点，延伸至机场或执行盘旋落地/复飞点；参见相关定义。
+
+FINAL APPROACH POINT / 最后进近点
+仅适用于无图示FAF的非精密进近。指航空器建立于最后进近航迹上并可开始下降的点，作为FAF标识最后进近段开始。
+
+FINAL APPROACH SEGMENT / 最后进近段
+参考条目“仪表进近程序阶段”：指最后进近定位点与跑道、机场或复飞点之间的进近程序部分。
+
+FINAL APPROACH SEGMENT [ICAO] / 最后进近段（ICAO）
+仪表进近程序中完成对准和下降以进行着陆的那一段。
+
+FINAL CONTROLLER / 最终管制员
+在利用雷达设备的精密进近雷达（PAR）和机场监视雷达（ASR）进近中，提供信息和最后进近引导的管制员。
+
+FINAL GUARD SERVICE / 最终保障服务
+仅在影响起降的重大快速变化天气期间，配合本地机场咨询（LAA）或雷达咨询（RAA）提供的增值服务。
+
+FINAL MONITOR AID / 最终监控辅助显示器
+用于监控同时平行进近中不穿越区的高分辨率彩色显示器，具备目标预测、穿透报警及语音警报功能。
+
+FINAL MONITOR CONTROLLER / 最终监控管制员
+负责通过雷达监控同时平行或紧密平行进近中航空器飞行路径的空管专员。每条跑道均指派一名此类管制员。
+
+FIR / 飞行情报区
+参考条目“FLIGHT INFORMATION REGION”：提供飞行情报服务和告警服务的划定空域。
+
+FIRST PERSON VIEW / 第一人称视角
+无人机操作中，机载摄像头将图像传输给无人机飞行员的操作模式。
+
+FIRST TIER CENTER / 一级中心
+紧邻受影响区域管制中心的相邻区域管制中心。
+
+FIS-B / 飞行信息服务广播
+参考条目“FLIGHT INFORMATION SERVICE-BROADCAST”：通过ADS-B广播网络在UAT数据链上提供的地面广播服务，向驾驶舱显示气象和航行资料。
+
+FIX / 定位点
+通过目视地表参考、无线电导航设备、天文定位或其他导航设备确定的地理位置。
+
+FIX BALANCING / 定位点均衡
+将航空器均匀分布在多个可用到达定位点上，以减少延误和管制员工作负荷的过程。
+
+FLAG / 旗标警告
+某些机载导航和飞行仪器中的警告装置，指示仪器失效或信号强度/质量低于可接受值。
+
+FLAG ALARM / 旗标警报
+参考条目“FLAG”：指示仪器失效或信号质量不足的机载警告装置。
+
+FLAMEOUT / 发动机停车
+由动力丧失引起的紧急情况。
+
+FLAMEOUT PATTERN / 停车进场航线
+单发军用飞机遭遇或预期失去动力/控制时执行的进场程序。包括标准顶置进场和直线进场，通常以全停着陆结束。
+
+FLIGHT CHECK / 飞行检查
+美国联邦航空局（FAA）用于导航设备和飞行程序检查/认证飞机的呼号前缀。可加后缀“已记录”表示终端区正在进行自动化飞行检查。
+
+FLIGHT DATA [FSS] / 飞行数据[飞服站]
+飞行服务站（FSS）飞行数据岗位的主要任务是信息管理，包括航空、气象及航空信息的开发、翻译、处理和协调。
+
+FLIGHT FOLLOWING / 飞行伴随服务
+参见交通建议。指管制员向飞行员发出的关于可能接近其位置或航线的其他已知或观测到的空中交通的警报。基于目视观察、雷达显示或口头报告提供，但不免除飞行员避让责任。
+
+FLIGHT INFORMATION REGION / 飞行情报区
+划定尺寸的空域，在此范围内提供飞行情报服务和告警服务。前者为安全高效飞行提供建议和信息；后者通知需搜救援助的组织并协助之。
+
+FLIGHT INFORMATION SERVICE / 飞行情报服务
+为安全且高效地执行飞行而提供建议和信息的服務。
+
+FLIGHT INFORMATION SERVICE-BROADCAST (FIS-B) / 广播式飞行情报服务(FIS-B)
+通过UAT数据链在978 MHz上运行的ADS-B广播网络提供的地面广播服务。向配备设备的机组提供驾驶舱内的特定航空天气和航空信息。
+
+FLIGHT INSPECTION / 飞行检查(实机)
+对导航设备进行在飞调查和评估，以确定其是否符合既定容差标准。参见飞行检查呼号和导航设备。
+
+FLIGHT LEVEL / 飞行高度层
+与29.92英寸汞柱参考基准相关的恒定大气压层级。用三位数字表示，代表数百英尺。例如FL 250对应气压高度表指示25,000英尺。
+
+FLIGHT LEVEL [ICAO] / 飞行高度层[ICAO]
+与特定压力基准（1013.2 hPa）相关的恒定大气压表面，与其他表面由特定压力间隔分隔。当高度表设定为该标准值时，可用于指示飞行高度层。
+
+FLIGHT LINE / 航线
+描述民用摄影测量飞机在实际拍摄过程中，沿预定航线在预定高度进行精确移动术语。
+
+FLIGHT MANAGEMENT SYSTEMS / 飞行管理系统
+利用大型数据库允许通过数据加载器预编程路线的系统。参照常规导航设备不断更新位置精度，自动选择最合适的设备。
+
+FLIGHT PATH / 飞行路径
+飞机正在飞行或计划飞行的线、航迹或轨迹。参见航路和航迹。
+
+FLIGHT PLAN / 飞行计划
+以电子、口头或书面形式提交给FSS、第三方供应商或ATC设施的，关于飞机预期飞行的指定信息。参见快速填报和已提交。
+
+FLIGHT PLAN AREA (FPA) / 飞行计划区域(FPA)
+分配给飞行服务站（FSS）的地理区域，负责VFR搜救、NOTAM发布、简报、空中服务、应急服务等。大型FSS可将多个FPA合并为更大的责任区。
+
+FLIGHT RECORDER / 飞行记录仪
+泛指任何记录飞机飞行性能或飞行中遭遇条件的仪器或装置。可记录空速、外界温度、垂直加速度、发动机转速等变量。
+
+FLIGHT RECORDER [ICAO] / 飞行记录仪[ICAO]
+安装在飞机上的任何类型记录仪，旨在补充事故/事件调查。具体规格见附件6第一部分。
+
+FLIGHT SERVICE STATION (FSS) / 飞行服务站(FSS)
+提供飞行员简报、飞行计划处理、航路建议、搜救、紧急协助、ATC许可转达、NOTAM处理及天气广播的空管设施。阿拉斯加还提供机场咨询服务。
+
+FLIGHT STANDARDS DISTRICT OFFICE / 飞行标准地区办公室
+FAA办事处，配备飞行标准人员，负责辖区内航空承运人和通用航空器的认证与运行事宜，包括安全监督、认证、事故预防和执法。
+
+FLIGHT TERMINATION / 飞行终止
+在无人机发生不可恢复的链路丢失、失控或其他危及飞行安全的故障时，有意且故意终止飞行的过程。
+
+FLIGHT TEST / 试飞
+旨在调查飞机或部件的操作/飞行特性，或评估申请人获取飞行员执照或等级的飞行。
+
+FLIGHT VISIBILITY / 飞行能见度
+参见能见度。指飞机飞行中从驾驶舱向前看的可见能力。区别于地面能见度和跑道视程。
+
+FLIP / 飞行信息出版物(FLIP)
+参见国防部FLIP。由国家地理空间情报局生产的用于全球飞行规划、航路和终端操作的飞行信息出版物。包含美国国家空域系统的图表。
+
+FLY‐BY WAYPOINT / 飞越航路点
+需要转弯提前量以避免超出下一段航路的航路点。
+
+FLY HEADING (DEGREES) / 保持航向(度数)
+告知飞行员应飞行的航向。飞行员需转向或继续特定罗盘方向以遵守指令，除非另有说明，通常沿较短方向转向。
+
+FLY‐OVER WAYPOINT / 飞越航路点
+要求航空器必须飞越该点后方可转弯，随后执行下一航段的截获机动。
+
+FLY VISUAL TO AIRPORT / 目视飞往机场
+仪表进近程序中的目视阶段，指示从特定位置起以目视方式飞向机场的航径、方位和距离。
+
+FLYAWAY / 失控/失联
+飞行员无法控制航空器，导致无人驾驶航空器未按计划或可预测方式运行的状态。
+
+FMA / 最终监控终端
+用于同时平行进近期间监控不穿越区的高分辨率彩色显示器，具备目标预测和侵入警报功能。
+
+FMS / 飞行管理系统
+管理航空器导航、性能及航路规划的机载计算机系统。
+
+FORMATION FLIGHT / 编队飞行
+多架航空器按预先安排作为单一单位运行，由长机负责保持间距，包含标准与非标准编队。
+
+FRC / 请求全航路许可
+飞行员请求管制员逐字宣读整个飞行航路的空中交通管制许可，以防基于修订前计划的许可。
+
+FREEZE/FROZEN / 冻结/已冻结
+指已被分配预计到达时间并显示在列表中的进场航空器及其状态。
+
+FREEZE HORIZON / 冻结时间点
+航空器预计到达时间固定不再随雷达更新波动的时刻，用于流量管理控制器规划延误策略。
+
+FREEZE SPEED PARAMETER / 冻结速度参数
+用于区分快慢机的适配速度参数，快机基于FCLT冻结，慢机基于MLDI冻结。
+
+FRIA / FAA认可识别区
+允许无人机在无远程识别情况下运行的地理区域，前提是保持目视视线内操作。
+
+FRICTION MEASUREMENT / 摩擦测量
+使用连续自浇水摩擦测量设备测定跑道表面摩擦特性的过程。
+
+FSDO / 飞行标准地区办公室
+FAA现场办公室，负责航空承运人和通用航空器的认证、运营安全监督及事故调查等事务。
+
+FSPD / 冻结速度参数
+用于区分快慢机的适配速度参数，快机基于FCLT冻结，慢机基于MLDI冻结。
+
+FSS / 飞行服务站
+提供飞行简报、计划处理、航路建议、搜救协助及天气广播等的空中交通设施。
+
+FUEL DUMPING / 放油
+空中释放可用燃料的行为，不包括抛掉燃油箱。
+
+FUEL REMAINING / 剩余油量
+飞行员或管制员通报的直至燃油耗尽前的剩余飞行时间，需包含备用燃油及仪表误差。
+
+FUEL SIPHONING / 漏油
+因溢出、穿刺或瓶盖松动等原因导致的非故意燃油泄漏。
+
+FUEL VENTING / 燃油挥发
+因溢出、穿刺或瓶盖松动等原因导致的非故意燃油泄漏。
+
+FUSED TARGET / 融合目标
+基于一次雷达回波或二次雷达应答生成的计算机符号，显示在数字显示器上的航空器位置。
+
+FUSION [STARS] / 融合[星状]
+将多种监视源数据结合为单个跟踪目标以供分离服务的技术，等效于单传感器雷达显示。
+
+GATE HOLD PROCEDURES / 关坪等待程序
+当离场延误超过或预计超过15分钟时，在关坪或其他地面位置等待航空器的程序。
+
+GCA / 地面控制进近
+由地面人员通过无线电向飞行员发送指令的雷达进近系统，包括监视雷达和精密进近雷达。
+
+GDP / 地面延误程序
+由ATCSCC管理的交通流程序，通过将航空器滞留在地面来限制空中盘旋并保持公平性。
+
+GENERAL AVIATION / 通用航空
+指不包括定期或不定期的航空公司及商业航天操作在内的民用航空部分。
+
+GENERAL AVIATION [ICAO] / 通用航空（ICAO）
+指除定期航班服务和为报酬或租赁进行的不定期航空运输操作之外的所有民用航空操作。
+
+GEO MAP / 地理地图
+与ASR-9雷达系统关联的数字地图标记。
+
+GLIDEPATH / 下滑道/下滑路径
+提供进近和着陆期间的垂直引导；包括ILS电子信号、VASI目视助航设备，或ATC用于PAR进近的垂直位置通报。参考：GLIDESLOPE。
+
+GLIDEPATH [ICAO] / 下滑路径（ICAO）
+为最后进近阶段垂直引导而确定的下降剖面。
+
+GLIDEPATH INTERCEPT ALTITUDE / 截获下滑道高度
+仪表进近中间段截获下滑道的公布最低高度。政府图表用闪电符号标识此点（PFAF）。参考：GLIDESLOPE INTERCEPT ALTITUDE。
+
+GLIDESLOPE / 下滑道
+提供进近和着陆期间的垂直引导；包括ILS电子信号、VASI目视助航设备，或ATC用于PAR进近的垂直位置通报。参考：GLIDEPATH。
+
+GLIDESLOPE INTERCEPT ALTITUDE / 截获下滑道高度
+仪表进近中间段截获下滑道的公布最低高度。政府图表用闪电符号标识此点（PFAF）。若ATC指示更高高度，则结果截获点变为PFAF。参考：FINAL APPROACH FIX。
+
+GLOBAL NAVIGATION SATELLITE SYSTEM (GNSS) / 全球导航卫星系统（GNSS）
+指从一个或多个卫星星座获得的全球定位、导航和授时能力总称。可通过地面站或地球静止卫星增强以提高完整性和精度。参考：GBAS、SBAS。
+
+GLOBAL NAVIGATION SATELLITE SYSTEM MINIMUM EN ROUTE IFR ALTITUDE (GNSS MEA) / GNSS航路IFR最低高度（GNSS MEA）
+在公布的ATS航路上，确保GNSS接收良好并满足障碍物清除要求的最低航路IFR高度。
+
+GLOBAL POSITIONING SYSTEM (GPS) / 全球定位系统（GPS）
+指从美国卫星星座获得的全球定位、导航和授时能力。其民用服务由性能标准定义，由空间、控制和用户部分组成。
+
+GNSS [ICAO] / 全球导航卫星系统（GNSS）[ICAO]
+参见GLOBAL NAVIGATION SATELLITE SYSTEM (GNSS)。
+
+GNSS MEA / GNSS MEA
+参见GLOBAL NAVIGATION SATELLITE SYSTEM MINIMUM EN ROUTE IFR ALTITUDE。
+
+GO AHEAD / 请发话
+继续发送你的信息。不得用于其他目的。
+
+GO AROUND / 复飞
+指令飞行员中止进近着陆。VFR或目视进近飞机应爬升至traffic pattern高度并从侧风边加入；IFR飞行员应执行公布的复飞程序或按ATC指令行动。
+
+GPD / 图形计划显示（GPD）
+EDST提供的视图，以图形方式显示飞机、交通及预测冲突通知。按需显示当前计划和试用计划的图形航线。参考：EN ROUTE DECISION SUPPORT TOOL。
+
+GPS / GPS
+参见GLOBAL POSITIONING SYSTEM。
+
+GRAPHICAL AIRMEN'S METEOROLOGICAL INFORMATION / 图形化航空人员气象情报
+描绘对飞机有危害但严重程度低于SIGMET的天气的图形。每3小时发布一次，覆盖未来12小时及美国本土和低空水域。包含中度湍流、低空风切变等。参考：AIRMET、SIGMET。
+
+GRAPHIC PLAN DISPLAY (GPD) / 图形计划显示（GPD）
+EDST提供的视图，以图形方式显示飞机、交通及预测冲突通知。按需显示当前计划和试用计划的图形航线。参考：EN ROUTE DECISION SUPPORT TOOL。
+
+GROSS NAVIGATION ERROR (GNE)  / 重大导航误差（GNE）
+偏离飞机许可航路横向距离10海里或以上的情况。
+
+GROUND BASED AUGMENTATION SYSTEM (GBAS) / 地基增强系统（GBAS）
+一种地基GNSS站，通过VHF数据广播提供局部差分修正、完整性参数和进近数据，以满足CAT I精密进近要求。单站可服务多个跑道端，半径约23海里。
+
+GROUND BASED AUGMENTATION SYSTEM (GBAS) LANDING SYSTEM (GLS) / GBAS着陆系统（GLS）
+基于GBAS站本地增强GNSS数据的精密进近类型。提高精度和可靠性，允许更灵活的精密进近。程序图标题为GLS，最低决断高可达200英尺。预期支持Cat II/III。
+
+GROUND-BASED INTERVAL MANAGEMENT-SPACING (GIM / 地间隔管理-速度建议（GIM-S）
+计算出的速度，使飞机能在航路和TRACON边界计量点符合TBFM时间表。
+
+GROUND CLUTTER / 地面杂波
+由地面回波在雷达屏幕上产生的图案，可能削弱受影响区域的其他雷达回波。使用运动目标指示（MTI）电路可最小化该影响，仅显示运动目标。参考：CLUTTER。
+
+GROUND COMMUNICATION OUTLET (GCO) / 地面通信出口 (GCO)
+无人值守的地面/地面通信设施。飞行员在非管制机场可通过甚高频无线电呼叫ATC或FSS获取IFR许可、关闭飞行计划或天气简报，需使用四次或六次按键音区分对象。仅限地面使用。
+
+GROUND CONTROLLED APPROACH / 地面控制进近 (GCA)
+由空管人员在地面操作雷达系统，通过无线电向飞行员发送指令的进近程序。包括监视雷达(ASR)和精密进近雷达(PAR)。飞行员应明确请求PAR或ASR进近。参见RADAR APPROACH。
+
+GROUND DELAY PROGRAM (GDP) / 地面延误程序 (GDP)
+由ATCSCC管理的流量管理措施，要求符合条件的航空器在地面等待，以限制空中盘旋并公平分配延误。可根据系统需求灵活实施多种形式。
+
+GROUND SPEED / 地速
+航空器相对于地球表面的运动速度。
+
+GROUND STOP (GS) / 地面停止 (GS)
+要求符合特定条件（如目的地机场、空域扇区或机型）的航空器在地面停留的过程。通常突然实施，预警极少。
+
+GROUND VISIBILITY / 地面能见度
+参考VISIBILITY。指在机场由认可观测员报告的能见度，即白天识别显著无光源物体和夜间识别显著光源物体的能力。
+
+GS / GS
+GROUND STOP的缩写。要求符合特定条件的航空器在地面停留，通常无预警。
+
+HAA / HAA
+HEIGHT ABOVE AIRPORT的缩写。指最低下降高度(MDA)高于公布机场标高的高度，通常与盘旋最低标准一起发布。参见MINIMUM DESCENT ALTITUDE。
+
+HAL / HAL
+HEIGHT ABOVE LANDING的缩写。指直升机仪表进近程序中，高于指定直升机着陆区域的高度。参照14 CFR第97部分。
+
+HANDOFF / 移交 (Handoff)
+当航空器将进入接收方空域且无线电通信将转移时，将一个控制器对航空器的雷达识别权移交给另一个控制器的动作。
+
+HAT / HAT
+HEIGHT ABOVE TOUCHDOWN的缩写。指决断高(DH)或最低下降高度(MDA)高于跑道接地地带（前3000英尺）最高跑道标高的高度。见于所有直线进近最低标准图表。参见DECISION HEIGHT和MINIMUM DESCENT ALTITUDE。
+
+HAVE NUMBERS / Have Numbers
+飞行员用于通报ATC，表示已收到跑道、风向风速和气压高度表拨正值信息。
+
+HAZARDOUS MATERIALS (HAZMAT) / 危险品 (HAZMAT)
+依据49 CFR §171.8定义的危险材料。
+
+HAZARDOUS WEATHER INFORMATION / 危险天气信息
+重要气象情报(SIGMET)、对流SIGMET、紧急飞行员天气报告(UUA)、中心天气建议(CWA)、AIRMET、图形AIRMET及未包含在当前警告中但显著发展的孤立雷暴、低云低能见度等天气信息的汇总。
+
+HAZMAT / HAZMAT
+HAZARDOUS MATERIALS的缩写。依据49 CFR §171.8定义的危险材料。
+
+HEAVY (AIRCRAFT) / 重型飞机
+最大认证起飞重量等于或超过300,000磅的飞机。用于尾流间隔分类为B、C或D类。参见AIRCRAFT CLASSES。
+
+HEIGHT ABOVE AIRPORT (HAA) / HEIGHT ABOVE AIRPORT (HAA)
+最低下降高度高于公布机场标高的高度。与盘旋最低标准一起发布。参见MINIMUM DESCENT ALTITUDE。
+
+HEIGHT ABOVE LANDING (HAL) / HEIGHT ABOVE LANDING (HAL)
+直升机仪表进近程序中，高于指定直升机着陆区域的高度。参照14 CFR第97部分。
+
+HEIGHT ABOVE TOUCHDOWN (HAT) / HEIGHT ABOVE TOUCHDOWN (HAT)
+决断高或最低下降高度高于跑道接地地带最高跑道标高的高度。见于所有直线进近最低标准图表。参见DECISION HEIGHT和MINIMUM DESCENT ALTITUDE。
+
+HELICOPTER / 直升机
+主要依靠发动机驱动旋翼进行水平运动的旋翼机。参见ROTORCRAFT。
+
+HELIPAD / 直升机停机坪 (HELIPAD)
+通常在直升机停机坪、机场、起降区、机坪或活动区内的较小指定区域，具有准备表面，用于直升机的起飞、着陆或停放。
+
+HELIPORT / 直升机停机坪 (HELIPORT)
+用于或意图用于直升机着陆和起飞的土地、水域或结构区域，包括其建筑物和设施（如有）。
+
+HELIPORT REFERENCE POINT (HRP) / 直升机停机坪基准点 (HRP)
+直升机停机坪的地理中心点。
+
+HERTZ / 赫兹
+电磁波频率的标准单位，即每秒周期数。千赫(kHz)为一千周/秒，兆赫(MHz)为一百万周/秒。
+
+HF / 高频
+指3至30兆赫兹的频率范围。
+
+HF COMMUNICATIONS / 高频通信
+使用3至30兆赫兹的高频无线电进行海外空中对地语音通信。
+
+HIGH FREQUENCY / 高频
+指3至30兆赫兹的频率范围。
+
+HIGH FREQUENCY COMMUNICATIONS / 高频通信
+使用3至30兆赫兹的高频无线电进行海外空中对地语音通信。
+
+HIGH SPEED EXIT / 高速滑行道出口
+设计有灯光或标记的长半径滑行道，供飞机以高达60节的速度从跑道中心滑行至滑行道，以缩短跑道占用时间。
+
+HIGH SPEED TAXIWAY / 高速滑行道
+设计有灯光或标记的长半径滑行道，供飞机以高达60节的速度从跑道中心滑行至滑行道，以缩短跑道占用时间。
+
+HIGH SPEED TURNOFF / 高速脱离道
+设计有灯光或标记的长半径滑行道，供飞机以高达60节的速度从跑道中心滑行至滑行道，以缩短跑道占用时间。
+
+HIGH UPDATE RATE SURVEILLANCE / 高更新率监视
+提供小于4.8秒传感器更新率的监视系统。
+
+HOLD FOR RELEASE / 等待放行
+管制员因交通管理原因要求航空器延误；告知飞行员IFR离场许可在收到放行时间前无效。
+
+HOLD‐IN‐LIEU OF PROCEDURE TURN / 替代程序转弯的等待
+当可从对齐的等待航线进近时建立，允许飞行员在等待中调整航向或下降高度以正常进入最后进近。
+
+HOLD PROCEDURE / 等待程序
+使航空器保持在指定空域或区域，直至获得管制进一步许可的预定机动。
+
+HOLDING FIX / 等待点
+通过导航设备或目视参考识别的指定位置，用于建立和保持航空器在等待时的位置。
+
+HOLDING POINT [ICAO] / 等待位置[ICAO]
+根据空中交通管制许可，在该指定位置附近保持飞行中航空器位置的地点。
+
+HOLDING PROCEDURE / 等待程序
+使航空器保持在指定空域或区域，直至获得管制进一步许可的预定机动。
+
+HOLD‐SHORT POINT / 停止等待点
+LAHSO许可着陆飞机不得超越的跑道上的点，通常位于相交跑道、滑行道或飞行路径之前。
+
+HOLD‐SHORT POSITION LIGHTS / 停止等待位置灯
+位于指定停止等待点的闪烁嵌入式白色灯光。
+
+HOLD‐SHORT POSITION MARKING / 停止等待位置标记
+所有LAHSO跑道上位于停止等待点的涂漆跑道标记。
+
+HOLD‐SHORT POSITION SIGNS / 停止等待位置标志
+位于停止等待点旁的红白相间等待位置标志。
+
+HOMING / 归航
+不修正风偏，通过调整航向保持相对方位零度飞向导航台。
+
+HOMING [ICAO] / 归航[ICAO]
+利用一个电台的测向设备追踪另一个电台发射信号的程序，移动站持续朝向另一站移动。
+
+HOT SPOT / 热点
+机场活动区历史上存在碰撞或跑道侵入风险的位置，需飞行员和驾驶员高度注意。
+
+HOVER CHECK / 悬停检查
+直升机/垂直起降航空器在起飞前保持稳定悬停以进行性能或功率检查。
+
+HOVER TAXI / 悬停滑行
+直升机/垂直起降航空器在地面效应内、低于约20节速度进行的离地移动。
+
+HOW DO YOU HEAR ME? / 你听得清吗
+询问传输质量或确认接收效果的用语。
+
+HZ / 赫兹
+电磁波频率的标准无线电计量单位，指每秒的周期数。千赫兹(kHz)为一千次/秒，兆赫兹(MHz)为百万次/秒。
+
+I SAY AGAIN / 再说一遍
+通报用语，表示该消息内容将被重复发送，以确保接收方准确理解或确认。
+
+IAF / 起始进近定位点
+仪表进近程序图表上标示的点位，用于识别初始进近航段的开始位置。
+
+IAP / 仪表进近程序
+一系列依据飞行仪表执行的预定机动动作，从起始进近定位点或指定进场路线开始，到可完成着陆的点，未成功则转入等待或航路阶段。
+
+IAWP / 起始进近航路点
+导航数据库中用于标识仪表进近程序起始进近阶段的特定航路点坐标。
+
+ICAO / 国际民航组织
+联合国专门机构，旨在制定国际空中航行原则技术，并促进国际民用航空运输的规划与发展。
+
+ICAO 3LD / ICAO三字代码
+由ICAO批准的独家设计符，与航班号组合构成呼号供ATC使用，替代注册号进行身份识别、飞行计划及通信，以增强空域安全。
+
+ICAO Three-Letter Designator (3LD) / ICAO三字代码
+由ICAO批准的独家设计符，与航班号组合构成呼号供ATC使用，替代注册号进行身份识别、飞行计划及通信，以增强空域安全。
+
+ICING / 结冰
+飞机机身表面积聚冰层的现象，可能影响气动性能和安全。
+
+Types of icing are: Rime Ice / 积冰类型
+明冰：大水滴缓慢冻结形成的光滑透明冰；雾凇冰：小过冷水滴瞬时冻结形成的粗糙乳白不透明冰；混合冰：上述两种冰的混合物。
+
+Intensity of icing: Trace / 积冰强度
+微量：可见但积累慢；轻度：需偶尔使用除冰系统；中度：需频繁使用除冰系统；严重：除冰系统失效且危及安全，必须立即脱离。
+
+IDAC / 综合离场/进场能力
+塔台/TRACON在TBFM系统中的离场调度能力，允许将离场航班安排进入进场或航路流，并提供电子协调离场释放时间的机制。
+
+IDENT / 应答机识别
+请求飞行员激活应答机识别功能，以帮助管制员确认或识别特定飞机的身份。
+
+IDENT FEATURE / 应答机识别特征
+空中交通管制雷达信标系统中的特殊功能，用于在雷达屏幕上立即区分某一信标目标与其他目标。
+
+IDENTIFICATION [ICAO] / 识别（ICAO）
+当特定飞机的位置指示在态势显示上被看到并被明确确认时的状态。
+
+IF / 中间定位点
+标识仪表进近程序中间进近航段开始的定位点，通常不在进近图上单独标记为IF。
+
+IF NO TRANSMISSION RECEIVED FOR (TIME) / 若(时间)内未收到传输
+管制员在雷达进近中使用的提示前缀，告知飞行员在通信中断时应遵循的程序步骤。
+
+IFR / 仪表飞行规则
+一套规范在仪表气象条件下进行飞行操作的规则体系。
+
+IFR AIRCRAFT / 仪表飞行航空器
+按照仪表飞行规则执行飞行的航空器。
+
+IFR CONDITIONS / 仪表飞行条件
+低于目视飞行规则最低天气标准的状况，即仪表气象条件(IMC)。
+
+IFR DEPARTURE PROCEDURE / 仪表离场程序
+参见“仪表起飞最低标准与离场程序”，涉及仪表条件下的起飞和初始爬升操作规范。
+
+IFR FLIGHT / 仪表飞行
+航空器按照仪表飞行规则进行的飞行活动。
+
+IFR LANDING MINIMUMS / 仪表进近着陆最低标准
+使用仪表进近程序着陆规定的最低能见度。包括直线进近和盘旋进近的决断高(DH)或最低下降高度(MDA)及能见度要求。
+
+IFR MILITARY TRAINING ROUTES (IR) / 仪表军用训练航线
+国防部及相关预备役部队用于低空导航和战术训练的航线，在10,000英尺MSL以下、速度超250节IAS的条件下运行。
+
+IFR TAKEOFF MINIMUMS AND DEPARTURE PROCEDURES / 仪表飞行规则起飞最低标准与离场程序
+因障碍物需设定的非标准起飞最低标准或离场程序。飞行员应通知管制员限制条件，确保满足爬升梯度要求。
+
+IF/IAWP / 中间定位点/初始进路航路点
+T型进近最后航段与横杆交汇的航路点。结合区域终端进场使用时，作为IAWP或IFWP使用。
+
+IFWP / 中间定位点航路点
+位于进近路径中间的导航定位点航路标。
+
+ILS / 仪表着陆系统
+参考条目INSTRUMENT LANDING SYSTEM (ILS)。提供精密进近的无线电和目视辅助设备。
+
+ILS CATEGORIES / 仪表着陆系统分类
+按决断高和跑道视程划分的ILS类别：I类至III类（含特殊授权），决定能否在低能见度下着陆及所需设备。
+
+IM / 内指点标
+参考条目INNER MARKER。用于CAT II进近，指示通常距地面100英尺的决断高度。
+
+IMC / 仪表气象条件
+参考条目INSTRUMENT METEOROLOGICAL CONDITIONS。能见度、云底高低于目视飞行规则最低标准的天气状况。
+
+IMMEDIATELY / 立即
+管制或飞行员用语，表示为避免迫在眉睫的危险必须立即执行动作。
+
+INCERFA (Uncertainty Phase) [ICAO] / 不确定阶段
+ICAO术语。指对航空器及其乘员安全存在疑虑的状态。
+
+INCREASED SEPARATION REQUIRED (ISR) / 需要增加间隔
+表示航迹置信度要求5海里间隔，不得使用3海里、1.5海里间隔或目标分辨。
+
+INCREASE SPEED TO (SPEED) / 加速至（速度）
+参考条目SPEED ADJUSTMENT。管制请求调整速度以提供所需间距，飞行员应保持指定速度加减10节或0.02马赫。
+
+INERTIAL NAVIGATION SYSTEM (INS) / 惯性导航系统
+参考条目INERTIAL NAVIGATION SYSTEM (INS)。一种自主式导航的RNAV系统。
+
+INFLIGHT REFUELING / 空中加油
+参考条目AERIAL REFUELING。军用程序，指飞行中从一架飞机向另一架飞机转移燃料。
+
+INFLIGHT SERVICES [FSS] / 飞行中服务
+FSS提供的涉及空中或地面运行的服务，包括放行、咨询、NOTAM、搜救通信、飞行计划处理及天气观察等。
+
+INFLIGHT WEATHER ADVISORY / 飞行中天气警告
+参考条目WEATHER ADVISORY。NWS发布的未在常规预报中的危险天气信息，如AIRMET或SIGMET。
+
+INFORMATION REQUEST (INREQ) / 信息查询
+参考条目INFORMATION REQUEST (INREQ)。FSS针对逾期未归VFR飞机发起的信息查询请求。
+
+INITIAL APPROACH FIX (IAF) / 初始进近定位点
+仪表进近图上标识初始进近段开始的定位点。
+
+INITIAL APPROACH SEGMENT / 初始进近段
+参考条目SEGMENTS OF AN INSTRUMENT APPROACH PROCEDURE。从初始进近定位点到中间定位点或建立最终航迹点的进近段。
+
+INITIAL APPROACH SEGMENT [ICAO] / 初始进近段
+ICAO术语。仪表进近程序中从初始进近定位点到中间进近定位点（或适用时的最后进近定位点）的区段。
+
+INLAND NAVIGATION FACILITY / 内陆导航设施
+北美航路上公共或非公共航路开始或结束的导航辅助设施。
+
+INNER MARKER / 内指点标
+用于CAT II精密进近的点信标，位于中指点标与跑道末端之间，指示100英尺决断高度。
+
+INNER MARKER BEACON / 内指点标信标
+参考条目INNER MARKER。用于CAT II进近，指示决断高度并标记CAT III进近进程。
+
+INREQ / 信息查询
+参考条目INFORMATION REQUEST。FSS针对逾期未归VFR飞机发起的信息查询请求。
+
+INS / 惯性导航系统
+参考条目INERTIAL NAVIGATION SYSTEM。一种自主式导航的RNAV系统。
+
+INSTRUMENT APPROACH / 仪表进近
+参见“仪表进近程序”。指依据飞行仪表，从起始进近定位点或指定进场路线开始，直至完成着陆或进入等待/航路净空保护区的一系列预定机动。
+
+INSTRUMENT APPROACH OPERATIONS [ICAO] / 仪表进近运行
+基于仪表进近程序使用仪器进行导航引导的进近和着陆。分为仅用横向引导的二维（2D）和同时使用横向与垂直引导的三维（3D）两种方法。
+
+INSTRUMENT APPROACH PROCEDURE / 仪表进近程序
+为有序转移处于仪表飞行条件下的航空器，从起始进近开始至着陆或可目视着陆点的一系列预定机动。由主管当局批准并公布，用于特定机场。
+
+INSTRUMENT APPROACH PROCEDURE [ICAO] / 仪表进近程序[ICAO]
+依据飞行仪表，从起始进近定位点或指定进场路线开始，具有规定障碍物保护，直至完成着陆或进入等待/航路净空保护区的一系列预定机动。
+
+INSTRUMENT APPROACH PROCEDURE CHARTS / 仪表进近图
+参见“航图”。指专门为了符合空中导航要求而指定的、表示地球部分区域及其文化地貌特征的图表。
+
+INSTRUMENT DEPARTURE PROCEDURE (DP) / 仪表离场程序(DP)
+为飞行员发布的预先规划的IFR离场程序，提供从终端区到适当航路结构的障碍物清除。包括障碍离场程序(ODP)和标准仪表离场(SID)。
+
+INSTRUMENT DEPARTURE PROCEDURE (DP) CHARTS / 仪表离场程序图
+参见“航图”。指专门为了符合空中导航要求而指定的、表示地球部分区域及其文化地貌特征的图表。
+
+INSTRUMENT FLIGHT RULES (IFR) / 仪表飞行规则(IFR)
+规范仪表飞行程序的规则。也是飞行员和管制员用来指示飞行计划类型的术语。与目视飞行规则相对。
+
+INSTRUMENT FLIGHT RULES [ICAO] / 仪表飞行规则[ICAO]
+一套规范在仪表气象条件下飞行活动的规则。
+
+INSTRUMENT LANDING SYSTEM (ILS) / 仪表着陆系统(ILS)
+一种精密仪表进近系统，通常包含以下电子组件和目视助航设施：航向台、下滑道、外指点标、中指点标及进近灯光。
+
+INSTRUMENT METEOROLOGICAL CONDITIONS (IMC) / 仪表气象条件(IMC)
+以能见度、距云距离和云底高表示的气象条件，其数值低于目视气象条件的最低标准。需遵循仪表飞行规则。
+
+INSTRUMENT RUNWAY / 仪表跑道
+配备电子和目视导航助航设施的跑道，已批准有直降最低标准的精密或非精密进近程序。
+
+INSTRUMENT RUNWAY [ICAO] / 仪表跑道[ICAO]
+用于执行仪表进近程序的跑道类型，包括非精密进近跑道、I类精密进近跑道、II类精密进近跑道和III类精密进近跑道。
+
+INTEGRATED DEPARTURE/ARRIVAL CAPABILITY (IDAC) / 综合离场/到达能力(IDAC)
+TBFM内的塔台/TRACON离场调度能力，允许将离场飞机调度至到达流或航路流中。提供协调离场释放时间的机制。
+
+INTEGRITY / 完整性
+系统在不应被用于导航时，及时向用户发出警告的能力。
+
+INTERMEDIATE APPROACH SEGMENT / 中间进近段
+参见“仪表进近程序段”。指介于中间定位点（或结束反向/三叶草航线程序的点）与最后进近定位点之间的程序段。
+
+INTERMEDIATE APPROACH SEGMENT [ICAO] / 中间进近段[ICAO]
+仪表进近程序中，位于中间进近定位点与最后进近定位点之间，或结束反向、三叶草或推测航行程序与最后进近定位点之间的段。
+
+INTERMEDIATE FIX / 中间定位点(IF)
+标识仪表进近程序中间进近段开始的定位点。通常不在仪表进近图上标记为中间定位点(IF)。
+
+INTERMEDIATE LANDING / 中途降落
+极少见情况下请求并经批准的中途降落。离场中心必须通知ATCSCC，以便将适当的延误顺延并分配至中途机场。
+
+INTERNATIONAL AIRPORT / 国际机场
+涉及国际飞行的机场，包括海关指定的入境机场、需提前获得许可的降落权机场，以及根据《芝加哥公约》指定的国际商业航空运输机场。
+
+INTERNATIONAL AIRPORT [ICAO] / 国际机场[ICAO]
+缔约国指定的用于国际空中交通出入境的机场，在此办理海关、移民、卫生、动植物检疫等手续。
+
+INTERNATIONAL CIVIL AVIATION ORGANIZATION [ICAO] / 国际民用航空组织(ICAO)
+联合国专门机构，旨在发展国际空中导航的原则和技术，促进国际民用航空运输的规划和发展。
+
+INTERNATIONAL NOTICE / 国际通告
+包含飞行禁止、潜在敌对局势或其他国际/外国海洋空域事项的通知。可在国际通告网站找到。
+
+INTERROGATOR / 询问机
+地面监视雷达信标收发器，通常与一次雷达同步扫描，发送离散无线电信号请求应答机回复。也指TACAN/DME系统的机载部分。
+
+INTERSECTING RUNWAYS / 交叉跑道
+两条或多条跑道在长度范围内相交或汇合。
+
+INTERSECTION / 交叉点
+由两个或多个导航设备的方位、径向线或航向组合定义的点，用于描述跑道间、跑道与滑行道间或滑行道间的交汇位置。
+
+INTERSECTION DEPARTURE / 交叉点起飞
+从跑道除末端以外的任何交叉点开始的离场。
+
+INTERSECTION TAKEOFF / 交叉点起飞
+同“交叉点离场”，指从跑道除末端以外的任何交叉点开始的离场。
+
+IR / IFR军事训练航线
+防务部及相关预备役和空军国民警卫队单位使用的航线，用于在10,000英尺MSL以下以超过250节IAS速度进行低空导航和战术训练。
+
+IRREGULAR SURFACE / 不规则表面
+开放使用但不符合规章要求的表面。
+
+ISR / 需增加间隔
+指示轨迹置信度要求5海里间隔，不得使用3海里、1.5海里间隔及目标分辨。
+
+JAMMING / 干扰
+不模仿GNSS信号但干扰民用接收机获取和跟踪信号的发射，导致导航、定位、定时等功能失效。
+
+JET BLAST / 喷气尾流
+喷气发动机排气产生的快速气流运动。
+
+JET ROUTE / 喷气航线
+服务于18,000英尺MSL至FL450高度层运行的航线，编号为“J”路线。
+
+JET STREAM / 急流
+高空存在的高速气流带。
+
+JETTISONING OF EXTERNAL STORES / 抛弃外挂物
+空中释放副油箱、武器等外挂物。
+
+JOINT USE RESTRICTED AREA / 联合使用限制区
+参照“限制区”定义：在特定条件下限制飞机飞行的空域。
+
+JUMP ZONE / 跳伞区
+与跳降区直接相关的空域，其垂直和水平范围可能由当地规定。
+
+KNOWN TRAFFIC / 已知交通
+关于ATC许可，指高度、位置和意图已为ATC所知的航空器。
+
+LAA / 本地机场咨询
+仅阿拉斯加提供，由着陆机场设施提供的服务，具备专用频率、自动化天气广播及观测数据。
+
+LAANC / 低空授权与通知能力
+LAANC的英文全称缩写。
+
+LAHSO / 落地短停操作
+LAND AND HOLD SHORT OPERATIONS的英文全称缩写。
+
+LAND AND HOLD SHORT OPERATIONS / 落地短停操作
+包括同时起降或降落，且降落航空器被指令在交叉跑道、滑行道或预定点前短停的操作。飞行员若无法接受应即刻通报。
+
+LAND-BASED AIR DEFENSE IDENTIFICATION ZONE (ADIZ) / 陆基防空识别区
+覆盖美国大都市区的ADIZ，按需激活并通过NOTAM发布相关信息。
+
+LANDING AREA / 着陆区域
+用于或意图用于航空器起降的任何陆地、水面或结构区域，无论是否提供 shelter或服务设施。
+
+LANDING AREA [ICAO] / 着陆区域[ICAO]
+机动区内专门用于航空器着陆或起飞的部分。
+
+LANDING DIRECTION INDICATOR / 着陆方向指示器
+视觉指示着陆和起飞方向的装置，如四面体。
+
+LANDING DISTANCE AVAILABLE (LDA) / 可用着陆距离
+宣布可用且适合飞机着陆的跑道长度。
+
+LANDING DISTANCE AVAILABLE [ICAO] / 可用着陆距离
+指定用于飞机着陆地面滑跑的跑道长度。
+
+LANDING MINIMUMS / 着陆最低标准
+使用仪表进近程序着陆民用航空器规定的最低能见度；包含直降和盘旋进近的决断高或最低下降高度及能见度要求，需符合相关法规限制。
+
+LANDING ROLL / 着陆滑跑距离
+从接地点到飞机停止或脱离跑道为止的距离。
+
+LANDING SEQUENCE / 着陆顺序
+飞机排列进行着陆的顺序。参见进近顺序。
+
+LAST ASSIGNED ALTITUDE / 最后指定高度
+由管制员分配且飞行员确认的最后高度或飞行高度层。参见保持。
+
+LATERAL NAVIGATION (LNAV) / 横向导航
+区域导航设备的功能，计算、显示并提供沿剖面或路径的横向引导。
+
+LATERAL SEPARATION / 横向间隔
+在同一高度通过要求在不同航线或不同地理位置运行来实现飞机的横向间距。参见间隔。
+
+LDA / LDA
+见定位仪型定向辅助设备；见ICAO术语可用着陆距离。
+
+LF / LF
+见低频。指30至300 kHz的频率波段。
+
+LIGHTED AIRPORT / 灯光机场
+提供跑道和障碍物照明的机场。参见机场灯光。
+
+LIGHT GUN / 信号枪
+塔台管制员使用的便携式定向光信号设备，发射白光、绿光或红光以批准或拒绝预计的飞行员动作，适用于无线电通信不可用时控制机场附近交通。
+
+LIGHT-SPORT AIRCRAFT (LSA) / 轻型运动航空器
+FAA注册的特定重量和性能的单发航空器（直升机除外），通常最多两座，最大起飞重量受限，设计简单，最高平飞速度不超过120节，失速速度不超过45节。
+
+LINE UP AND WAIT (LUAW) / 进入跑道等待
+管制员指令飞行员滑行至起飞跑道排队等待，非起飞许可。因交通等原因无法立即发出起飞许可时使用。参见允许起飞。
+
+LOCAL AIRPORT ADVISORY (LAA) / 本地机场咨询
+仅阿拉斯加提供的服务，由位于着陆机场的设施提供，具备专用频率、自动气象广播及连续数据观测能力。参见机场咨询区。
+
+LOCAL TRAFFIC / 本场交通
+在起落航线内运行、在塔台视线内、已知从本地练习空域起飞或降落，或执行本机场上仪表练习进近的航空器。参见起落航线。
+
+LOCALIZER / 航向道
+仪表着陆系统的组成部分，提供对准跑道的航向引导。参见仪表着陆系统。
+
+LOCALIZER COURSE [ICAO] / 航向道[ICAO]
+在任何给定水平面上调制深度差为零的点集。
+
+LOCALIZER OFFSET / 航向道偏移
+航向道与跑道中心线对齐角度在3度以内的偏移。
+
+LOCALIZER TYPE DIRECTIONAL AID (LDA) / 定位仪型定向辅助设备
+与跑道中心线对齐角度超过3度的航向道，用于非精密仪表进近，精度 comparable 于航向道但不属于完整ILS。参见AIM。
+
+LOCALIZER TYPE DIRECTIONAL AID (LDA) PRECISION RUNWAY MONITOR (PRM) APPROACH / PRM进近
+配合ILS PRM等系统使用的带下滑道的进近，用于平行跑道间同时偏置仪表进近，需监控禁飞区。参见同时偏置仪表进近。
+
+LOCALIZER USABLE DISTANCE / 航向道可用距离
+经飞行检查验证，在指定高度能持续可靠接收航向信息的距发射机最大距离。
+
+LOCATOR [ICAO] / 定位台[ICAO]
+用作最后进近辅助的中频/低频无方向性信标。覆盖半径通常为10至25海里。
+
+LONG RANGE NAVIGATION / 远程导航
+见罗兰。通过测量两个固定发射机同步脉冲信号的到达时间差来确定双曲线位置线的电子导航系统。
+
+LONGITUDINAL SEPARATION / 纵向间隔
+在同一高度通过最小时间或英里数表示的飞机纵向间距。参见间隔。
+
+LORAN / 罗兰导航系统
+通过测量两个固定发射台同步脉冲信号接收时间差来确定双曲线位置线的电子导航系统。Loran A频段为1750-1950 kHz，C和D为100-110 kHz。美国海岸警卫队已于2010年终止所有Loran-C传输。
+
+LOST COMMUNICATIONS / 通信中断
+丧失无线电通信能力，飞机有时称为NORDO（无电台）。标准程序见14 CFR第91部分。雷达管制员在天气可能导致IFR条件时，会发布雷达进近期间的通信中断处理程序。
+
+LOST LINK (LL) / 链路丢失
+控制链路中断或飞行员无法操控无人机，导致其执行预定机动。指地面站与航空器间指挥与控制链路的丢失，包括上行指令链路和下行状态感知链路。
+
+LOST LINK PROCEDURE / 链路丢失程序
+为确保无人机在链路丢失时继续安全运行而预设的缓解措施。若无法建立正向链路，必须实施飞行终止程序。
+
+LOW ALTITUDE AIRWAY STRUCTURE / 低空航路结构
+服务于海拔18,000英尺MSL以下（不含该高度）航空器运行的航路网络。参见AIRWAY条目。
+
+LOW ALTITUDE ALERT, CHECK YOUR ALTITUDE IMMEDIATELY / 低高度警报：立即检查高度
+ATC发出的安全警报，告知飞行员其高度可能危及地形、障碍物或其他航空器。具体指令见SAFETY ALERT条目中的Terrain/Obstruction Alert说明。
+
+LOW ALTITUDE AUTHORIZATION AND NOTIFICATION CAPABILITY (LAANC) / 低空授权与通知能力
+FAA与行业合作推出的自动化流程，用于获取在管制空域运行所需的授权。
+
+LOW APPROACH / 低通场跑道
+仪表进近或VFR进近后，飞行员故意不接地而进行的飞越机场或跑道的进近，包含复飞机动。
+
+LOW FREQUENCY (LF) / 低频
+频率范围在30至300 kHz之间的频段。
+
+LOCALIZER PERFORMANCE WITH VERTICAL GUIDANCE (LPV) / 带垂直引导的局部性能
+基于WAAS的带有垂直引导的进近类型，公布于RNAV（GPS）进近图上。利用WAAS提供精确横向引导，决断高以DA表示。
+
+LUAW / 上线等待
+管制员指令飞行员滑行至起飞跑道并排队等待。非起飞许可，因交通等原因无法立即发放起飞许可时使用。参见CLEARED FOR TAKEOFF。
+
+MAA / 最大授权高度
+公布的特定空域结构或航路段的最大可用高度或飞行高度层。在该高度及以上，联邦航路或RNAV航路上的导航信号接收不再保证充足。
+
+MACH NUMBER / 马赫数
+真空速与声速的比值，如MACH .82或MACH 1.6。参见AIRSPEED。
+
+MACH TECHNIQUE [ICAO] / 马赫数技术
+管制员要求连续沿适宜航线飞行的喷气式飞机保持适当马赫数的控制技术。旨在优化空域利用率并确保后续飞机间隔不低于最低标准。
+
+MAHWP / 复飞等待航点
+复飞等待航点（MAHWP）是仪表进近程序中规定的，当无法建立目视参考时必须执行复飞程序的点位。
+
+MAINTAIN / 保持
+关于高度/飞行高度层时，意为保持在指定高度。通常前接“爬升并”或“下降并”。关于其他指令时，按字面意思理解，如保持VFR。
+
+MAINTENANCE PLANNING FRICTION LEVEL / 维护计划摩擦等级
+AC 150/5320-12中指定的摩擦水平，代表跑道表面开始显现退化但仍适用于任何类别飞机操作的临界摩擦值。具体数值取决于测量设备。
+
+MAKE SHORT APPROACH / 短五边进近
+管制员指令飞行员改变交通流模式，以进行短五边进近。参见TRAFFIC PATTERN。
+
+MAN PORTABLE AIR DEFENSE SYSTEMS (MANPADS) / 便携式防空系统
+轻型肩射导弹系统，用于击落飞机。成本低、机动性强、易操作。虽射程有限且受天气影响，但可从陆地或船只发射。
+
+MANDATORY ALTITUDE / 强制高度
+仪表进近程序图上标示的高度，要求航空器在该点必须维持图示高度值。
+
+MANPADS / 便携式防空系统
+参见MAN PORTABLE AIR DEFENSE SYSTEMS条目。指轻型肩射导弹系统，用于击落飞机，具有低成本、高机动性特点。
+
+MAP / 复飞点
+仪表进近程序中规定的点位，若在此处未建立所需目视参考，必须执行复飞程序。参见MISSED APPROACH。
+
+MARKER BEACON / 指点标
+发射75 MHz垂直扇形或骨状辐射图案的电子导航设施。通过调制频率和编码识别，经机载设备接收后可向飞行员提供视听指示，表明正飞越该设施。
+
+MARSA / 军方承担分离责任
+军事部门在ATC系统中承担参与军事飞机之间分离责任的状况。仅用于协议或文件中规定的必需IFR运行。
+
+MAWP / 复飞定位点
+仪表进近程序中，飞机执行复飞机动时必须飞越的特定地理坐标点。
+
+MAXIMUM AUTHORIZED ALTITUDE / 最大授权高度
+联邦航路或导航路线上保证导航信号可靠接收的最高可用飞行高度层。
+
+MAXIMUM GROSS OPERATING WEIGHT (MGOW) / 最大总运行重量
+飞行中任何时刻飞机的最大总重，包含燃油及外部挂载物。
+
+MAYDAY / 遇险呼叫
+国际无线电遇险信号，重复三次表示面临紧迫且严重的危险，请求立即援助。
+
+MCA / 最低穿越高度
+在飞向更高最低航路高度的航段时，飞机必须在特定定位点穿过的最低高度。
+
+MDA / 最低下降高度
+无下滑道指引的非精密进近中，允许下降至决断复飞的最低海拔高度。
+
+MEA / 最低航路IFR高度
+两个无线电台定位点之间保证导航覆盖和障碍净空的最低公布高度。
+
+MEARTS / 微型航路自动雷达跟踪系统
+结合短程与远程雷达的微计算机自动化跟踪系统，提供数字显示与数据记录。
+
+METEOROLOGICAL IMPACT STATEMENT / 气象影响声明
+描述预计4至12小时内开始并可能影响特定区域空中交通流量的非计划预报。
+
+METER FIX ARC / 计量定位点弧线
+以计量定位点为圆心的半圆弧，用于计算未沿既定航线飞行飞机的到达时间。
+
+METER REFERENCE ELEMENT (MRE) / 计量参考要素
+管理交通流的约束点，如跑道入口、计量定位点或计量弧线。
+
+METER REFERENCE POINT LIST (MRP) / 计量参考点列表
+管制员通过显示器查看的TBFM延迟信息列表，俗称计量列表。
+
+METERING / 流量计量
+在航路和终端区调节交通流的时间控制方法。
+
+METERING AIRPORTS / 计量机场
+适用于流量计量且已定义最佳飞行路径的机场，最多15个。
+
+METERING FIX / 计量定位点
+飞机进入终端区前进行计量的航路上的定位点，通常位于距机场一定距离处以便下降。
+
+MGOW / 最大总运行重量
+飞行中任何时刻飞机的最大总重，包含燃油及外部挂载物。
+
+MHA / 最低等待高度
+等待程序规定的最低高度，保证导航覆盖、通信及符合障碍净空要求。
+
+MIA / 最低IFR高度
+按法规公布的仪表飞行最低安全高度，山区高于障碍物2000英尺，其他区域1000英尺。
+
+MICROBURST / 微下击暴流
+水平范围小于2.5英里的强下沉气流，可能产生高达150节的破坏性阵风。
+
+MICRO‐EN ROUTE AUTOMATED RADAR TRACKING SYSTEM (MEARTS) / 微型航路自动雷达跟踪系统
+结合短程与远程雷达的微计算机自动化跟踪系统，提供数字显示与数据记录。
+
+MID RVR / 中间RVR
+跑道视程的一种，指跑道上中间位置区域的能见度范围。
+
+MIDDLE COMPASS LOCATOR / 中台信标台
+安装在仪表着陆系统中场信标位置的低功率无线电导航信标。
+
+MIDDLE MARKER / 中场信标
+ILS进近中指示接近决断高度的指点标，发射每分钟95次的点划交替信号。
+
+MILES‐IN‐TRAIL / 英里间隔
+同一空域、目的地或航线上飞机之间指定的纵向距离间隔。
+
+MILITARY AUTHORITY ASSUMES RESPONSIBILITY FOR SEPARATION OF AIRCRAFT (MARSA) / 军事责任分离
+参与飞行的军方承担航空器间隔责任，仅适用于协议或文件中指定的仪表飞行规则（IFR）操作。
+
+MILITARY LANDING ZONE / 军用着陆区
+专供军事训练使用的跑道，不赋予标准跑道编号。
+
+MILITARY OPERATIONS AREA / 军事活动区
+用于将非危险军事活动与IFR交通隔离的特定空域；参见特殊使用空域。
+
+MILITARY TRAINING ROUTES / 军事训练航线
+为进行超过250节指示空速的军事飞行训练而设立的空域；分IFR和VFR两类。
+
+MINIMA / 最低限度
+特定运行类型的天气条件要求，如IFR起降、备降场或VFR飞行标准；参见最低标准。
+
+MINIMUM CROSSING ALTITUDE (MCA) / 最低穿越高度
+在飞向更高最低航路高度时，飞机必须在某些定位点穿越的最低高度。
+
+MINIMUM DESCENT ALTITUDE (MDA) / 最低下降高度
+无下滑道指引的标准进近或盘旋进近中，允许下降至的最终决断高度。
+
+MINIMUM EN ROUTE IFR ALTITUDE (MEA) / 最低航路IFR高度
+两个无线电定位点之间保证导航信号覆盖并满足障碍物清除要求的最低公布高度。
+
+MINIMUM FRICTION LEVEL / 最低摩擦等级
+AC 150/5320-12规定的湿滑跑道最小推荐摩擦值，用于LAHSO操作。
+
+MINIMUM FUEL / 最低燃油量
+表明燃油已极少，到达目的地后几乎不能接受延误；非紧急状态但预示潜在风险。
+
+MINIMUM HOLDING ALTITUDE / 最低等待高度
+保证导航信号覆盖、通信及满足障碍物清除要求的最低等待模式高度。
+
+MINIMUM IFR ALTITUDES (MIA) / 最低IFR高度
+按法规公布的IFR操作最低高度；若未规定，山区需高于障碍物2000英尺，其他区域1000英尺。
+
+MINIMUM OBSTRUCTION CLEARANCE ALTITUDE (MOCA) / 最低障碍物清除高度
+在VOR台25英里范围内保证导航覆盖且满足全段障碍物清除要求的最低高度。
+
+MINIMUM RECEPTION ALTITUDE (MRA) / 最低接收高度
+能够确定交叉定位点的最低高度。
+
+MINIMUM SAFE ALTITUDE (MSA) / 最低安全高度
+以导航设施为中心25英里半径内提供至少1000英尺障碍物清除的高度，仅供紧急情况使用。
+
+MINIMUM SAFE ALTITUDE WARNING (MSAW) / 最低安全高度警告
+EAS/STARS计算机功能，当 tracked 飞机低于或预计低于预设最低安全高度时向管制员发出警报。
+
+MINIMUM SECTOR ALTITUDE [ICAO] / 最低扇区高度
+ICAO术语，以导航台为中心25海里扇区内提供至少300米障碍物清除的应急最低高度。
+
+MINIMUMS / 最低标准
+特定运行类型（如IFR起降、VFR飞行）的天气条件要求。
+
+MINIMUM VECTORING ALTITUDE (MVA) / 最低向量高度
+雷达管制员对IFR飞机实施雷达引导的最低MSL高度，满足IFR障碍物清除标准。
+
+MINUTES‐IN‐TRAIL / 分钟间隔
+以时间表示的航空器指定间隔，通常用于任何高度层。
+
+MIS / 气象影响声明
+描述预计4至12小时内开始并可能影响特定中心区域交通流的未计划规划预报；参见METEOROLOGICAL IMPACT STATEMENT。
+
+MISSED APPROACH / 复飞
+无法完成仪表进近着陆时执行的机动；飞行员用此词通报ATC正在执行复飞程序。
+
+MISSED APPROACH POINT (MAP) / 复飞点
+仪表进近程序中规定的点，若此时未建立所需目视参考，必须在此点执行复飞程序。
+
+MISSED APPROACH PROCEDURE [ICAO] / 复飞程序
+ICAO术语，指无法继续进近时应遵循的程序。
+
+MISSED APPROACH SEGMENT / 复飞航段
+仪表进近程序的一部分，指从复飞点或决断高位置到指定复飞定位点及规定高度之间的飞行路段。
+
+MM / 中指点标
+ILS下滑道上的信标台，通常位于决断高附近。以每分钟95次的速率交替发送点和划信号，供机载设备接收。
+
+MOA / 军事活动区
+特殊使用空域的一种，用于在非危险军事活动与IFR交通之间进行隔离，并为VFR交通标识活动区域。永久MOA在航图上标示。
+
+MOCA / 最低越障高度
+VOR航路或航线段间发布的最低海拔，满足全段越障要求，且仅保证距VOR站25英里内的导航信号覆盖。
+
+MODE / 模式
+ATCRBS系统中地面询问器或机载应答机传输或接收的特定脉冲间隔所分配的字母或数字。Mode A和C用于空中交通管制。
+
+MODE (SSR MODE) [ICAO] / SSR模式
+分配给询问器发射的特定脉冲间隔的字母或数字。Annex 10规定了A、B、C、D四种模式，对应四种不同的询问脉冲间隔。
+
+MODE C INTRUDER ALERT / 模式C入侵警报
+某些ATC自动化系统的功能，旨在提醒雷达管制员注意已跟踪目标与未跟踪目标之间需要立即关注的冲突情况。
+
+MODEL AIRCRAFT / 模型飞机
+无人航空器，具备持续大气飞行能力，在操作者视距内飞行，且仅用于爱好或休闲目的。
+
+MONITOR / 监听
+在通信转移时，在特定频率上收听并待命等待指令。正常情况下不建立通信联系。
+
+MONITOR ALERT (MA) / 监控警报
+TFMS的功能，为交通管理人员提供预测单个运行扇区潜在容量问题的工具，提示需分析实际活动以确定控制需求。
+
+MONITOR ALERT PARAMETER (MAP) / 监控警报参数
+TFMS用于监控警报处理的指定数值，针对每个运行扇区按15分钟增量设定。
+
+MOSAIC/MULTI-SENSOR MODE / 多传感器模式
+接受多个批准监视源的位置数据。根据地理区域内分配源的层次结构，从单一源显示目标。
+
+MOUNTAIN WAVE / 山波
+空气吹过山脉或陡峭山脊时产生的现象。气流爬升形成平稳上升气流，越过脊顶后转为湍流下沉气流，可能导致空速和高度显著波动。
+
+MOVEMENT AREA / 活动区
+机场/直升机坪用于滑行、起飞和降落的跑道、滑行道及其他区域，不包括装卸坡道和停机位。进入需塔台许可。
+
+MOVEMENT AREA [ICAO] / 活动区
+aerodrome中用于飞机起飞、降落和滑行的部分，包括机动区和一个或多个停机坪。
+
+MOVING AIRSPACE RESERVATION / 移动空域保留
+海洋ATC术语，指包含海洋活动并随任务进展而移动的 reservated 空域，即保留区随飞机或航班移动。
+
+MOVING ALTITUDE RESERVATION / 移动高度保留
+涵盖航路活动并随任务进展而移动的高度保留区，即保留区随飞机或航班移动。
+
+MOVING TARGET INDICATOR / 动目标显示
+一种电子设备，允许雷达屏幕仅显示运动目标，作为减轻地面杂波干扰的部分补救措施。
+
+MRA / 最低接收高度
+能够确定交叉定位点的最低海拔。
+
+MRE / 计量参考元素
+管理交通流的约束点。可以是跑道入口、计量定位点或计量弧线。
+
+MRP / 计量参考点列表
+通过计量参考点视图（俗称“计量列表”）向管制员传达TBFM延迟信息的列表。
+
+MSA / 最低安全高度
+进近图或离场程序图上标示的海拔，在导航设施、航路点或机场参考点周围25英里半径内提供至少1000英尺的障碍物清除，仅供紧急情况使用。
+
+MSAW / 最低安全高度警告
+EAS和STARS计算机的功能，当跟踪的Mode C-equipped飞机低于或预计将低于预设最低安全高度时，提醒管制员。
+
+MTI / 动目标显示
+一种电子设备，允许雷达屏幕仅显示运动目标，作为减轻地面杂波干扰的部分补救措施。
+
+MTR / MTR（军事训练航线）
+参考条目：为速度超250节IAS的军事飞行训练设立的特定垂直和水平范围空域。
+
+MULTICOM / MULTICOM（多频通信）
+不对公众开放通话的移动业务，用于提供执行或指挥私人航空器活动所需的必要通信。
+
+MULTIPLE RUNWAYS / MULTIPLE RUNWAYS（多跑道运行）
+在可行时利用专用到达跑道起飞、专用起飞跑道降落，以减少延误并提升容量。
+
+MVA / MVA（最低向量高度）
+雷达管制员对IFR航空器进行雷达引导的最低MSL高度，符合IFR障碍物清除标准。仅在确认收到足够雷达回波时使用，通常仅管制员可见。
+
+NAS / NAS（国家空域系统）
+参考条目：美国空域网络及设施、机场、航图、规则、人员物资等的总和，含与军方共享部分。
+
+NAT HLA / NAT HLA（北大西洋高空空域）
+参考条目：Bodo、Gander等海洋管制区内在FL285至FL420之间的空域体积，排除Shannon和Brest过渡区。
+
+NATIONAL AIRSPACE SYSTEM / NATIONAL AIRSPACE SYSTEM（国家空域系统）
+美国空域网络及设施、机场、航图、规则、人员物资等的总和，含与军方共享部分。
+
+NATIONAL BEACON CODE ALLOCATION PLAN AIRSPACE (NBCAP) / NBCAP空域
+北美大陆美加墨之间及邻近领水至海洋管制区边界的空域，用于国家应答机代码分配计划。
+
+NATIONAL FLIGHT DATA DIGEST (NFDD) / NFDD（国家飞行数据摘要）
+除周末和联邦假日外每日发布的出版物，提供图表、NOTAM等中的关键操作飞行数据。
+
+NATIONAL SEARCH AND RESCUE PLAN / NATIONAL SEARCH AND RESCUE PLAN（国家搜救计划）
+跨机构协议，规定在所有类型搜救任务中有效利用所有可用设施。
+
+NATIONAL SECURITY AREA (NSA) / NSA（国家安全区）
+参考条目：为保障地面设施安全而设立的空域，建议自愿避开；必要时可通过TFR临时禁止飞行。属特殊使用空域。
+
+NAVAID / NAVAID（导航辅助设备）
+参考条目：任何机载或地面的视觉或电子设备，为飞行中航空器提供点对点引导信息或位置数据。
+
+NAVAID CLASSES / NAVAID CLASSES（导航设备等级）
+VOR、VORTAC和TACAN按用途分为T（终端）、L（低空）、H（高空）三类，服务距离受检查和地形影响。
+
+NAVIGABLE AIRSPACE / NAVIGABLE AIRSPACE（可飞空域）
+包括CFRs规定的最低飞行高度及以上空域，以及起降所需空域。
+
+NAVIGATION REFERENCE SYSTEM (NRS) / NRS（导航参考系统）
+美国境内用于不依赖地面导航设备的飞行计划和导航的航点系统，位于经纬线网格上，FL180以上可用。
+
+NAVIGATION SPECIFICATION [ICAO] / NAVIGATION SPECIFICATION [ICAO]（导航规范）
+支持特定空域基于性能的导航操作的飞机和机组要求。分RNP（含监控告警）和RNAV两类。
+
+NAVIGATIONAL AID / NAVIGATIONAL AID（导航辅助设备）
+任何机载或地面的视觉或电子设备，为飞行中航空器提供点对点引导信息或位置数据。
+
+NBCAP AIRSPACE / NBCAP AIRSPACE（NBCAP空域）
+参考条目：北美大陆美加墨之间及邻近领水至海洋管制区边界的空域，用于国家应答机代码分配计划。
+
+NDB / NDB（无方向性信标）
+参考条目：发射非定向信号的无线电信标，配合测向设备确定方位。若与ILS指点标同址常称罗盘定位器。
+
+NEGATIVE / NEGATIVE（否定/未获许可）
+意为“不”、“未获许可”或“不正确”。
+
+NEGATIVE CONTACT / NEGATIVE CONTACT（未见交通）
+飞行员通知ATC：先前通报的交通不在视线内；可能随后请求协助避让；或在特定频率无法联系ATC。
+
+NFDD / NFDD（国家飞行数据摘要）
+参考条目：除周末和联邦假日外每日发布的出版物，提供图表、NOTAM等中的关键操作飞行数据。
+
+NIGHT / NIGHT（夜间）
+民用暮光结束至次日民用暮光开始的时间段，以《天文年历》为准并转换为当地时间。
+
+NIGHT [ICAO] / NIGHT [ICAO]（夜间 [ICAO]）
+民用暮光结束至次日民用暮光开始的小时数，或当局指定的日落至日出期间。民用暮光指太阳中心低于地平线6度。
+
+NO GYRO APPROACH / 无陀螺仪进近
+因罗盘故障，管制员通过雷达观察航迹并直接指令飞机转向或停止，而非提供具体航向。
+
+NO GYRO VECTOR / 无陀螺仪矢量
+参见“无陀螺仪进近”。在罗盘故障时，由管制员依据雷达轨迹发出转向指令代替标准航向引导。
+
+NO TRANSGRESSION ZONE (NTZ) / 非穿越区(NTZ)
+平行跑道或独立平行进近航道中间宽2000英尺的区域，通常禁止飞行进入。
+
+NONAPPROACH CONTROL TOWER / 非进近管制塔台
+负责交通流排序、起降许可及D类空域通行，并在仪表规则下与进近/中心管制分离飞机的地面管制设施。
+
+NONCOMMON ROUTE/PORTION / 非通用航段
+北美航线中从内陆导航台至指定终端区域的航段。
+
+NON-COOPERATIVE SURVEILLANCE / 非合作监视
+如一次雷达，不依赖机载应答设备的监视系统。
+
+NONDIRECTIONAL BEACON / 无方向性信标(NDB)
+发射无方向信号的无线电台，配备测向设备的飞机可据此确定方位或跟踪。常作为指点标使用时称罗盘定位器。
+
+NONMOVEMENT AREAS / 非活动区
+不受空中交通管制控制的滑行道和停机坪区域。
+
+NONPRECISION APPROACH / 非精密进近
+参见“非精密进近程序”。无电子下滑道指引的仪表进近程序。
+
+NONPRECISION APPROACH PROCEDURE / 非精密进近程序
+不提供电子下滑道的标准仪表进近程序，如VOR、NDB、LOC等。
+
+NONRADAR / 非雷达
+指不使用雷达的操作或环境。包括：无雷达进近（无地面精确/监视雷达引导）、非雷达进近管制、无雷达到达、非雷达航线（飞行员自主导航）及非雷达间隔（基于最小安全距离）。
+
+NON-RESTRICTIVE ROUTING (NRR) / 非限制性路由(NRR)
+允许用户规划最优航路且无需参考地基导航台的航段。
+
+NOPAC / 北太平洋航路(NOPAC)
+参见“北太平洋”。连接阿拉斯加西海岸与日本的有组织航路系统。
+
+NORDO (No Radio) / 无无线电通讯(NORDO)
+无法或不进行无线电通讯的状态，适用于需通讯但失效的情况。参见通信中断。
+
+NORMAL OPERATING ZONE (NOZ) / 正常作业区(NOZ)
+独立平行ILS进近期间飞机保持运行的正常区域。
+
+NORTH AMERICAN ROUTE / 北美航线
+经预编码连接沿海固定点的航线，含通用航段（内陆台至沿海点）和非通用航段（内陆台至终端）。
+
+NORTH AMERICAN ROUTE PROGRAM (NRP) / 北美航线计划程序(NRP)
+旨在提高用户在规定指南内飞行计划灵活性的规则和程序集合。
+
+NORTH ATLANTIC HIGH LEVEL AIRSPACE (NAT HLA) / 北大西洋高空空域(NAT HLA)
+FL285至FL420之间特定海洋管制区的空域体积，排除部分过渡区。
+
+NORTH PACIFIC / 北太平洋
+连接阿拉斯加西海岸与日本的有组织航路系统。
+
+NOT STANDARD / 非标准
+偏离预期或公布内容，仅用于NOTAM。
+
+NOT STD / 非标准(缩写)
+参见“非标准”。偏离预期或公布内容，仅用于NOTAM。
+
+NOTAM / 航行通告(NOTAM)
+参见“航行通告(NOTAM)”。包含对飞行操作至关重要的设施、服务或危险变更信息。
+
+NOTAM [ICAO] / 航行通告[ICAO]
+包含航空设施、服务、程序或危害信息的通知，其及时知晓对飞行人员至关重要。
+
+NOTICE TO AIRMEN (NOTAM) / 航行通告(NOTAM)
+包含国家空域系统中设施、服务、程序或危害变更信息的通知，这些信息未及时公开但对飞行操作至关重要。包括NOTAM(D)远距离发布和FDC NOTAM法规性发布。
+
+NRR / 非限制性航路
+允许飞行员在飞行计划中自主规划最具优势航路的航段，无需依赖地面导航台。
+
+NRS / 导航参考系统
+美国境内用于飞行计划和导航的航点系统，位于经纬网格上，供具备点对点导航能力的飞机在FL180及以上高度使用。
+
+NUMEROUS TARGETS VICINITY (LOCATION) / 附近目标众多
+管制员通报雷达屏幕上的目标过多，无法逐一提供交通咨询时使用的术语。
+
+OBSTACLE / 障碍物
+固定地理位置的现有物体、自然生长物或地形，或预期存在于特定区域内的物体，飞行操作需为其提供垂直净空。
+
+OBSTACLE DEPARTURE PROCEDURE (ODP) / 障碍物离场程序
+为IFR飞行预设的文本或图形离场程序，提供从终端区到航路结构的最简障碍净空路径。除非ATC指定其他程序，否则无需许可即可飞行。
+
+OBSTACLE FREE ZONE / 无障碍区
+保护飞机起降过渡的三维空域，禁止滑行、停放飞机及物体侵入（除刚性导航设施外），包含跑道、内进近和内过渡无障碍区。
+
+OBSTRUCTION / 超限物
+任何超过14 CFR Part 77子部分C规定的障碍物标准的物体或障碍物。
+
+OBSTRUCTION LIGHT / 障碍物灯
+通常安装在建筑物或自然地形的红色或白色灯光，用于警示飞行员存在障碍物。
+
+OCEANIC AIRSPACE / 海洋空域
+被视为国际空域的公海上空空域，适用国际民航组织的分离标准和程序。空中交通管制服务责任由各国根据地理邻近性和资源情况承担。
+
+OCEANIC ERROR REPORT / 海洋误差报告
+当空中交通管制观察到符合FAA Order JO 7210.632定义的海洋误差时提交的报告。
+
+OCEANIC PUBLISHED ROUTE / 海洋公布航路
+在国际空域建立并在航图或航行资料中公布的航路，如航路图、NOTAM和航迹消息。
+
+OCEANIC TRANSITION ROUTE / 海洋过渡航路
+为将飞机进出有组织航迹系统而建立的航空交通服务航路。
+
+ODP / 障碍物离场程序
+为IFR飞行预设的文本或图形离场程序，提供从终端区到航路结构的最简障碍净空路径。除非ATC指定其他程序，否则无需许可即可飞行。
+
+OFF COURSE / 偏航
+描述飞机报告的位置点或在雷达上观测到的位置不在ATC批准的飞行航路上的情况。
+
+OFF-ROUTE OBSTRUCTION CLEARANCE ALTITUDE (OROCA) / 偏航超障高度
+公布的 altitude，在非山区提供1000英尺缓冲，山区2000英尺，美国境外ADIZ区域3000英尺。未评估导航信号覆盖，用于态势感知和应急。
+
+OFF‐ROUTE VECTOR / 偏航向量
+管制员引导飞机离开先前指定航路的雷达引导向量。分配的 altitude 提供所需的障碍物净空。
+
+OFFSET PARALLEL RUNWAYS / 偏移平行跑道
+中心线平行但纵向错开的跑道布局。
+
+OFFSHORE/CONTROL AIRSPACE AREA / 近海/管制空域区
+美国12海里限制与海洋CTA/FIR边界之间的空域，实施空中交通管制。分为A类或E类空域。
+
+OFT / 外测距点时间
+计算出的离开外测距点的时间，以便在预计到达限制时间穿过顶点。反映下降速度调整和必须吸收的延误时间。
+
+OM / 外指点标
+位于ILS进近下滑道截获高度的指点信标，以每秒两划频率发射，通常位于跑道入口前4至7英里处。
+
+ON COURSE / 航线上
+指示飞机已建立在规定航路中心线上。用于管制员告知雷达进近的飞机已对准最后进近航道。
+
+ON‐COURSE INDICATION / 航向指示
+仪表上提供的视觉指示，表明飞机位于给定导航航迹的中心线上，或雷达屏幕上显示飞机在该航迹上。
+
+ONE‐MINUTE WEATHER / 一分钟天气
+飞行员从不控制机场的ASOS/AWOS接收到的最新一分钟更新天气广播。
+
+ONER / 海洋导航误差报告
+见OCEANIC NAVIGATIONAL ERROR REPORT。
+
+OOP / 人员上方运行
+小型无人机在人员上空运行的操作，参见OPERATIONS OVER PEOPLE条目。
+
+OPEN LOOP CLEARANCE / 开环许可
+提供不包含返回航路点的横向矢量引导的许可方式。
+
+OPERATIONAL / 运行中
+指国家运营航空器的机长承担与其他航空器保持间隔责任的飞行阶段，参见DUE REGARD条目。
+
+OPERATIONS OVER PEOPLE (OOP) / 人员上方运行
+小型无人机在人员上空的操作，受14 CFR第107部分监管。
+
+OPERATIONS SPECIFICATIONS [ICAO] / 运行规范
+与航空承运人证书相关的授权、条件和限制，需符合运行手册中的规定。
+
+OPERATOR (UAS) / 运营商
+无人驾驶航空系统的拥有者和/或远程飞行员。
+
+OPPOSITE DIRECTION AIRCRAFT / 对向航空器
+沿同一航迹反向飞行；或航迹平行且反向飞行；或航迹相交角度超过135度的航空器。
+
+OPTION APPROACH / 选择进近
+由飞行员请求并执行的进近，结果可能是轻落重飞、复飞、低空通场、停飞着陆或全停着陆。若决定留在跑道上或有延误需通知ATC。
+
+ORGANIZED TRACK SYSTEM / 有组织航路系统
+固定且标绘的ATS航路系列（如CEP、NOPAC），或由NOTAM描述的灵活航路（如NAT TRACK MESSAGE）。
+
+OTR / 洋区过渡航路
+用于在航空器与有组织航路系统之间转换的ATS航路，参见OCEANIC TRANSITION ROUTE条目。
+
+OTS / 有组织航路系统
+固定且标绘的ATS航路系列，或由NOTAM描述的灵活航路，参见ORGANIZED TRACK SYSTEM条目。
+
+OUT / 结束通话
+表示对话已结束，且不期望收到回复。
+
+OUT OF SERVICE/UNSERVICEABLE (U/S) / 非可用/故障
+设备、导航台、设施或服务未处于运行状态，未获认证（如需）且立即不可供空中交通或公众使用。
+
+OUTER AREA (associated with Class C airspace) / 外区
+C类空域机场周围的非管制空域，ATC在此提供雷达引导和排序服务，包括IFR/IFR分离及交通咨询等。半径通常20海里。
+
+OUTER COMPASS LOCATOR / 外指点标信标台
+安装在仪表着陆系统外指点标位置的无方向信标台，用于约15英里范围内的导航，参见COMPASS LOCATOR条目。
+
+OUTER FIX / 外部定位点
+终端区内除最后进近定位点外的定位点统称；或进入计量定位点前，已计算并显示穿越时间的改航路线适配定位点。
+
+OUTER FIX ARC / 外定位点弧线
+以计量定位点为中心、半径约50-70英里的半圆，用于计算外定位点穿越时间及确定到达航路上的扇区计量列表分配。
+
+OUTER FIX TIME / 外定位点时间
+为在ACL T处穿越顶点而计算的外定位点离港时间，反映下降速度调整及穿越计量定位点前需吸收的任何延误时间。
+
+OUTER MARKER / 外指点标
+位于ILS进近下滑道截获高度附近的指点标台，每秒发送两个短划信号，通常距跑道入口4至7英里。
+
+OVER / 呼叫完毕
+表示我的发射已结束，我期望收到回复。
+
+OVERHEAD MANEUVER / 越顶机动
+用于进入目视飞行规则交通模式并着陆的一系列预定机动动作，通常为编队执行。执行此机动时视为VFR，IFR飞行计划取消。
+
+OVERLYING CENTER / 上级中心
+负责特定终端区到达和出发操作的ARTCC设施。
+
+P TIME / 预计离港时间
+航空器预期升空的时间，参见PROPOSED DEPARTURE TIME条目。
+
+P‐ACP / 预先协调程序
+描述如何允许一架航空器穿透或穿越另一控制器空域而不需逐架协调的标准程序，以确保批准的间隔，参见PREARRANGED COORDINATION PROCEDURES条目。
+
+PAN‐PAN / PAN-PAN
+国际无线电紧急信号。重复三次表示不确定或警报，随后说明紧急性质。
+
+PAO / PAO
+参见公共航空器运行（PUBLIC AIRCRAFT OPERATION）。
+
+PAR / PAR
+参见精密进近雷达（PRECISION APPROACH RADAR）。
+
+PAR [ICAO] / PAR [ICAO]
+参见ICAO术语精密进近雷达（PRECISION APPROACH RADAR）。
+
+PARALLEL ILS APPROACHES / 平行ILS进近
+IFR飞机对平行跑道进行的进近。在相邻最终进近航道上建立时，由雷达保持至少2英里间隔。
+
+PARALLEL OFFSET ROUTE / 平行偏置航路
+指定或建立航路/路线左侧或右侧的平行轨迹。通常与区域导航（RNAV）操作相关。
+
+PARALLEL RUNWAYS / 平行跑道
+同一机场中心线平行的两条或多条跑道。除编号外，用L（左）、R（右）或C（中）标识。
+
+PBCT / PBCT
+参见预计边界穿越时间（PROPOSED BOUNDARY CROSSING TIME）。
+
+PBN / PBN
+参见ICAO术语基于性能的导航（PERFORMANCE-BASED NAVIGATION）。
+
+PDC / PDC
+参见预先离场许可（PRE-DEPARTURE CLEARANCE）。
+
+PDRR / PDRR
+参见预先离场改航（PRE-DEPARTURE REROUTE）。
+
+PERFORMANCE-BASED NAVIGATION (PBN) [ICAO] / 基于性能的导航 [ICAO]
+基于性能要求的区域导航，适用于ATS航路、仪表进近程序或指定空域。要求包括精度、完整性等。
+
+PERMANENT ECHO / 固定回波
+来自地面固定物体（如建筑、塔、地形）的雷达反射信号。区别于地物杂波，位置可定义，可用于检查雷达对准。
+
+PERTI / PERTI
+参见计划、执行、审查、训练、改进（PLAN, EXECUTE, REVIEW, TRAIN, IMPROVE）。
+
+PGUI / PGUI
+参见平面视图图形用户界面（PLANVIEW GRAPHICAL USER INTERFACE）。
+
+PHOTO RECONNAISSANCE / 照相侦察
+军事活动，需定位单个照片目标并按预定角度和高度导航至目标。通常需要16海里横向宽度和1500至10000英尺AGL的高度范围。
+
+PILOT BRIEFING / 飞行员简报
+收集、翻译、解释和总结天气及航空信息，供飞行员或飞行监督人员用于飞行计划和决策，以确保安全高效运行。
+
+PILOT IN COMMAND / 机长
+负责飞行期间航空器运行和安全的飞行员。参考14 CFR第91部分。
+
+PILOT INITIATED DOWNLINK (PID) / PID
+参见飞行员发起的下行链路（PILOT INITIATED DOWNLINK）。
+
+PILOT WEATHER REPORT / 飞行员气象报告
+关于飞机在飞行中遇到的气象现象的报告。
+
+PILOT'S DISCRETION / 飞行员自行决定
+结合高度分配使用时，意味着ATC允许飞行员随时开始爬升或下降，以任意速率进行，并可临时在任何中间高度平飞。但离开某高度后不得返回。
+
+PIREP / PIREP
+参见飞行员气象报告（PILOT WEATHER REPORT）。
+
+PITCH POINT / 俯仰点
+作为从离场程序或低空地基导航结构过渡到高空航路点系统的定点/航路点。
+
+PLAN, EXECUTE, REVIEW, TRAIN, IMPROVE (PERTI) / PERTI
+提供NAS运营一日详细计划和两日展望的过程，设定高影响约束下的NAS性能目标。包含计划、执行、审查、训练和改进阶段。
+
+PLANS DISPLAY / 计划显示
+EDST中提供文本格式的当前及试飞计划详情与预测冲突信息。
+
+PLANVIEW GRAPHICAL USER INTERFACE (PGUI) / 平面视图GUI
+TBFM提供的飞机航迹空间显示图形界面。
+
+POFZ / 精密障碍物净空区
+跑道入口中心线旁800x200英尺区域，保护低能见度下的精密进近飞机免受地面车辆干扰。
+
+POINT OUT / 雷达移交
+管制员将未转移无线电通信的航空器雷达识别权移交给另一管制员的行动。
+
+POINT‐TO‐POINT (PTP) / 点对点服务
+基于传统航路点或RNAV设备的NRR服务等级。
+
+POLAR TRACK STRUCTURE / 极地航路结构
+连接冰岛与阿拉斯加、覆盖加拿大MNPS空域的有组织航路系统。
+
+POSITION REPORT / 位置报告
+航空器向ATC在已知位置发送的报告。
+
+POSITION SYMBOL / 位置符号
+雷达屏幕上指示跟踪模式的计算机生成标识。
+
+POSITIVE CONTROL / 正序控制
+指定空域内由ATC对所有航空器实施的间隔保障。
+
+POWERED‐LIFT / 动力升力航空器
+依赖引擎升力垂直起降、水平飞行靠固定翼的重于空气航空器。
+
+PRACTICE INSTRUMENT APPROACH / 练习仪表进近
+为训练或熟练度演示进行的仪表进近程序。
+
+PRE-DEPARTURE CLEARANCE / 预先放行许可
+通过TDLS系统将文本放行信息发送至驾驶舱或打印机的应用。
+
+PRE-DEPARTURE REROUTE (PDRR) / 预先改道
+TFMS中快速修订并执行离场许可以缓解航路限制的能力。
+
+PREARRANGED COORDINATION / 预先协调
+无需口头协调即可进入他方空域的标准化程序。
+
+PREARRANGED COORDINATION PROCEDURES / 预先协调程序
+确保不逐个协调即可安全穿越他方空域的标准化设施程序。
+
+PRECIPITATION / 降水
+从大气降落至地面的雨、雪、冰雹等水滴形态。
+
+PRECISION APPROACH / 精密进近
+参见精密进近程序。
+
+PRECISION APPROACH PROCEDURE / 精密进近程序
+提供电子下滑道或其他引导路径的标准仪表进近程序，如ILS。
+
+PRECISION APPROACH RADAR / 精密进近雷达
+监测最终进近方位、仰角和距离并指导飞行员着陆的雷达设备。
+
+PRECISION APPROACH RADAR [ICAO] / 精密进近雷达[ICAO]
+确定最终进近阶段航空器相对于名义航径偏差及距离的雷达。
+
+PRECISION OBSTACLE FREE ZONE (POFZ) / 精密障碍物净空区
+保护低能见度下精密进近飞机的跑道入口旁特定区域。
+
+PRECISION RUNWAY MONITOR (PRM) SYSTEM / 精密跑道监控系统
+提供高更新率数据以监控NTZ、支持平行PRM进近的监视系统。
+
+PREDICTIVE WIND SHEAR ALERT SYSTEM (PWS) / 预测风切变警报系统
+机载系统，预警前方潜在风切变，辅助起飞中止或复飞决策。
+
+PREFERRED IFR ROUTES / 推荐IFR航路
+为平衡高密度终端流量而建立的繁忙机场间标准航路。
+
+PRE‐FLIGHT PILOT BRIEFING / 飞行前飞行员简报
+收集、翻译、解释和总结天气及航务信息，供飞行员或飞行管理人员用于飞行计划制定和安全决策。包括气象观测、预报、NOTAM等，参见PILOT BRIEFING。
+
+PREVAILING VISIBILITY / prevailing visibility
+指在机场范围内普遍存在的能见度，由大气条件决定并以距离单位表示，参见VISIBILITY（能见度）。
+
+PRIMARY RADAR TARGET / 一次雷达目标
+雷达显示器上呈现的模拟或数字目标，特指非二次雷达（应答机）回波形成的目标。
+
+PRIOR PERMISSION REQUIRED (PPR) / 需事先许可(PPR)
+指使用跑道、滑行道、停机坪或机场设施/服务前必须获得的事先许可。通知方式通常为电话或无线电。若NOTAM中同时包含PPR和其他例外，PPR应排在前面。
+
+PRM / 精密进近雷达监视(PRM)
+一种GPS进近程序，需垂直引导，用于平行跑道间距小于4300英尺但至少3000英尺且允许同时紧密进近的情况；也可用于替代ILS PRM或LDA PRM进行SOIA操作。参见PRM APPROACH及PRECISION RUNWAY MONITOR SYSTEM。
+
+PRM APPROACH / PRM进近
+针对间距小于4300英尺且至少3000英尺的平行跑道执行的仪表进近（如ILS PRM、RNAV PRM等），允许独立紧密进近。需增强显示、无穿越区(NTZ)及特殊培训。在SOIA操作中，一条为直线进近，另一条为偏移进近。
+
+PROCEDURAL CONTROL [ICAO] / 程序管制[ICAO]
+指在提供空中交通管制服务时，不需要依赖空中交通服务监视系统所派生信息的管制方式。
+
+PROCEDURAL SEPARATION [ICAO] / 程序间隔[ICAO]
+在执行程序管制期间所使用的航空器间隔标准。
+
+PROCEDURE TURN / 程序转弯
+为建立航空器于中间进近段或最后进近航道而反向飞行的规定机动。指定了 outbound 航向、转弯方向、完成距离及最低高度；除非另有规定，开始转弯点及类型由飞行员酌情决定。参见ICAO术语PROCEDURE TURN。
+
+PROCEDURE TURN [ICAO] / 程序转弯[ICAO]
+一种机动动作：先偏离指定航迹转弯，再反向转弯，以截获并沿指定航迹的反向航迹飞行。根据初始转弯方向分为左/右程序转弯；可根据情况在平飞或下降中执行。
+
+PROCEDURE TURN INBOUND / 程序转弯入航
+程序转弯机动中，完成反向飞行并建立于中间进近段或最后进近航道上的点。ATC通常以此作为位置报告用于间隔目的。参见FINAL APPROACH COURSE及PROCEDURE TURN。
+
+PROFILE DESCENT / 连续下降剖面
+从巡航高度/平飞层不间断下降至截获下滑道或非精密进近的初始/中间进近段指定最低高度。仅在需要速度调整（如10,000英尺以下250节）时可平飞。通常在通过进近门或截获下滑道/最低高度时终止。
+
+PROGRESS REPORT / 进度报告
+即位置报告(PROPOSITION REPORT)。指航空器向ATC发送的关于已知位置的信息。
+
+PROGRESSIVE TAXI / 渐进式滑行
+向不熟悉机场的飞行员提供的精确滑行指令，或随飞机沿滑行路线行进分阶段发布的指令。
+
+PROHIBITED AREA / 禁飞区
+根据14 CFR第73部分指定的空域，未经使用机构许可，禁止任何人在此运行航空器。属于特殊用途空域的一种。参见SPECIAL USE AIRSPACE。
+
+PROHIBITED AREA [ICAO] / 禁飞区[ICAO]
+在国家陆地领土或领水之上定义的特定尺寸空域，在此空域内禁止航空器飞行。
+
+PROMINENT OBSTACLE / 显著障碍物
+满足以下条件之一的障碍物：1.超出周围地形表面并立即对飞行构成明显危险；2.距起飞端10海里内且高出起飞端标高300英尺以上，穿透离场超障面(OCS)；3.距机场10海里外，需障碍离场程序(ODP)以确保避让。参见OBSTACLE。
+
+PROPELLER (PROP) WASH (PROP BLAST) / 螺旋桨洗流
+由螺旋桨运动产生的扰动气流质量，也称螺旋桨吹流。
+
+PROPOSED BOUNDARY CROSSING TIME / 预计边界跨越时间(PBCT)
+每个中心为内部机场设定的参数。若从起飞机场到中心边界的预计飞行时间小于或等于PBCT值，或机场适配要求无论PBCT如何均传输，则内部飞行计划将传送给相邻中心。
+
+PROPOSED DEPARTURE TIME / 预计起飞时间
+航空器期望离地升空的时间。
+
+PROTECTED AIRSPACE / 受保护空域
+海洋航线/航迹两侧的空域，宽度等于横向间隔最小值的一半，除非已授权减少受保护空域。
+
+PROTECTED SEGMENT / 受保护段
+修改后的TFM航路上的一个段，旨在防止ERAM系统进行自动适配航路更改。
+
+PT / PT
+即程序转弯(PROCEDURE TURN)。一种机动动作，先偏离指定航迹转弯，再反向转弯，以截获并沿指定航迹的反向航迹飞行。
+
+PTP / 点对点(PTP)
+基于FMS中传统航路点或RNAV设备的一种NRR服务水平。
+
+PTS / 极迹结构
+冰岛与阿拉斯加之间经过加拿大MNPS空域的组织化航路系统。
+
+PUBLIC AIRCRAFT OPERATION (PAO) / 公共航空器运行
+符合公共航空器运行资格和条件的无人驾驶航空器运行。
+
+PUBLISHED INSTRUMENT APPROACH PROCEDURE VISUAL SEGMENT / 公布仪表进近程序可视段
+标注为“飞至机场”或“飞”的进近图段，指示目视飞行路径，需保持目视条件并配合仪表或导航技术飞行。
+
+PUBLISHED ROUTE / 公布航路
+已建立并公布IFR高度的航路，如联邦航路、喷气机航路、区域导航航路和指定直飞航路。
+
+PWS / 预测风切变警报系统
+机载系统，用于在飞机前方3英里及左右25度范围内（1200英尺以下）探测潜在风切变并向机组发出警报。
+
+Q ROUTE / Q航路
+美国使用的公布RNAV航路的代号。
+
+QFE / QFE气压
+机场标高或跑道入口处的大气压力。
+
+QNE / QNE气压
+用于标准高度表拨正值的气压值（29.92英寸汞柱）。
+
+QNH / QNH气压
+特定气象站报告的气压值。
+
+QUADRANT / 象限
+以导航台为中心、从磁北顺时针划分的四分之一圆区域：东北(000-089)、东南(090-179)、西南(180-269)、西北(270-359)。
+
+QUEUING / 排队
+根据离场点、预计离场时间等限制，在机场指定活动区域内安排、整合和隔离离场飞机的过程。
+
+QUICK LOOK / 快速查看
+EAS和STARS系统的功能，允许管制员显示其他管制席位跟踪飞机的完整数据块。
+
+RAD / 航路修正对话框
+交通流管理系统中的功能，允许交通管理人员提交或编辑单个或多个航班的航路修正申请。
+
+RADAR / 雷达
+通过测量无线电脉冲往返时间及波束方向来确定目标距离、方位和/或高度的设备。包括利用反射信号的一次雷达和利用应答机信号的二次雷达。
+
+RADAR [ICAO] / 雷达[ICAO]
+提供目标距离、方位和/或高度信息的无线电探测设备。一次雷达使用反射信号，二次雷达由地面信号触发机载信号传输。
+
+RADAR ADVISORY / 雷达咨询
+基于雷达观测提供的建议和情报服务。
+
+RADAR ALTIMETER / 雷达高度表
+利用无线电波从地面反射的原理，测定飞机相对于地表高度的机载设备。
+
+RADAR APPROACH / 雷达进近
+利用精密进近雷达或机场监视雷达执行的仪表进近程序。
+
+RADAR APPROACH [ICAO] / 雷达进近[ICAO]
+在雷达管制员指挥下执行的进近操作。
+
+RADAR APPROACH CONTROL FACILITY / 雷达进近管制设施
+使用雷达和非雷达能力为终端区起降或过境飞机提供进近管制服务的ATC设施，可由FAA或军方运营。
+
+RADAR ARRIVAL / 雷达到达
+抵达由雷达设施服务的机场并与该设施保持雷达联系的飞机。
+
+RADAR BEACON / 雷达信标
+提供目标距离、方位和/或高度信息的无线电探测设备。一次雷达使用反射信号，二次雷达由地面信号触发机载信号传输。
+
+RADAR CLUTTER [ICAO] / 雷达杂波[ICAO]
+雷达显示器上非期望信号的视觉指示。
+
+RADAR CONTACT / 雷达接触
+ATC通知飞机已被识别并将提供雷达引导，直至服务终止；飞行员自动停止在强制报告点的位置汇报。
+
+RADAR CONTACT [ICAO] / 雷达接触
+管制员在雷达显示器上看到并识别出特定航空器的光点或位置符号。
+
+RADAR CONTACT LOST / 失去雷达接触
+ATC通报因气象、地形遮挡、设备故障等原因，不再接收或无法可靠获取航空器位置数据，停止提供雷达服务。
+
+RADAR ENVIRONMENT / 雷达环境
+可能提供雷达服务的区域。参考：附加服务、雷达接触、雷达服务、交通建议。
+
+RADAR FLIGHT FOLLOWING / 雷达飞行跟踪
+管制员保持并关联已识别航空器身份与其目标显示，主要导航由飞行员执行时的观察过程。参考：雷达接触、雷达服务。
+
+RADAR IDENTIFICATION / 雷达识别
+确认观测到的雷达目标确认为特定航空器回波的过程。参考：雷达接触、雷达服务。
+
+RADAR IDENTIFIED AIRCRAFT / 雷达识别航空器
+其位置已与雷达显示器上观测到的目标或符号相关联的航空器。参考：雷达接触、失去雷达接触。
+
+RADAR MONITORING / 雷达监控
+雷达服务的一种。利用雷达向航空器提供关于偏离标准飞行路径的信息和建议。参考：雷达服务。
+
+RADAR NAVIGATIONAL GUIDANCE / 雷达导航引导
+雷达服务的一种。通过雷达直接提供的导航引导服务。参考：雷达服务。
+
+RADAR POINT OUT / 雷达移交
+当航空器将进入另一管制区且无线电通信不转移时，管制员将其雷达识别权移交给其他管制员的动作。
+
+RADAR REQUIRED / 要求雷达
+图表或NOTAM中标注术语，提示该航段因导航台缺失不可用，需依赖雷达引导。参考：雷达航路、雷达服务。
+
+RADAR ROUTE / 雷达航路
+航空器被指挥飞行的路径，由ATC提供导航引导和高度分配。参考：飞行航径、航路。
+
+RADAR SEPARATION / 雷达间隔
+雷达服务的一种。基于雷达源的位置信息，按既定最小值对航空器进行间隔配置。参考：雷达服务。
+
+RADAR SERVICE / 雷达服务
+涵盖基于雷达的服务统称：监控（观察偏航）、导航引导（向量引导）、间隔（雷达间距）。参考：附加服务、交通建议。
+
+RADAR SERVICE [ICAO] / 雷达服务[ICAO]
+指示通过雷达直接提供的服务。包括监控（偏离提醒）和间隔（基于雷达源的间隔）。
+
+RADAR SERVICE TERMINATED / 终止雷达服务
+ATC通知不再提供雷达服务。某些情况下如取消IFR计划、落地或改频，服务自动终止且无需通报。
+
+RADAR SURVEILLANCE / 雷达监视
+对特定地理区域进行雷达观测，以执行某项雷达功能。
+
+RADAR TRAFFIC ADVISORIES / 雷达交通建议
+警告飞行员注意已知或观测到的可能影响其预定航路的雷达交通。参考：交通建议。
+
+RADAR TRAFFIC INFORMATION SERVICE / 雷达交通信息服务
+参考：交通建议。基于视觉、雷达或口头报告发布，不免除飞行员目视避让责任。参考：交通建议。
+
+RADAR VECTORING [ICAO] / 雷达矢量[ICAO]
+基于雷达使用，以具体航向形式向航空器提供导航引导。
+
+RADIAL / 径向线
+从VOR/VORTAC/TACAN导航设施延伸出的磁方位角。
+
+RADIO / 无线电
+用于通信的设备。常指飞行服务站，如“西雅图无线电”即呼叫西雅图FSS。
+
+RADIO ALTIMETER / 无线电高度表
+利用地面反射无线电波来确定航空器相对于地表高度的机载设备。
+
+RADIO BEACON / 无线电信标
+参考：无方向信标。发射非定向信号，供配备测向设备的航空器确定方位。参考：无方向信标。
+
+RADIO-CONTROLLED (RC) / 无线电遥控(RC)
+通过无线电传输控制信号操作远程设备，如遥控模型飞机。
+
+RADIO DETECTION AND RANGING / 无线电测距
+即雷达。利用反射或应答无线电信号，提供目标距离、方位和/或高度信息的设备。
+
+RADIO MAGNETIC INDICATOR / 无线电磁指示器
+与陀螺罗盘等结合的导航仪表，显示选定导航台的方位及相对于飞机航向的偏角。
+
+RAIS / 远程机场信息服务
+由非着陆机场设施提供的临时服务，具备通信能力并向飞行员自动播报着陆机场天气。
+
+RAMP / 停机坪
+机场陆地指定区域，用于飞机上下客货、加油、停放或维修。
+
+RANDOM ALTITUDE / 随机高度
+飞行方向不适宜或不符合垂直间隔最小标准的高度。
+
+RANDOM ROUTE / 随机航线
+未建立、未绘图出版或未对所有用户开放的航线。
+
+RC / 无线电遥控
+通过无线电传输控制信号操作远程设备，如模型飞机。
+
+RC / 道路侦察
+沿道路、铁路、河流飞行的军事活动，通常需10至30海里宽度及特定低空空域。
+
+RCAG / 远程中心空对地设施
+无人值守VHF/UHF收发设施，扩展空管通信覆盖，便于飞行员与管制员直接联系。
+
+RCC / 救援协调中心
+负责在指定区域内协调和控制搜救行动的设施，由海岸警卫队或空军运营。
+
+RCO / 远程通信出口
+由空管人员远程控制的无人通信设施，延伸空管设施的通信范围。
+
+RCR / 跑道状况读数
+空管转发的数值减速计读数，供飞行员判断跑道刹车效能，主要供美军使用。
+
+READ BACK / 复诵
+将收到的指令重复回传给发送方以确认接收正确。
+
+RECEIVER AUTONOMOUS INTEGRITY MONITORING (RAIM) / 接收机自主完整性监测
+民用GNSS接收机通过冗余伪距测量的一致性检查，独立确定导航信号完整性的技术。
+
+RECEIVING CONTROLLER / 接收管制员
+从另一管制员或设施处接收航空器管制权的管制员或设施。
+
+RECEIVING FACILITY / 接收设施
+同接收管制员，指接收航空器管制权的设施。
+
+RECONFORMANCE / 重新符合
+使航空器的当前计划轨迹与其实际航迹保持一致的自动化过程。
+
+RECREATIONAL FLYER / 娱乐飞行员
+根据美国法典第49编第44809条规定，操作小型无人驾驶航空器的飞行员。
+
+REDUCE SPEED TO (SPEED) / 减速至（速度）
+要求飞行员调整速度至指定值以实现所需间隔的程序，允许误差为正负10节或0.02马赫。
+
+REDUCED VERTICAL SEPARATION MINIMUM (RVSM) AIRSPACE / 缩小垂直间隔空域
+FL290至FL410之间，合格航空器间垂直间隔为1000英尺的空域。
+
+REFINED HAZARD AREA (RHA) / 精细化危险区
+发射或再入任务失败后定义的更精确的空域，比应急危险区更简洁地描绘危险位置。
+
+REIL / 跑道端识别灯
+机场灯光系统的一部分，通常为成对闪光灯，帮助飞行员快速识别跑道入口。
+
+RELEASE TIME / 放行时间
+空管为分离离场航空器而发布的出发时间限制。
+
+RELEASE TIME [ICAO] / 放行时间
+航空器不得在此时间前获得进一步许可或在无线电失效时不得继续飞行的时间点。
+
+REMOTE AIRPORT INFORMATION SERVICE (RAIS) / 远程机场信息服务 (RAIS)
+由非着陆机场但具备通信和自动气象报告能力的设施提供的临时服务。
+
+REMOTE CENTER AIR/GROUND FACILITY (RCAG) / 远程中心空地设施 (RCAG)
+无人值守的VHF/UHF收发设施，用于扩展ARTCC的空地通信覆盖并促进飞行员与管制员直接联系。部分设施可能不具备紧急频率。
+
+REMOTE COMMUNICATIONS OUTLET (RCO) / 远程通信出口 (RCO)
+由空中交通管制人员远程控制的无人通信设施，服务于FSS或终端ATC。用于扩展通信范围，提供地面到地面的通信以发送航路许可等。
+
+REMOTE IDENTIFICATION (RID) / 远程识别 (RID)
+用于无人驾驶航空系统电子身份识别和安全监管的系统。
+
+REMOTE PILOT / 遥控驾驶员
+不依据49 USC §44809作为休闲飞行员的无人驾驶航空系统驾驶员。
+
+REMOTE PILOT IN COMMAND (RPIC) / 遥控机长 (RPIC)
+对无人驾驶航空系统的运行直接负责并具有最终决定权的驾驶员。
+
+REMOTE TRANSMITTER/RECEIVER (RTR) / 远程发射/接收器 (RTR)
+服务于终端ATC设施的无人通信设施，功能同远程通信出口 (RCO)，用于扩展通信范围。
+
+REPORT / 报告
+指示飞行员向ATC通报指定信息，如“经过Hamilton VOR时报告”。
+
+REPORTING POINT / 报告点
+相对于该位置报告飞机位置的地理点。包括强制性报告点。
+
+REPORTING POINT [ICAO] / 报告点 [ICAO]
+可用来报告飞机位置的特定地理位置。
+
+REQUEST FULL ROUTE CLEARANCE / 请求全航线许可
+飞行员请求ATC逐字宣读整个飞行路线的许可。用于在修订飞行计划后避免收到基于原计划的许可。
+
+REQUIRED NAVIGATION PERFORMANCE (RNP) / 所需导航性能 (RNP)
+定义空域内运行所需的导航性能声明；含RNP-X（精度值）、A-RNP（高级功能）、RNP空域、ANP/EPE（实际/估计位置误差）及LNAV/VNAV（横向/垂直导航）。
+
+REROUTE IMPACT ASSESSMENT (RRIA) / 改道影响评估 (RRIA)
+流量管理系统中的能力，用于在实施前定义和评估潜在改道的影响，包括需求（扇区负载）和性能（延误），防止溢出需求。
+
+RESCUE COORDINATION CENTER (RCC) / 救援协调中心 (RCC)
+配备人员以协调和控制指定区域内搜救行动的设施。由美国海岸警卫队和空军负责运营。
+
+RESCUE CO‐ORDINATION CENTRE [ICAO] / 救援协调中心 [ICAO]
+负责组织搜救服务和协调搜救区域内搜救行动的单位。
+
+RESOLUTION ADVISORY / 解决咨询
+TCAS II向飞行员显示的指示，建议增加垂直间隔的动作。分为正负及垂直速度限制咨询，分为纠正性或预防性。
+
+RESTRICTED AREA / 限制区
+根据14 CFR第73部分指定的空域，飞机飞行虽未完全禁止，但受特定条件限制。通常为联合使用，非使用时段可由ATC授权IFR/VFR运行。
+
+RESTRICTED AREA [ICAO] / 限制区 [ICAO]
+在国家陆地或领水之上定义的特定维度空域，飞机飞行需符合某些指定条件。
+
+RESUME NORMAL SPEED / 恢复正常速度
+ATC指示飞行员恢复飞机正常操作速度。用于终止无公布速度限制的调速，但不删除后续航段的公布程序速度限制。
+
+RESUME OWN NAVIGATION / 恢复自主导航
+ATC指示飞行员恢复自身导航责任。通常在雷达引导完成或雷达接触丢失时发布。
+
+RESUME PUBLISHED SPEED / 恢复公布速度
+ATC指示飞行员恢复适用于SID、STAR或其他仪表程序的公布速度限制。用于终止有公布速度限制的调速。
+
+RHA / 细化危险区 (RHA)
+ATC用语。发射或再入失败后定义和分布的空域，比应急危险区更精确地描绘危险位置。
+
+RID / 远程识别 (RID)
+无人驾驶航空系统电子身份识别和安全监管系统。参见REMOTE IDENTIFICATION。
+
+RMI / 无线电磁指示器 (RMI)
+与陀螺罗盘耦合的导航仪器，指示选定导航台的方向及相对于航空器航向的方位。
+
+RNAV / 区域导航
+参见AREA NAVIGATION (RNAV)。
+
+RNAV APPROACH / RNAV进近
+依赖机载区域导航设备进行引导的仪表进近程序。参见AREA NAVIGATION (RNAV)和INSTRUMENT APPROACH PROCEDURE。
+
+RNAV VISUAL FLIGHT PROCEDURE (RVFP) / RNAV目视飞行程序(RVFP)
+基于IFR计划执行的特殊目视程序，需ATC许可且使用批准RNAV系统沿公布航径飞行。不公布于联邦公报，需特定运行规范，无复飞程序及障碍物保护评估。
+
+ROAD RECONNAISSANCE (RC) / 道路侦察(RC)
+沿道路、铁路或河流进行的军事活动。航路通常非直线，侧向宽度10至30海里，高度范围500至10,000英尺AGL。
+
+ROGER / 罗杰(收到)
+表示已收到对方最后一条传输。不用于回答是非题。参见AFFIRMATIVE和NEGATIVE。
+
+ROLLOUT RVR / 接地RVR
+参见VISIBILITY。跑道视程指跑道上中线飞机驾驶员能看清跑道标志或灯光的距离。
+
+ROTOR WASH / 旋翼下洗气流
+直升机主旋翼产生的垂直向下气流现象。
+
+ROTORCRAFT / 旋翼航空器
+主要依靠一个或多个旋翼产生的升力支撑在空中的重于空气的航空器。
+
+ROUND-ROBIN FLIGHT PLAN / 往返飞行计划
+从起飞机场提交至中途目的地，再返回原起飞机场的单份飞行计划。
+
+ROUTE / 航路
+由水平面上一条或多条航迹组成的定义路径，飞机沿地表穿越。参见AIRWAY、JET ROUTE等。
+
+ROUTE ACTION NOTIFICATION / 航路动作通知
+EDST通知ADR/ADAR/AAR已应用于飞行计划。参见ATC PREFERRED ROUTE NOTIFICATION和EN ROUTE DECISION SUPPORT TOOL。
+
+ROUTE AMENDMENT DIALOG (RAD) / 航路修改对话框(RAD)
+交通流量管理系统中允许人员提交或编辑单个或多个航班航路修改的功能。
+
+ROUTE SEGMENT / 航路段(管制用语)
+由两个定位点、两个导航台或一个定位点和一个导航台定义的航路部分。参见FIX、ROUTE。
+
+ROUTE SEGMENT [ICAO] / 航路段(ICAO)
+飞行计划中由两个连续显著点定义的待飞航路段。
+
+RPIC / 远程机长(RPIC)
+参见REMOTE PILOT IN COMMAND。RPIC对无人驾驶航空器系统的运行负直接责任并拥有最终决定权。
+
+RRIA / 改航影响评估(RRIA)
+交通流量管理系统中用于实施前定义和评估潜在改航（含或不含英里间隔限制）的能力。评估需求与性能影响，确定是否减少拥堵且不造成过度溢出。
+
+RSA / 跑道安全区(RSA)
+围绕跑道的定义表面，旨在减少飞机冲出、未达或偏出跑道时的损坏风险。需平整排水，无危险物，仅保留功能必需的低冲击设施。
+
+RTR / 遥控收发信机(RTR)
+参见REMOTE TRANSMITTER/RECEIVER。服务于终端ATC设施的无人通信设施，扩展空管通信范围，可支持地空通信。
+
+RUNWAY / 跑道
+陆地机场为飞机起降准备的矩形区域。通常按磁方向四舍五入至10度的整数命名。参见PARALLEL RUNWAYS。
+
+RUNWAY [ICAO] / 跑道(ICAO)
+陆地机场为飞机着陆和起飞准备的定义矩形区域。
+
+RUNWAY CENTERLINE LIGHTING / 跑道中心线灯
+参见AIRPORT LIGHTING。机场灯光包括进近灯光系统、跑道边灯、接地带灯等，提供视觉引导和边界定义。
+
+RUNWAY CONDITION CODES (RwyCC) / 跑道状况代码(RwyCC)
+机场运营商提供的数值读数，指示跑道表面污染程度（1为差，6为干）。当任何区域小于6时需包含在ATIS中。
+
+RUNWAY CONDITION READING / 跑道状况读数
+由美国空军及部分民用基地空管员转发的减速度计读数，供飞行员判断刹车效应。通常仅转发给美国空军和国民警卫队飞机。
+
+RUNWAY CONDITION REPORT (RwyCR) / 跑道状况报告(RwyCR)
+机场运营商使用的数据收集表，关联污染物覆盖率、深度和类型，用于生成FICON NOTAM。
+
+RUNWAY END IDENTIFIER LIGHTS (REIL) / 跑道端识别灯 (REIL)
+参见机场灯光。指用于在进近时提供视觉引导的灯光系统，帮助飞行员将飞机对准跑道延长线中心线。
+
+RUNWAY ENTRANCE LIGHTS (REL) / 跑道入口灯 (REL)
+一排红色灯光，包括停止线上的第一盏灯，沿滑行道中心线向跑道边缘均匀分布，并在最后两盏灯与跑道中心线对齐处增加一盏灯。
+
+RUNWAY GRADIENT / 跑道坡度
+跑道两端或两点间的平均坡度，以百分比表示。当总坡度超过0.3%时，会在政府航图中标注。
+
+RUNWAY HEADING / 跑道磁航向
+与跑道延长中心线对应的磁方向，非 painted 编号。指令保持该航向时，飞行员应飞对应航向且不应用偏流修正。
+
+RUNWAY IN USE/ACTIVE RUNWAY/DUTY RUNWAY / 使用中的跑道/活跃跑道
+当前用于起飞或降落的任何跑道。多跑道运行时均视为活跃。在流量管理中，指指定的着陆配置或交通流向。
+
+RUNWAY LIGHTS / 跑道灯
+参见机场灯光。定义跑道侧向界限的灯光，通常间距约200英尺，亮度可控。还包括接地区灯光等进近引导设施。
+
+RUNWAY MARKINGS / 跑道标记
+参见机场标记辅助设施。用于跑道和滑行道的标记，以识别特定跑道、入口、中心线、等待线等。
+
+RUNWAY OVERRUN / 跑道冲出区
+军事航空专用术语。指位于跑道末端之外、与跑道同宽并包含肩部的稳定或铺设区域，居中于跑道延长中心线。
+
+RUNWAY PROFILE DESCENT / 跑道剖面下降
+供飞行员使用的仪表飞行规则进场程序，可能关联标准终端到达航线。提供从航路结构到执行仪表进近点的路由、高度、速度和航向信息。
+
+RUNWAY SAFETY AREA / 跑道安全区
+围绕跑道的指定表面，旨在减少飞机冲出、未落地或偏离跑道时的损坏风险。需清理、平整、排水，且无潜在危险物。
+
+RUNWAY STATUS LIGHTS (RWSL) SYSTEM / 跑道状态灯系统 (RWSL)
+一种跑道和滑行道灯光系统，通过点亮跑道入口灯或起飞等待灯，在跑道不适合进入、穿越或起飞时提高飞行员的情境意识。
+
+RUNWAY TRANSITION / 跑道过渡
+参见SID/STAR航段。指SID或STAR中连接航路飞行与跑道的航段部分。
+
+RUNWAY TRANSITION WAYPOINT / 跑道过渡航路点
+参见SID/STAR航段。在STAR上，定义公共航段或航路过渡结束及跑道过渡开始的导航台/定位点/航路点。
+
+RUNWAY USE PROGRAM / 跑道使用计划
+旨在减轻机场社区噪音的跑道选择计划。适用于重型涡轮喷气机，分为强制性和自愿性两种，由空中交通服务管理。
+
+RUNWAY VISUAL RANGE (RVR) / 跑道视程 (RVR)
+参见能见度。指位于跑道中心线的飞机驾驶员能看清跑道表面标志或界定跑道/中心线的灯光的距离。
+
+RVFP / RNAV目视飞行程序 (RVFP)
+参见RNAV目视飞行程序。一种在IFR飞行计划下执行的特殊目视飞行程序，使用批准RNAV系统保持发布路径至无仪表进近的跑道。需ATC许可。
+
+RwyCC / 跑道状况代码 (RwyCC)
+参见跑道状况代码。机场运营商提供的数值读数，指示跑道表面污染程度（如雪、冰、雨）。范围从1（差）到6（干），需在ATIS播报小于6的情况。
+
+RwyCR / 跑道状况报告 (RwyCR)
+参见跑道状况报告。机场运营商使用的数据收集工作表，关联跑道覆盖率、污染物深度和类型，用于创建FICON NOTAM。
+
+SAA / 感知与避让 (SAA)
+参见感知与避让。指无人驾驶航空器在运行期间检测（感知）并避免与其他航空器及障碍物碰撞的能力。
+
+SAFETY ALERT / 安全警报
+管制员发出的安全警报，当其认为航空器处于不安全接近地形、障碍物或其他航空器的高度时。包括地形/障碍物警报和航空器冲突警报。
+
+SAFETY LOGIC SYSTEM / 安全逻辑系统
+ASDE-3、ASDE-X和ASSC的软件增强功能，预测着陆/起飞航空器及跑道车辆移动路径。当预测潜在碰撞时激活视觉和听觉警报。
+
+SAFETY LOGIC SYSTEM ALERTS / 安全逻辑系统警报
+实际警报：预测 imminent 碰撞；虚假警报：由错误雷达目标生成；干扰警报：已知非不安全操作生成；有效非警报：正确判定无需警报；无效非警报：应发未发。
+
+SAIL BACK / 帆后退
+在高风条件下（通常动力关闭）的水上飞机机动动作，通过控制水舵或开关舱门来管理水上飞机的移动。
+
+SAME DIRECTION AIRCRAFT / 同向航空器
+航空器在同一方向运行时：遵循相同轨迹同向；或轨迹平行同向；或轨迹相交角度小于45度。
+
+SAR / 搜救
+参见“搜救”条目。
+
+SATELLITE-BASED AUGMENTATION SYSTEM (SBAS)  / 星基增强系统
+一种广域增强系统，用户通过卫星发射机接收增强信息。参见“广域增强系统”。
+
+SAW / 航空监视通知消息
+参见“航空监视通知消息”。
+
+SAY AGAIN / 请重复
+用于请求重复上一次传输。通常指定未听懂或未收到的部分，如“重复ABRAN VOR之后的所有内容”。
+
+SAY ALTITUDE / 报告高度
+管制员用于确认航空器具体高度或飞行层。爬升或下降时，飞行员应报出四舍五入到最近100英尺的指示高度。
+
+SAY HEADING / 报告航向
+管制员用于请求航空器航向。飞行员应报告航空器的实际航向。
+
+SCHEDULED TIME OF ARRIVAL (STA) / 预计到达时间
+航空器应飞越特定点（着陆或计量点）的预期时间。考虑其他交通和空域配置，由调度器根据间距、性能和天气计算得出。
+
+SE SAR / 监视增强搜救
+参见“监视增强搜救”条目。
+
+SEA LANE / 水上跑道
+由视觉水面标记划定的水域指定区域，供设计在水上运行的飞机使用。
+
+SEARCH AND RESCUE / 搜救
+寻找失踪飞机并协助获救者的服务。是联邦、州和地方机构的合作努力。海岸警卫队负责海上区域，空军负责内陆区域。信息应通过空中交通管制设施传递或直接电话通知救援协调中心。
+
+SEARCH AND RESCUE FACILITY / 搜救设施
+负责维护和运行搜救服务以援助遇险人员和财产的机构。包括任何可用于搜救任务的单位、站点或活动，如民防巡逻团大队或海岸警卫队站。
+
+SECNOT / 安全通告
+参见“安全通告”。
+
+SECONDARY RADAR TARGET / 二次雷达目标
+源自应答机返回信号并在雷达显示器上呈现的目标。
+
+SECTIONAL AERONAUTICAL CHARTS / 航图
+参见“航图”。
+
+SECTOR LIST DROP INTERVAL / 扇区列表删除间隔
+到达时间后多少分钟，到达航空器将从到达扇区列表中删除的参数。
+
+SECURITY NOTICE (SECNOT)  / 安全通告
+由空中交通安全协调员发起的请求，对涉及或疑似涉及安全违规、被视为安全风险的航空器进行广泛通信搜索。包含航空器识别、搜索区域和过期时间。过期即取消。
+
+SECURITY SERVICES AIRSPACE  / 安保空域
+通过监管程序或NOTAM设立的空域，要求提供ATC安保服务，如防空识别区或临时飞行规则区域。
+
+SEE AND AVOID / 目视避让
+在天气条件允许时，IFR或VFR飞行员必须观察并机动以避免与其他航空器相撞。让路规则见14 CFR第91部分。
+
+SEGMENTED CIRCLE / 分段圆
+一套视觉指示系统，旨在为没有运营控制塔的机场提供交通模式信息。
+
+SEGMENTS OF A SID/STAR / SID/STAR航段
+包括：航路过渡段（连接航路与SID/STAR）、公共航路段（服务于一个或多个跑道的单一路线）、跑道过渡段（从公共航段到跑道）。各段可能不存在特定过渡点。
+
+SEGMENTS OF AN INSTRUMENT APPROACH PROCEDURE / 仪表进近程序航段
+包括：初始进近段（IAF至中间点）、中间进近段（中间点至FAF）、最后进近段（FAF至跑道或复飞点）、复飞段（复飞点至指定高度修正点）。
+
+SELF‐BRIEFING / 自我简令
+使用自动工具审查所有影响飞行员规划、更改或取消预定飞行路线的气象和航空信息的过程。
+
+SENSE AND AVOID (SAA) / 感知与避让
+无人驾驶航空器在NAS运行时，探测并避免与其他航空器及地面或空中障碍物碰撞的能力。
+
+SEPARATION / 间隔
+空中交通管制中，为确保航空器在飞行、起飞和降落期间安全有序移动而保持的间距。参见“最小间隔”。
+
+SEPARATION [ICAO] / 间隔
+航空器之间、高度层或航迹之间的间距。
+
+SEPARATION MINIMA / 最小间隔标准
+通过应用空中交通管制程序，对航空器进行纵向、横向或垂直方向的最小间隔距离。参见间隔。
+
+SERVICE / 服务
+指由或来自空中交通管制提供的功能或协助的通用术语。例如C类服务指在C类空域内提供的ATC服务。
+
+SEVERE WEATHER AVOIDANCE PLAN (SWAP) / 严重天气规避计划
+经批准的旨在将严重天气对终端区及ARTCC区域交通流影响降至最低的计划，用于在恶劣天气导致部分空域难以飞行时减少对管制系统的干扰。
+
+SEVERE WEATHER FORECAST ALERTS / 严重天气预报警报
+为通知用户正在发布严重天气监视公报而发出的初步消息，定义可能发生的严重雷暴或龙卷风活动区域，由风暴预测中心按需不定期发布。
+
+SFA / 单频进近
+根据协议向军用单座涡喷飞机提供的服务，允许进近着陆期间使用单一UHF频率，通常无需在进近过程中切换频率。参见SINGLE FREQUENCY APPROACH。
+
+SFO / 模拟失速熄火
+喷气式飞机（通常为军用）以慢车推力进行的练习进近，旨在模拟发动机熄火。可终止于着陆或低空通场。参见FLAMEOUT。
+
+SGI / 特殊政府利益空域
+针对支持重大紧急政府利益活动的Part 91或107无人机实时空域授权，包括国防、国土安全、执法和应急行动。参见SPECIAL GOVERNMENT INTEREST。
+
+SHF / 超高频
+参见SUPER HIGH FREQUENCY。
+
+SHORT RANGE CLEARANCE / 短程许可
+发给离场IFR航班的许可，授权其飞往目的地之前的特定近距点，以便在管制设施协调并获取完整许可期间保持IFR飞行状态。
+
+SHORT TAKEOFF AND LANDING AIRCRAFT (STOL) / 短距起降飞机
+在其批准操作重量的某重量下，能在跑道上符合STOL特性、适航、运行、噪音及污染标准的飞机。参见垂直起降飞机。
+
+SIAP / 标准仪表进近程序
+参见INSTRUMENT APPROACH PROCEDURE。指从起始进近定位点开始，参考飞行仪表的一系列预定机动，直至完成着陆或进入等待/航路阶段。
+
+SID / 标准仪表离场
+为飞行员/管制员设计的预规划IFR离场程序，提供障碍物清除及从终端区到航路结构的过渡，旨在优化流量并减轻负荷。飞行前必须获得ATC许可。
+
+SIDESTEP MANEUVER / 侧方机动
+仪表进近完成后由飞行员执行的目视机动，允许在平行跑道（距离不超过1200英尺）上进行直线进近着陆。
+
+SIGMET / 重要气象情报
+关于危及所有航空器安全的显著天气的警告。涵盖严重湍流、结冰及能见度低于3英里的沙尘暴。参见AIRMET等。
+
+SIGMET INFORMATION [ICAO] / 重要气象情报信息
+气象监视办公室发布的关于发生或预期发生可能影响航空器安全运行的指定航路天气现象的信息。
+
+SIGNIFICANT METEOROLOGICAL INFORMATION / 重要气象信息
+即SIGMET。关于危及所有航空器安全的显著天气的警告，涵盖严重湍流、结冰及低能见度沙尘暴。参见SIGMET。
+
+SIGNIFICANT POINT / 显著点
+为提供间隔、作为报告点或描绘飞行路线而设立的特定点，如命名交叉点、导航台、衍生定位点或地理坐标。
+
+SIMULATED FLAMEOUT / 模拟失速熄火
+喷气式飞机以慢车推力进行的练习进近，旨在模拟发动机熄火。可终止于着陆或低空通场。参见FLAMEOUT。
+
+SIMULTANEOUS CLOSE PARALLEL APPROACHES / 同时接近平行进近
+允许在平行跑道（间距3000至4300英尺）上独立进行ILS/RNAV/GLS进近的操作。航空器可在同时操作中相互穿越，需雷达及增强型显示系统支持。
+
+SIMULTANEOUS (CONVERGING) DEPENDENT APPROACHES / 同时收敛依赖进近
+允许在非平行跑道或相交复飞航线上进行ILS/RNAV/GLS进近的操作，要求每条最终进近航线上航空器之间保持所需的最小间距。
+
+SIMULTANEOUS (CONVERGING) INDEPENDENT APPROACHES / 同时收敛独立进近
+允许在非平行跑道上进行ILS/RNAV/GLS进近的操作，程序设计中维持所需的航空器间距，使操作可独立进行。
+
+SIMULTANEOUS ILS APPROACHES / 同时ILS进近
+允许在中心线间距至少4300英尺的平行跑道上同时进行ILS进近的进近系统，包含ILS、雷达、通信及ATC程序等组成部分。
+
+SIMULTANEOUS OFFSET INSTRUMENT APPROACH (SOIA) / 同时偏移仪表进近
+一条跑道使用PRM进近，另一条使用偏移LDA或RNAV GLS进近，适用于间距750至3000英尺的平行跑道。航迹收敛2.5至3度，最后阶段利用目视间隔。
+
+SIMULTANEOUS (PARALLEL) DEPENDENT APPROACHES / 同时平行依赖进近
+允许在相邻平行跑道进行进近，但需保持规定的对角间隔。在此操作期间，飞机不得相互超越。
+
+SINGLE DIRECTION ROUTES / 单向航线
+通常仅沿单一方向飞行的首选IFR航路，有时显示于高空航图上。参见首选IFR航路及美国航图附录。
+
+SINGLE FREQUENCY APPROACH / 单频进近
+为军用单座涡喷飞机提供的服务，允许在进近着陆时使用单一UHF频率。除管制移交外，通常无需更改频率。DoD FLIP IFR补充资料中的“SFA”表示该服务可用。
+
+SINGLE‐PILOTED AIRCRAFT / 单座飞机
+指具有一套飞行控制、串联驾驶舱或由一名飞行员操作的军用涡喷飞机。ATC据此确定适用的空中交通服务。参见单频进近。
+
+SKYSPOTTER / 天空观测员
+接受过专门培训以观察和报告飞行中天气现象的飞行员。
+
+SLASH / 斜线
+雷达信标回复显示为拉长的目标符号。
+
+SLDI / 扇区列表删除间隔
+见扇区列表删除间隔：到达飞机从到达扇区列表中删除的时间参数，以计量点时间后分钟数计。
+
+SLOW TAXI / 慢速滑行
+以低功率或低转速使浮筒飞机滑行的操作。
+
+SMALL UNMANNED AIRCRAFT SYSTEM (sUAS) / 小型无人驾驶航空系统
+起飞重量小于55磅的无人驾驶航空器，包括机上及附着的所有物品。
+
+SMAR / 特殊军事活动航线
+见特殊军事活动航线。
+
+SN / 系统战略导航
+见系统战略导航：利用机载内部系统沿预定路线导航以维持期望航迹的军事活动。通常要求10海里横向宽度和1000至6000英尺AGL高度范围，部分路段允许贴地飞行。
+
+SPACE-BASED ADS-B (SBA) / 星基ADS-B
+接收ADS-B Out广播并转发给监视设施的人造卫星星座。目前部署的系统仅能接收配备1090ES的飞机信号，无法接收仅配备UAT的飞机。机身顶部装有应答机天线的飞机更易被接收。参见自动相关监视广播及自动相关监视广播出站。
+
+SPACE LAUNCH AND REENTRY AREA / 发射与再入区域
+发生商业航天发射和/或再入操作的地点。航图上使用火箭形状符号标示此类区域以提醒飞行员。
+
+SPEAK SLOWER / 语速放慢
+用于口头通信的请求，要求降低说话速度。
+
+SPECIAL ACTIVITY AIRSPACE (SAA) / 特殊活动空域
+在国家空域系统中具有明确尺寸的空域，可能因国防、国土安全等目的对操作施加限制。包括ATCAA、ALTRV、MTR、TFR等。特殊使用空域是其子集。参见特殊使用空域。
+
+SPECIAL AIR TRAFFIC RULES (SATR) / 特殊空中交通规则
+管理特定区域（14 CFR第93部分列出）飞行程序的规定。在美国用于描述法典指定区域的运行规则。参见14 CFR第93部分。
+
+SPECIAL EMERGENCY / 特殊紧急情况
+机上人员实施空中劫持或其他敌对行为，威胁飞机或乘客安全的状况。
+
+SPECIAL FLIGHT RULES AREA (SFRA) / 特殊VFR规则区域
+国家空域系统中受特殊空中交通规则约束的区域（除非获ATC授权）。并非所有第93部分列出的区域都指定为SFRA，但均适用特殊规则。参见14 CFR第93部分。
+
+SPECIAL GOVERNMENT INTEREST (SGI) / 特殊政府利益
+针对第91或第107部分无人机的近实时空域授权，支持国防、国土安全、执法及紧急行动等迫切政府利益。
+
+SPECIAL INSTRUMENT APPROACH PROCEDURE / 特殊仪表进近程序
+见仪表进近程序。特殊军事活动航线(SMAR)：可能在VFR分区图上显示的航线，展示分配给关联IFR军事训练路线的空域范围，国防部在此进行无人机系统定期操作。
+
+SPECIAL USE AIRSPACE / 特殊使用空域
+定义尺寸的地表上空区域，因活动性质限制活动或限制非参与航空器操作。类型包括：警报区（提示非参与者注意训练活动）、管制射击区（消除对非参与航空器危险）、军事作战区(MOA)（隔离非危险军事活动与IFR交通）、国家安全区(NSA)（建议自愿避开，必要时可设TFR禁止穿越）、禁区（未经许可不得进入）、限制区（受限制而非完全禁止）。参见航图和AIM。
+
+SPECIAL VFR CONDITIONS / 特殊VFR条件
+低于B、C、D、E类地表区域基本VFR要求的气象条件，在此条件下允许部分航空器按目视飞行规则飞行。参见特殊VFR运行及14 CFR第91部分。
+
+SPECIAL VFR FLIGHT [ICAO] / 特殊VFR飞行[ICAO]
+经空中交通管制许可，在气象条件低于目视气象标准的情况下，在B、C、D、E类地表区域内运行的VFR飞行。
+
+SPECIAL VFR OPERATIONS / 特殊VFR运行
+在低于基本VFR气象标准的B、C、D、E类地表区域内，根据许可运行的航空器操作。此类操作必须由飞行员请求并经ATC批准。参见特殊VFR条件和ICAO术语特殊VFR飞行。
+
+SPECIALIST / 飞行服务专员
+通过地空通信、面对面或技术手段直接提供服务的专业人员。
+
+SPEED / 速度
+见AIRSPEED和GROUND SPEED。AIRSPEED指相对气流的速率，通常指示空速；True Airspeed为真空速。
+
+SPEED ADJUSTMENT / 速度调整
+管制员要求飞行员将速度调整至指定值以维持间隔的指令。误差允许范围通常为±10节或0.02马赫。
+
+SPEED ADVISORY / 速度建议
+基于流量管理生成的建议，协助管制员满足定点预计到达时间。
+
+SPEED BRAKES / 减速板
+飞机上用于在下降和着陆期间降低空速的可动空气动力装置。
+
+SPEED SEGMENTS / 速度段
+进场路线中指定速度和高度限制的区段，连接过渡点与顶点，每套最多包含六个区段。
+
+SPOOFING / 欺骗
+发射类似GNSS信号导致接收器获取错误位置、导航或时间信息，甚至丧失GNSS使用能力的行为。
+
+SQUAWK (Mode, Code, Function) / 应答机编码
+管制员指令飞行员开启应答机和ADS-B Out并报告高度，或激活特定模式/代码的功能。
+
+STA / 预计到达时间
+飞机应飞越特定点（如着陆点或计量点）的理想时间，考虑了交通、空域配置及优化间隔等因素。
+
+STAGING/QUEUING / 排队/集结
+按离场点、EDCT或限制条件，在机场指定活动区域放置、整合和隔离离场飞机的过程。
+
+STAND BY / 稍等
+表示需暂停几秒处理更高优先级事务，或等待许可。非批准或拒绝，长时间延迟需重新建立联系。
+
+STANDARD INSTRUMENT APPROACH PROCEDURE (SIAP) / 标准仪表进近程序
+见INSTRUMENT APPROACH PROCEDURE。指依据仪表执行的一系列预定机动，确保从起始进近点到可完成着陆点的障碍保护。
+
+STANDARD INSTRUMENT DEPARTURE (SID) / 标准仪表离场程序
+预先规划的IFR离场程序，提供障碍物避让及从终端区到航路结构的过渡。必须获得ATC许可方可执行。
+
+STANDARD RATE TURN / 标准转弯率
+每秒转向三度的转弯速率。
+
+STANDARD TERMINAL ARRIVAL (STAR) / 标准终端进场航线
+预先规划的IFR进场程序，提供从航路结构到终端区外指点标或进近定位点的过渡。
+
+STANDARD TERMINAL ARRIVAL CHARTS / 标准终端进场图
+见AERONAUTICAL CHART。为满足航空导航需求而专门指定的地球部分及其文化、地形表现的图表。
+
+STANDARD TERMINAL AUTOMATION REPLACEMENT SYSTEM (STARS) / 终端自动化替代系统
+见DTAS。数字终端自动化系统，实时显示雷达和信标数据并监控系统性能。
+
+STAR / STAR
+即STANDARD TERMINAL ARRIVAL（标准终端进场航线）。提供从航路结构到终端区进近定位点的预先规划IFR进场程序。
+
+STATE AIRCRAFT / 国家航空器
+用于军事、海关、警察或政府专属服务的航空器，不包括从事商业运输的政府所有航空器。
+
+STATIC RESTRICTIONS / 固定限制
+通常不变更、已固定存在且已公布的限制措施。
+
+STATIONARY AIRSPACE RESERVATION / 静态空域保留
+海洋ATC术语，指在固定时间段内占用固定体积空域进行武器测试、海军行动或火箭发射等活动。
+
+STATIONARY ALTITUDE RESERVATION (STATIONARY ALTRV) / 静态高度保留
+在固定时间段内占用固定空域体积的高度保留，用于武器测试、海军反潜、火箭导弹或无人机操作等。
+
+STEP TAXI / 滑行起步
+水上飞机在全功率或高转速下滑行的操作。
+
+STEP TURN / 阶跃转弯
+水上飞机在进入跑道前调整为滑行姿态的机动，仅在飞行员请求时使用。
+
+STEPDOWN FIX / 下降定位点
+仪表进近程序中允许进一步下降的定位点，标识已安全飞越控制障碍物。
+
+STEREO ROUTE / 立体航路
+由用户和区域管制中心建立并命名的常规飞行路线，用于简化飞行计划处理及通信。
+
+STNR ALT RESERVATION / 静止高度保留
+NOTAM中常用的缩写，指代STATIONARY ALTITUDE RESERVATION。参见相关条目。
+
+STOL AIRCRAFT / 短距起降飞机
+能在特定重量下符合规定标准，从跑道起降的航空器。参见垂直起降飞机。
+
+STOP ALTITUDE SQUAWK / 停止高度报告应答
+管制员指令飞行员关闭应答机和ADS-B自动高度报告功能，通常因口头报告高度偏差过大而发出。
+
+STOP AND GO / 落地后复飞
+飞机在跑道上完全停稳后，随即从该点开始起飞的操作程序。参见低进近、选择进近。
+
+STOP BURST / 停止干扰
+管制员请求飞行员暂停电子攻击活动。参见STOP STREAM。
+
+STOP BUZZER / 停止蜂鸣器
+管制员请求飞行员暂停电子攻击活动。参见STOP STREAM。
+
+STOP SQUAWK (Mode or Code) / 停止应答（模式或代码）
+管制员指令飞行员停止应答机和ADS-B传输，或仅关闭指定功能。军用常用。参见停止高度报告应答。
+
+STOP STREAM / 停止流
+管制员请求飞行员暂停电子攻击活动。参见干扰。
+
+STOPOVER FLIGHT PLAN / 经停飞行计划
+允许单次提交包含一系列中途完整停留目的地直至最终目的地的飞行计划格式。
+
+STOPWAY / 停止道
+跑道延长线中心两侧等宽区域，用于中止起飞时减速且不造成结构损伤，由机场当局指定。
+
+STRAIGHT‐IN APPROACH IFR / 直进IFR进近
+未执行程序转弯即开始的仪表进近，不一定以直线着陆结束或使用直线着陆最低标准。参见着陆最低标准。
+
+STRAIGHT‐IN APPROACH VFR / 直进VFR进近
+不执行其他机动，直接切入跑道延长线（最后进近航道）进入交通流。参见交通流。
+
+STRAIGHT‐IN LANDING / 直线着陆
+完成仪表进近后，在偏离最后进近航道30度以内的跑道上进行的着陆。参见直进IFR进近。
+
+STRAIGHT‐IN LANDING MINIMUMS / 直线着陆最低标准
+指定跑道直线着陆所需的最低能见度及MDA或DH。参见着陆最低标准、决断高。
+
+STRAIGHT‐IN MINIMUMS / 直进最低标准
+参见直线着陆最低标准。
+
+STRATEGIC PLANNING / 战略规划
+寻求解决方案以解决潜在冲突的规划过程。
+
+sUAS / 小型无人机系统
+起飞重量小于55磅的无人驾驶航空器，含机上及附着物。参见小型无人机系统。
+
+SUBSTITUTE ROUTE / 替代航路
+当航路部分因导航台状态不可用时分配的路线，包括图表显示路线、ATC指定的径向线或直接连线。
+
+SUNSET AND SUNRISE / 日落与日出
+航海年历发布的平均太阳时，转换为当地标准时间。阿拉斯加地区指民用昏影终和晨光始。
+
+SUPPLEMENTAL WEATHER SERVICE LOCATION / 补充气象服务地点
+配备合同人员提供天气观测和当前当地天气信息的机场设施，其他服务由上级FSS提供。
+
+SUPPS / 补充程序
+指ICAO Doc 7030中的区域补充程序，包含各区域独有的且全球航行计划未涵盖的程序。
+
+SURFACE AREA / 地表空域
+B、C、D或E类空域的侧向边界内，从地表向上延伸的空域范围。
+
+SURFACE METERING PROGRAM / 表面计量程序
+终端飞行数据管理器功能，通过调整离场队列长度平衡地面交通需求与容量。预测资源供需失衡时建议执行计量程序。
+
+SURFACE VIEWER / 表面态势显示器
+流量管理系统功能，以俯视视角显示机场跑道、滑行道及实时飞机车辆位置。包含当前机场配置如起降跑道和流量率信息。
+
+SURPIC / 海面船舶情报
+搜救事故区域的海面船舶描述，含位置和特征。参考JO 7110.65第10-6-4条空中应急程序。
+
+SURVEILLANCE APPROACH / 雷达进近
+管制员依据雷达显示的方位和距离向飞行员发布指令的仪表进近。若飞行员请求，可提供最后进近阶段的推荐高度。
+
+SURVEILLANCE ENHANCED SEARCH AND RESCUE (SE SAR) / 监视增强型搜救
+增强搜救作业的自动化服务，为联邦合同飞行服务站专员提供来自航空器注册跟踪设备的直接信息。
+
+SUSPICIOUS UAS / 可疑无人机
+指未经授权操作、在敏感地点盘旋或导致空管系统中断（如跑道变更、地面停止）的无人机活动。需结合具体情境判断。
+
+SWAP / 恶劣天气避让计划
+参见SEVERE WEATHER AVOIDANCE PLAN。批准的计划旨在最小化恶劣天气对终端区或航路中心控制区交通流的影响。
+
+SWSL / 补充气象服务点
+参见SUPPLEMENTAL WEATHER SERVICE LOCATION。由合同人员值守的机场设施，通过电话或无线电提供天气观测和当前本地天气。
+
+SYSTEM STRATEGIC NAVIGATION / 系统战略导航
+军事活动，利用机载内部系统沿预定航线导航以保持期望航迹。通常要求10海里横向宽度和1000至6000英尺AGL的高度范围。
+
+TACAN  / 战术空中导航
+参见TACTICAL AIR NAVIGATION。超高频电子 rho-theta 导航设备，为配备设备航空器提供指向该站的连续方位和距离指示。
+
+TACAN‐ONLY AIRCRAFT / 仅TACAN航空器
+通常指军用航空器，具备TACAN/DME但无VOR导航能力。许可必须指定TACAN或VORTAC定位点和进近程序。
+
+TACTICAL AIR NAVIGATION (TACAN) / 战术空中导航(TACAN)
+超高频电子 rho-theta 导航设备，为配备设备航空器提供指向该站的连续方位和距离指示。见VORTAC。
+
+TAILWIND / 顺风
+与跑道纵轴夹角超过90度的任何风。确定纵轴必须以跑道磁方向为基础。
+
+TAKEOFF AREA  / 起飞可用区域
+参见LANDING AREA。ICAO术语，指运动区内用于航空器着陆或起飞的区域部分。
+
+TAKEOFF DISTANCE AVAILABLE (TODA) / 起飞可用距离(TODA)
+起飞滑跑可用距离加上跑道尽头外任何净空道或剩余跑道的长度。参见ICAO术语TAKEOFF DISTANCE AVAILABLE。
+
+TAKEOFF DISTANCE AVAILABLE [ICAO] / 起飞可用距离[ICAO]
+起飞滑跑可用长度加上提供的净空道长度（如有）。
+
+TAKEOFF HOLD LIGHTS (THL) / 起飞等待灯(THL)
+嵌入道面的双排纵向灯光，对准“上线等待”点。红色亮起表示跑道被占用或即将被占用，禁止起飞或滑行。
+
+TAKEOFF ROLL  / 起飞滑跑
+航空器对准跑道中心线并移动意图起飞的过程。直升机指离开起飞区域后升空的动作。
+
+TAKEOFF RUN AVAILABLE (TORA)  / 起飞滑跑可用距离(TORA)
+宣布可用于飞机起飞地面滑跑的跑道长度。参见ICAO术语TAKEOFF RUN AVAILABLE。
+
+TAKEOFF RUN AVAILABLE [ICAO] / 起飞滑跑可用距离[ICAO]
+宣布可用于飞机起飞地面滑跑的跑道长度。
+
+TARGET / 目标
+雷达回波、应答机回复或ADS-B报告在显示器上产生的指示。符号因监视源而异。参见关联目标、非关联目标等。
+
+TARGET [ICAO] / 目标[ICAO]
+雷达中一般指反射或重发射能量回雷达设备的离散物体。特指雷达搜索或监视的对象。
+
+TARGET RESOLUTION / 目标间隔标准
+确保相关雷达目标不接触的进程。适用于主/辅雷达目标边缘、信标控制斜杠与主目标边缘之间。使用此程序须发布强制性交通咨询和安全警报。
+
+TARGET SYMBOL / 目标符号
+参见TARGET。军事语境下指分配瞄准责任或满足交战规则要求的特定目标或航迹。
+
+TARMAC DELAY / 停机坪延误
+飞机在地面等待起飞或降落，且乘客无法下机的状态。
+
+TARMAC DELAY AIRCRAFT / 申请滑行至停机位
+机长为遵守三小时停机坪规则，请求滑行至停机坪、登机口或替代下机区域的飞机。
+
+TARMAC DELAY REQUEST / 停机坪滑行请求
+机长为遵守三小时停机坪规则，请求滑行至停机坪、登机口或替代下机区域的指令。
+
+TAS / 终端自动化系统
+指代包括STARS和MEARTS在内的多种自动跟踪系统的统称。参见TERMINAL AUTOMATION SYSTEMS (TAS)。
+
+TAWS / 地形感知与警告系统
+提供低高度警告的机载地形接近警报系统，以便飞行员立即采取行动。参见TERRAIN AWARENESS WARNING SYSTEM (TAWS)。
+
+TAXI / 滑行
+飞机在机场表面依靠自身动力移动；也指带轮直升机在地面的移动。参见AIR TAXI, HOVER TAXI。
+
+TAXI PATTERNS / 滑行路线
+为不同跑道或可用机场区域的地面交通流设定的规划模式。
+
+TBM / 基于时间的管理
+通过分配特定时间点来管理空中交通流量的方法，旨在缓解供需不平衡并提高预测性。参见TIME-BASED MANAGEMENT (TBM)。
+
+TBO / 基于轨迹的运行
+利用基于时间的管理、空地信息交换及飞机四维轨迹飞行能力进行战略规划和管理的空中交通管理方法。参见TRAJECTORY-BASED OPERATIONS (TBO)。
+
+TCAS  / 交通警戒与防撞系统
+独立于地面设备的机载防撞系统。TCAS-I仅产生交通咨询；TCAS-II产生垂直平面的交通咨询和解决咨询。参见TRAFFIC ALERT AND COLLISION AVOIDANCE SYSTEM (TCAS)。
+
+TCH  / 决断高度/高
+理论上的跑道入口上方高度，假设飞机保持平均ILS下滑道轨迹时下滑道天线的位置，或RNAV/GPS进近的计算下滑道高度。参见THRESHOLD CROSSING HEIGHT。
+
+TDLS  / 终端数据链系统
+提供数字自动终端信息服务(D-ATIS)及CPDLC离场许可(DCL)的系统，支持文本发送至驾驶舱或网关打印机。参见TERMINAL DATA LINK SYSTEM (TDLS)。
+
+TDZE  / 接地地带标高
+着陆面前三千英尺范围内的最高标高。当批准直线进近最低标准时，在仪表进近程序图上标示。参见TOUCHDOWN ZONE ELEVATION。
+
+TEMPORARY FLIGHT RESTRICTION (TFR) / 临时飞行限制区
+FAA发布的管制行动，暂时限制特定空域内的航空器运行，以保护人员或财产。适用于灾难、VIP活动或国家安全等情况。参见TEMPORARY FLIGHT RESTRICTION (TFR)。
+
+TERMINAL AREA / 终端区域
+描述提供进近管制服务或机场塔台管制服务的空域的通用术语。
+
+TERMINAL AREA FACILITY / 终端区设施
+为到达和离场的IFR、VFR、特殊VFR及偶尔航路飞机提供空中交通管制服务的设施。参见APPROACH CONTROL FACILITY, TOWER。
+
+TERMINAL AUTOMATION SYSTEMS (TAS) / 终端自动化系统
+用于识别包括STARS和MEARTS在内的众多自动跟踪系统的术语。
+
+TERMINAL DATA LINK SYSTEM (TDLS) / 终端数据链系统
+提供数字自动终端信息服务(D-ATIS)及CPDLC离场许可(DCL)，将文本发送至驾驶舱或网关打印机的系统。
+
+TERMINAL FLIGHT DATA MANAGER (TFDM) / 终端飞行数据管理器
+集成塔台飞行数据自动化系统，改善机场表面和终端空域管理，促进实时数据共享以提高流量效率。
+
+TERMINAL RADAR SERVICE AREA / 终端雷达服务区
+指定机场周围的空域，在此范围内ATC全天候为所有IFR和参与VFR飞机提供雷达引导、排序和间隔。参见TERMINAL RADAR SERVICE AREA。
+
+TERMINAL SEQUENCING AND SPACING (TSAS) / 终端排序与间距
+将调度和计量能力延伸至终端区，为终端控制器和管理人员提供计量自动化工具，以实现准确交付。
+
+TERMINAL VFR RADAR SERVICE / 终端VFR雷达服务
+将终端雷达服务扩展至VFR飞机的项目，包括基本雷达服务、TRSA服务、B类和C类服务。
+
+TERMINAL‐VERY HIGH FREQUENCY OMNIDIRECTIONAL RANGE STATION (TVOR) / 终端全向方位信标
+位于机场附近的高频全向信标台，用作进近助航设施。参见TERMINAL‐VERY HIGH FREQUENCY OMNIDIRECTIONAL RANGE STATION (TVOR)。
+
+TERRAIN AWARENESS WARNING SYSTEM (TAWS) / 地形感知与警告系统
+提供低高度警告的机载地形接近警报系统，允许飞行员立即采取行动。
+
+TERRAIN FOLLOWING / 地形跟随飞行
+军用飞机保持距地面或最高障碍物恒定高度飞行的方式，随地形变化自动调整高度。
+
+TETRAHEDRON / 四面体风向标
+非管制机场指示着陆方向的装置，小端指向着陆方向；管制机场以塔台指令为准。
+
+TF  / 地形跟随
+参见TERRAIN FOLLOWING（地形跟随飞行）。
+
+TFDM / 终端飞行数据管理器
+集成塔台自动化系统，整合流量管理数据，提升空域与地面交通效率，支持实时数据共享。
+
+TGUI / 时间线图形界面
+TBFM显示工具，用时间线展示飞机到达约束点的预计和计划时间，也可显示预离场飞机。
+
+THAT IS CORRECT / 正确
+确认对方理解无误的用语。
+
+THA / 过渡危险区
+ATC使用的受限空域，通常关联航空器危险区，飞行受限制。
+
+THE RECREATIONAL UAS SAFETY TEST (TRUST) / 娱乐无人机安全测试
+美国联邦法律要求的免费电子航空知识与安全测试，娱乐无人机操作员必须通过。
+
+THREE‐HOUR TARMAC RULE / 三小时停机坪规则
+DOT规定，当预计停机坪延误达三小时时，航空公司需满足特定条件。
+
+360 OVERHEAD  / 360度通场
+VFR进入起落航线并着陆的一系列预定机动动作，非IFR进近程序。
+
+THRESHOLD / 跑道入口
+跑道上可用于着陆部分的起始点。
+
+THRESHOLD CROSSING HEIGHT / 门槛穿越高度
+飞机沿ILS下滑道或RNAV/GPS计算航径飞行时，下滑道天线理论上的跑道入口上方高度。
+
+THRESHOLD LIGHTS  / 跑道入口灯
+参见AIRPORT LIGHTING（机场灯光），属于定义跑道边界及提供进近引导的各类灯光设施之一。
+
+TIE-IN FACILITY / 接入设施
+主要负责为飞行计划区内导航设施或着陆设施提供FSS服务的电台，具有三位字母标识。
+
+TIME‐BASED FLOW MANAGEMENT (TBFM) / 基于时间的流量管理
+决策支持工具，按指定时间调度飞机到达约束点，优化空域容量利用，减少协调与等待。
+
+TIME‐BASED MANAGEMENT (TBM) / 基于时间的管理
+通过在特定点分配时间来管理空中交通流的方法，旨在缓解供需不平衡，提高可预测性。
+
+TIME GROUP / 时间组
+代表UTC时分的四位数字，如“0205”表示02:05 UTC，通话中常称为ZULU时间。
+
+TIMELINE GRAPHICAL USER INTERFACE (TGUI) / 时间线图形用户界面
+TBFM显示工具，用时间线展示飞机到达约束点的预计和计划时间，也可显示预离场飞机。
+
+TIS-B / 广播式交通信息服务-B
+向ADS-B装备飞机广播由雷达等地面传感器获取的ATC交通信息，覆盖依赖监视与广播网络。
+
+TMI / 交通管理措施
+用于在NAS中平衡需求与容量的工具，可战术性或战略性地管理资源或提升运行效率。
+
+TMPA  / 交通管理项目警报
+NOTAM中使用的缩写，提示飞行员存在特殊交通管理项目及详情，指引查阅相关 advisory。
+
+TMU  / 交通管理单位
+ARTCC和指定终端内直接负责主动管理设施交通的实体，通常由助理经理监督。
+
+TOD / 开始下降点
+飞机开始初始下降的位置。
+
+TODA  / 可用起飞距离
+ICAO术语，指可用起飞滑行道长度加上净空道长度（如有）。
+
+TOI / 关注目标 (TOI)
+指可能威胁北美或国家安全的空中物体。包括违反空管指令、通信中断、入侵管制空域或ADIZ、劫机等异常行为，或基于特定可信情报的监控对象。
+
+TOP ALTITUDE / 最高高度
+仪表离场程序(SID)中图表标注的“保持”高度，即程序描述中的规定高度或由空管分配的高度。
+
+TOP OF DESCENT (TOD) / 开始下降点 (TOD)
+飞机开始初始下降航段的地理位置点。
+
+TORA  / 可用起飞滑跑距离 (TORA)
+宣布可用且适合飞机地面起飞滑跑的跑道长度。
+
+TORCHING / 排气管燃烧
+混合气过富导致在往复式航空发动机排气管末端发生燃料燃烧的现象。
+
+TOS / 轨迹选项集 (TOS)
+运营商提交的电子消息，用于协作轨迹选择计划(CTOP)。允许运营商表达愿意接受的路由和延误权衡方案以管理空域流量。
+
+TOTAL ESTIMATED ELAPSED TIME [ICAO] / 总预计经过时间
+IFR飞行指从起飞到开始进近导航点（或目的地）的预计时间；VFR飞行指从起飞到到达目的地的预计时间。
+
+TOUCH‐AND‐GO / 连续起降
+飞机在跑道上着陆后立即起飞，中途不停止也不脱离跑道的操作。
+
+TOUCH‐AND‐GO LANDING  / 连续起降着陆
+同连续起降，指飞机在跑道上着陆后不脱离跑道立即起飞的运行模式。
+
+TOUCHDOWN / 接地点
+飞机首次接触着陆表面的点。精密雷达进近(PAR)中指下滑道与着陆面相交的点。
+
+TOUCHDOWN [ICAO] / 接地点 [ICAO]
+名义下滑道与跑道相交的点。此为数据基准，不一定是飞机实际触地的位置。
+
+TOUCHDOWN RVR  / 接地视程 (TDZ RVR)
+位于跑道接地带的跑道视程(RVR)，反映该区域能见度。属于跑道视程的一种，表示中线飞行员可见度。
+
+TOUCHDOWN ZONE / 接地区
+从跑道入口起的前3000英尺区域。用于确定接地区标高，以制定直线进近的最低标准。
+
+TOUCHDOWN ZONE [ICAO] / 接地区 [ICAO]
+跑道入口之后，预期着陆飞机首先接触跑道的部分。
+
+TOUCHDOWN ZONE ELEVATION / 接地区标高 (TDZE)
+着陆表面前3000英尺内的最高标高。授权直线进近最低标准时会在仪表进近图上标示。
+
+TOUCHDOWN ZONE LIGHTING  / 接地区灯光
+沿跑道中线对称布置的两排横向灯带，通常间隔100英尺，延伸至3000英尺，用于提供接地视觉引导。
+
+TOWER / 塔台
+终端设施，利用无线电和目视信号为机场附近或活动区的飞机提供空管服务，批准起降或穿越D类空域，也可提供进近控制。
+
+TOWER EN ROUTE CONTROL SERVICE / 塔台中途管制服务
+在相邻进近管制设施间授权的空域内对IFR航路交通进行管制，旨在提高效率并减少通信需求。
+
+TOWER TO TOWER  / 塔台间通信
+同塔台中途管制服务，指两个或多个相邻进近管制设施之间的IFR航路交通管制协调与服务。
+
+TRACEABLE PRESSURE STANDARD / 可溯源气压标准
+经认证/校准可追溯至美国国家标准与技术研究院(NIST)的气压测量仪器，如水银气压计或ASOS/AWOS设备。
+
+TRACK / 航迹
+飞机在地表上空的实际飞行路径。
+
+TRACK [ICAO] / 航迹 [ICAO]
+飞机路径在地表的投影，其方向通常用相对于北的真方位、磁方位或网格方位角度表示。
+
+TRACK OF INTEREST (TOI) / 关注目标 (TOI)
+显示代表威胁或潜在威胁北美及国家安全的目标数据。指标包括违规、失联、入侵空域、劫持等，或基于可信情报的对象。
+
+TRACK OF INTEREST RESOLUTION / 关注目标解除
+当目标不再在空中、遵守指令、恢复联系、被拦截确认无害、情报失效或数据无效时，视为TOI已解决。
+
+TRAFFIC / 交通状况
+管制员用于移交雷达识别或协调分离的行动术语；也指ATC对一架或多架飞机的称呼。
+
+TRAFFIC ADVISORIES / 交通情报通报
+为引起飞行员注意而发出的关于附近已知或观察到的其他航空器的通报。基于目视、雷达或口头报告，但不免除飞行员“看见并避让”的责任。
+
+TRAFFIC ALERT (aircraft call sign), TURN (left/right) IMMEDIATELY, (climb/descend) AND MAINTAIN (altitude). / 交通警报
+参考SAFETY ALERT：ATC因飞机处于不安全高度（接近地形、障碍物或其他飞机）而发出的安全警报，通常包含立即转向或保持高度的指令。由飞行员自行决定应对措施。
+
+TRAFFIC ALERT AND COLLISION AVOIDANCE SYSTEM (TCAS) / 交通警戒与防撞系统
+独立于地面的机载防撞系统。TCAS-I仅产生交通情报；TCAS-II在垂直方向上产生交通情报及解决冲突的防撞建议。
+
+TRAFFIC INFORMATION  / 交通信息
+参考TRAFFIC ADVISORIES：旨在提醒飞行员注意附近其他航空器的通报，可能基于目视、雷达或口头报告。
+
+TRAFFIC INFORMATION SERVICE-BROADCAST (TIS-B) / 广播式交通信息服务
+将源自地面雷达等传感器的交通信息广播给装有ADS-B的飞机。当进入无广播覆盖区域时服务中断，但在有雷达覆盖且邻近飞机仍在广播区时可被看到。
+
+TRAFFIC IN SIGHT / 已见交通
+飞行员告知管制员此前通报的交通目标已进入视线。参见NEGATIVE CONTACT和TRAFFIC ADVISORIES。
+
+TRAFFIC MANAGEMENT INITIATIVE (TMI) / 交通管理倡议
+用于在国家空域系统中平衡需求与容量的工具，可战术性或战略性地管理资源以提高运行效率。
+
+TRAFFIC MANAGEMENT PROGRAM ALERT / 交通管理计划警报
+NOTAM中的缩写TMPA，用于通知飞行员存在特殊的交通管理计划并指引其查阅详细信息。
+
+TRAFFIC MANAGEMENT UNIT / 交通管理单位
+在航管中心和指定终端直接参与设施交通主动管理的实体，通常由助理交通管理经理监督。
+
+TRAFFIC NO FACTOR / 交通非因素
+表示此前通报的交通状况不再构成影响或威胁。
+
+TRAFFIC NO LONGER OBSERVED / 交通不再观测
+表示此前通报的交通目标已从雷达显示中消失，但仍可能构成潜在影响。
+
+TRAFFIC PATTERN / 起落航线
+机场内规定的飞行流量模式，包括离场、上风边、侧风边、下风边、基线边和最后进近边等组成部分。
+
+TRAFFIC SITUATION DISPLAY (TSD) / 交通态势显示
+接收并整合全美20个ARTCC雷达数据的计算机系统，以马赛克形式展示交通流，供交通管理协调员监控和分析。
+
+TRAJECTORY / 轨迹
+参考EN ROUTE DECISION SUPPORT TOOL：基于当前或试验计划预测飞机飞行路径的EDST表示。
+
+TRAJECTORY ALTERING CLEARANCE (TAC) / 改变轨迹许可
+一种允许改变高度、速度、航向或航路的许可。
+
+TRAJECTORY-BASED OPERATIONS (TBO) / 基于轨迹的运行
+利用时间管理、空地信息交换及四维轨迹能力，对航班进行战略规划和管理的空中交通管理方法。
+
+TRAJECTORY MODELING / 轨迹建模
+自动计算轨迹的过程。
+
+TRAJECTORY OPTIONS SET (TOS) / 轨迹选项集
+运营商提交的电子消息，用于CTOP程序表达愿意接受的路径和延误权衡选项。
+
+TRANSFER OF COMMUNICATION (TOC) / 通信移交
+CPDLC上行链路指令，指示飞行员联系或监视下一个空中交通无线电频率。
+
+TRANSFER OF CONTROL / 管制权移交
+将一架飞机的分离责任从一个管制员移交给另一个管制员的行动。参见ICAO术语。
+
+TRANSFER OF CONTROL [ICAO] / 管制权移交[ICAO]
+提供空中交通管制服务的责任的转移。
+
+TRANSFERRING CONTROLLER / 移交管制员
+将飞机控制权移交给另一管制员/设施的管制员或设施。参见ICAO术语。
+
+TRANSFERRING FACILITY  / 移交设施
+参考TRANSFERRING CONTROLLER：将飞机控制权移交给另一管制员/设施的管制员或设施。
+
+TRANSFERRING UNIT/CONTROLLER [ICAO] / 移交单位/管制员
+正在将航空器管制责任移交给航路下一管制单位的空中交通管制单位或管制员。
+
+TRANSITION / 转换
+描述飞行阶段或条件从一种状态变为另一种状态的通用术语，如航路转进近、仪表转目视。
+
+TRANSITION POINT / 转换点
+距顶点特定距离的点，到达航空器通常在此点开始从航路高度下降，是到达速度扇区的第一个定位点。
+
+TRANSITIONAL AIRSPACE / 过渡空域
+受控空域的一部分，航空器在此区域从一种飞行阶段或飞行条件转换为另一种。
+
+TRANSITIONAL HAZARD AREA (THA) / 过渡危险区(THA)
+ATC使用的术语，指与航空危险区相关的空域，其中航空器飞行受限制。参见航空危险区、应急危险区、精细化危险区。
+
+TRANSMISSOMETER / 透射仪
+通过测量光线在大气中的传输来确定能见度的装置，是确定跑道视程(RVR)的测量源。参见能见度。
+
+TRANSMITTING IN THE BLIND / 盲发
+在两方通信无法建立但认为被叫站可能接收的情况下，从一个电台向其他电台发出的发射。
+
+TRANSPONDER / 应答机
+空中交通管制雷达信标系统(ATCRBS)的机载部分，自动接收地面询问信号，仅对设定的模式选择性地回复特定脉冲。参见询问器。
+
+TRANSPONDER [ICAO] / 应答机[ICAO]
+接收器/发射器，在适当询问时生成回复信号；询问和回复在不同频率上进行。
+
+TRANSPONDER CODES  / 应答机代码
+参见CODES：由应答机传输的特定多脉冲回复信号所分配的号码。参见离散代码。
+
+TRANSPONDER OBSERVED  / 已观察到应答机
+用于通知VFR飞行员其指定应答机代码和位置已被观察到的用语，表示已观察到回复并关联了其在指定区域的过境位置。
+
+TRIAL PLAN / 试验计划
+利用自动化分析并显示沿选定航空器预测轨迹潜在冲突的建议修正案。
+
+TRSA  / 终端雷达服务区(TRSA)
+参见TERMINAL RADAR SERVICE AREA：指定机场周围的空域，ATC全天候为所有IFR和参与VFR航空器提供雷达引导、排序和间隔服务。建议参与但非强制。
+
+TRUST / 信任(TRUST)
+参见THE RECREATIONAL UAS SAFETY TEST： recreational UAS操作员必须参加的电子管理免费测试，即航空知识安全测试。
+
+TSAS / 终端排序与间距(TSAS)
+参见TERMINAL SEQUENCING AND SPACING：将调度与计量能力扩展至终端区，为终端管制员提供计量自动化工具，以按预定时间将航空器准确送达约束满足点。
+
+TSD / 交通态势显示(TSD)
+参见TRAFFIC SITUATION DISPLAY：计算机系统将20个ARTCC的雷达航迹数据组织成马赛克显示，供交通管理协调员监控任何交通状况或全系统流量。
+
+TURBOJET AIRCRAFT / 喷气式飞机
+装有喷气发动机的飞机，喷气能量驱动涡轮，涡轮进而驱动空气压缩机。
+
+TURBOPROP AIRCRAFT / 涡桨飞机
+装有喷气发动机的飞机，喷气能量驱动涡轮，涡轮进而驱动螺旋桨。
+
+TURBULENCE / 湍流
+引起航空器高度、姿态或空速变化的大气现象。强度分为轻、中、强、极剧烈，依据航空器反应程度区分。参见风切变。
+
+TURN ANTICIPATION / 转弯预判
+(机动预判)。
+
+TVOR  / 终端甚高频全向信标台(TVOR)
+参见TERMINAL‐VERY HIGH FREQUENCY OMNIDIRECTIONAL RANGE STATION：位于或靠近机场的甚高频全向信标台，用作进近辅助。参见导航 aids, VOR。
+
+TWO‐WAY RADIO COMMUNICATIONS FAILURE / 双向无线电通信失效
+参见LOST COMMUNICATIONS：丧失无线电通信能力。航空器有时称为NORDO。标准程序见14 CFR part 91。
+
+UAM / 城市空中交通(UAM)
+参见URBAN AIR MOBILITY：先进空中交通(AAM)的子集，指利用高度自动化航空器在城市/郊区运输乘客或货物的空中交通系统。
+
+UAP / 不明异常现象(UAP)
+参见UNIDENTIFIED ANOMALOUS PHENOMENA：航空报告用途中指难以立即识别的空中物体或现象，表现出传感器或观察者难以理解的行为。
+
+UAS FACILITY MAP (UASFM) / 无人机设施图
+显示机场周边最大高度的网格，用于确定在管制空域进行Part 107无人机操作时是否需要额外安全分析或授权。
+
+UAS TEST SITE / 无人机测试场
+由独立拥有并获FAA认可的无人机测试与研究站点。
+
+UAS TRAFFIC MANAGEMENT (UTM) / 无人机交通管理
+支持多架低空超视距运行的生态系统，独立于但互补于FAA空中交通管制系统。
+
+UASFM / 无人机设施图
+参见“无人机设施图 (UASFM)”条目定义。
+
+UHF / 特高频
+参见“特高频 (UHF)”条目定义。
+
+ULTRAHIGH FREQUENCY (UHF) / 特高频
+300至3,000 MHz频段，主要用于军用地空语音通信，有时低至225 MHz仍称UHF。
+
+ULTRALIGHT VEHICLE / 超轻型飞机
+单座航空器，用于运动或娱乐，无需注册、适航证或飞行员执照；特定空域需ATC授权。
+
+UNABLE / 无法执行
+表示无法遵守特定的指令、请求或许可。
+
+UNASSOCIATED / 未关联目标
+雷达目标未显示包含飞行识别和高度信息的數據块。参见“已关联”。
+
+UNCONTROLLED AIRSPACE / 非管制空域
+不适用A、B、C、D或E类管制空域分离标准的空域。
+
+UNDER THE HOOD / 使用盲飞罩
+飞行员使用遮罩限制外部视野以模拟仪表飞行，此时另一控制座位需有合格飞行员。
+
+UNFROZEN / 未冻结
+预计到达时间标签仍在由基于时间的流量管理计算重新调度，直至通过预设冻结阈值前保持此状态。
+
+UNICOM / 通用航空信息服务
+非政府通信设施，可能在某些机场提供机场信息。位置及频率见航图和出版物。
+
+UNIDENTIFIED ANOMALOUS PHENOMENA (UAP) / 不明异常现象
+航空报告用途中指难以立即识别且行为异常的空中或观测对象，如气球、飞行器或自然现象。
+
+UNMANNED AIRCRAFT (UA) / 无人驾驶航空器
+无机载飞行员的设计用于飞行的装置（如飞机、直升机等）；不包括自由气球、系留气球、滑翔机等。
+
+UNMANNED AIRCRAFT SYSTEM (UAS) / 无人驾驶航空系统
+包括无人驾驶航空器及其相关控制站、数据链、支持设备等元素，确保运行安全。
+
+UNPUBLISHED ROUTE / 未公布航线
+未公布或未标绘最小高度的航线，可能包括导航台间直飞路线、径向线或雷达引导。
+
+UNRELIABLE (GPS/WAAS) / GPS/WAAS不可靠
+警告飞行员GPS和/或WAAS的预期服务级别可能不可用，需自行判断信号是否满足需求。
+
+UNSERVICEABLE (U/S) / 不工作
+参见“停役/不工作”条目定义。
+
+UPLINK / 上行链路
+从空中交通管制发送至驾驶舱的CPDLC消息。
+
+UPWIND LEG / 顺风边
+参见“起落航线”条目定义。
+
+URBAN AIR MOBILITY (UAM) / 城市空中交通
+先进空中移动性的子集，指利用高度自动化航空器在城市或郊区运输乘客或货物的系统。
+
+URGENCY / 紧急状况
+对安全感到担忧并要求及时但非立即援助的状态；潜在遇险条件。
+
+URGENCY [ICAO] / 紧急状况 [ICAO]
+涉及航空器、其他车辆或机上人员安全的状况，但不需要立即援助。
+
+USAFIB / 美国空军飞行信息公报
+参见陆军航空飞行信息公报，该公报提供涵盖陆军、国民警卫队和预备役航空活动的空中运行数据。
+
+UTM / 无人驾驶交通管理
+参见无人机交通管理（UAS Traffic Management）。
+
+VASI / 目视进近坡度指示器
+参见目视进近坡度指示器及机场灯光系统，包括进近灯光系统（如ALSF-1/2、SSALR等）、跑道引导灯、跑道边灯和接地区灯，用于为着陆飞机提供视觉引导和对齐参考。
+
+VCOA / 机场目视爬升
+IFR飞机在满足特定能见度与云底高时，可选的离场方式；飞行员需目视盘旋爬升至公布高度以继续仪表程序，旨在避开跑道端3英里内障碍，替代大于200英尺/海里的爬升梯度要求。飞行员需尽早通知ATC。
+
+VDP / 目视下降点
+非精密直线进近最后航段上的定义点；若飞行员能清晰看到跑道入口、进近灯光或其他标识，可从此点开始从最低下降高度正常下降至跑道接地点。
+
+VECTOR / 矢量
+由雷达发出的航向指令，为飞机提供导航引导。参见ICAO术语雷达矢量引导。
+
+VERIFY / 核实
+请求确认信息的准确性；例如“核实指定高度”。
+
+VERIFY SPECIFIC DIRECTION OF TAKEOFF (OR TURNS AFTER TAKEOFF) / 核实起飞方向（或起飞后转弯方向）
+ATC用于查明飞机起飞及起飞后转弯方向，通常用于无塔台机场的IFR离场。若无直连通信，可通过飞行服务站或签派员转达。参见IFR起飞最低标准与离场程序。
+
+VERTICAL NAVIGATION (VNAV) / 垂直导航
+区域导航（RNAV）设备的一项功能，计算、显示并提供沿剖面或路径的垂直引导。
+
+VERTICAL SEPARATION / 垂直间隔
+以垂直距离单位表示的飞机间间隔。参见间隔。
+
+VERTICAL TAKEOFF AND LANDING AIRCRAFT (VTOL) / 垂直起降飞机
+能够垂直爬升和/或下降，并使用极短跑道或小区域进行起降的飞机，包括直升机等。参见短距起降飞机。
+
+VERTIPAD / 垂直起降坪
+通常在垂直停机坪、机场、起降区、机坪或活动区内指定的小面积区域，通常有硬化表面，用于倾转旋翼机的起降或停放。
+
+VERTIPORT / 垂直停机坪
+陆地、水域或建筑物区域，用于支持倾转旋翼机或其他符合标准的飞机的起降、滑行、停放和存储。
+
+VERY HIGH FREQUENCY (VHF) / 甚高频
+30至300 MHz频率波段。其中108-118 MHz用于部分导航设备；118-136 MHz用于民用空对地语音通信。其他频段用于非空管目的。
+
+VERY HIGH FREQUENCY OMNIDIRECTIONAL RANGE STATION / 全向方位信标台
+参见VOR。地面电子导航设施，发射360度方位的高频导航信号，基于磁北定向。通过莫尔斯码自动识别，可能附带语音功能供ATC或FSS使用。参见导航设备。
+
+VERY LOW FREQUENCY (VLF) / 极低频
+3至30 kHz频率波段。
+
+VFR / 目视飞行规则
+规范目视条件下飞行程序的规则。在美国也指等于或高于最低VFR要求的天气条件，以及飞行员和管制员使用的飞行计划类型。参见仪表飞行规则。
+
+VFR AIRCRAFT / VFR飞机
+按照目视飞行规则飞行的飞机。参见目视飞行规则。
+
+VFR CONDITIONS / VFR条件
+等于或优于目视飞行规则最低标准的天气条件。仅在IFR飞机请求在VFR条件下升降、噪声缓解或练习仪表进近且无IFR计划时使用。受令飞行员须遵守VFR能见度及云距要求，不解除管制员在B/C类空域的间隔责任。
+
+VFR FLIGHT / VFR飞行
+参见VFR飞机，即按照目视飞行规则进行的飞行。
+
+VFR MILITARY TRAINING ROUTES (VR) / VFR军事训练航线
+国防部及相关预备役单位用于低于10,000英尺MSL、IAS超过250节的高速低空导航和战术训练的VFR航线。
+
+VFR NOT RECOMMENDED / 不推荐VFR
+飞行服务站在起飞前或飞行中天气简报时提供的建议，指出当前或预报天气处于或低于VFR最低标准，不建议执行VFR飞行。不剥夺飞行员自行决策权。
+
+VFR‐ON‐TOP / VFR顶天
+ATC授权IFR飞机在规定的VFR高度层按VFR条件运行。飞行员须遵守VFR能见度、云距及IFR最低高度要求。不解除管制员在B/C类空域的间隔责任。
+
+VFR TERMINAL AREA CHARTS / VFR终端区图
+参见航空图，即为满足空中导航需求而专门设计的地球部分区域、文化及地形表示图。
+
+VFR WAYPOINT / VFR航路点
+用于定义航路、仪表进近、进度报告或过渡管制空域的预定地理定位点，通常相对于VORTAC台或经纬度坐标定义。
+
+VHF / 甚高频
+30至300 MHz频段。其中108-118 MHz用于部分导航设备；118-136 MHz用于民用航空地空语音通信。
+
+VHF OMNIDIRECTIONAL RANGE/TACTICAL AIR NAVIGATION / VOR/塔康台
+在同一地点提供VOR方位、TACAN方位及TACAN测距设备的导航辅助设施。
+
+VIDEO MAP / 视频地图
+雷达显示器上电子显示的地图，描绘机场、跑道中心线延伸段、导航台、航路中心线、边界、移交点、特殊使用空域轨迹、障碍物及显著地理特征等数据。
+
+VISIBILITY / 能见度
+由大气条件决定并以距离单位表示的视觉能力。包括飞行能见度（驾驶舱向前水平距离）、地面能见度（地表 prevailing 水平能见度）和跑道视程（RVR，沿跑道方向的仪器测量值）。
+
+VISIBILITY [ICAO] / 能见度[ICAO]
+由大气条件决定的视觉能力。包括飞行能见度（从驾驶舱向前）、地面能见度（经认可观测员报告的气象站能见度）及跑道视程（RVR，沿跑道中心线能看到的范围）。
+
+VISUAL APPROACH / 目视进近
+在IFR飞行计划下，授权飞行员在目视条件下并避开云层飞向机场。飞行员必须始终能看到机场或前机。需ATC授权，且机场天气要求云底高至少1000英尺，能见度至少3英里。
+
+VISUAL APPROACH [ICAO] / 目视进近[ICAO]
+IFR飞行中未完成全部或部分仪表进近程序，转而依据地形进行目视参考执行的进近。
+
+VISUAL APPROACH SLOPE INDICATOR (VASI) / 目视进近坡度指示系统(VASI)
+机场灯光设施的一种，通过方向性光束为着陆飞机提供引导，帮助飞行员在对正跑道中心线时保持正确的下滑道。属于机场灯光系统的一部分。
+
+VISUAL CLIMB OVER AIRPORT (VCOA) / 目视爬升越场(VCOA)
+IFR飞机在满足特定能见度与云底高的VMC条件下，可选择在机场上空目视盘旋爬升至公布高度，随后继续仪表离场程序，以避开跑道端3海里外的障碍物。起飞前需通知ATC。
+
+VISUAL DESCENT POINT / 目视下降点(VDP)
+非精密直线进近最后阶段的一个定义点。在此点之前，若飞行员能清晰看到跑道入口、进近灯光或其他标识，即可从最低下降高度(MDA)正常下降至跑道接地点。
+
+VISUAL FLIGHT RULES / 目视飞行规则(VFR)
+规范目视条件下飞行程序的规则。在美国也指符合或高于最低VFR要求的天气状况，以及飞行员和管制员使用的飞行计划类型代号。
+
+VISUAL HOLDING / 目视等待
+在易于从空中识别的选定显著地理定位点进行的航空器等待程序。
+
+VISUAL LINE OF SIGHT (VLOS) / 目视视距内(VLOS)
+无人机操作员保持对无人驾驶航空器连续、无辅助的目视接触的运行状态。
+
+VISUAL METEOROLOGICAL CONDITIONS / 目视气象条件(VMC)
+以能见度、距云距离和云底高表示，且等于或优于规定最小值的气象条件。适用于目视飞行规则下的运行。
+
+VISUAL OBSERVER (VO) / 目视观察员(VO)
+由远程机长指定，协助其及小微型无人机(sUAS)操控人员发现并避让空中或地面其他航空器和物体的人员。
+
+VISUAL SEGMENT / 目视段
+仪表进近程序图中标注“飞往机场”或“目视飞行”的区段。指示目视飞行路径、大致航向和距离，需在保持目视条件的同时结合仪表或地标导航技术飞行。
+
+VISUAL SEPARATION / 目视间隔
+ATC在终端区和航路上分离航空器的一种手段。方式一：管制员看到航空器并发出指令避免冲突；方式二：飞行员看到其他航空器并按指令自行机动保持间隔。
+
+VLF / 极低频
+3至30 kHz的频率频段。
+
+VMC / 目视气象条件(VMC)
+以能见度、距云距离和云底高表示，且等于或优于规定最小值的气象条件。参见仪表飞行规则(IMC)。
+
+VOICE SWITCHING AND CONTROL SYSTEM (VSCS) / 语音交换控制系统(VSCS)
+计算机控制的交换系统，为空中交通管制员提供所有必要的语音电路（空地及地地），以支持空中交通管制的通信需求。
+
+VOR / 全向信标(VOR)
+地面电子导航设施，发射360度方位的高频导航信号，以磁北为基准定向。通过莫尔斯电码自我识别，并可附加语音功能用于传输指令或信息。
+
+VOR TEST SIGNAL / VOR测试信号
+地面设施发射的信号，用于检查VOR接收机的准确性。部分VOT在空中可用，部分仅限地面使用。
+
+VORTAC / VORTAC
+在同一地点提供VOR方位、TACAN方位及TACAN测距设备(DME)的导航辅助设施。
+
+VORTICES / 涡流
+机翼产生升力时形成的旋转气流，是尾流湍流的主要部分。其强度取决于航空器的翼载荷、总重和速度，对小型飞机构成危险。
+
+VOT / VOR校验台
+地面设施，发射测试信号以检查VOR接收机精度。部分供空中使用，部分仅限地面使用。
+
+VR / VR航路
+国防部及预备役用于低空导航和战术训练的VFR航路，高度低于10,000英尺MSL，指示空速超过250节。
+
+VSCS / 语音交换控制系统
+计算机控制的交换系统，为管制员提供所有必要的语音电路（空地和地地），以执行空中交通管制。
+
+VTOL AIRCRAFT / 垂直起降航空器
+能够垂直爬升/下降或使用极短跑道起飞的航空器，包括直升机等。
+
+WA / AIRMET
+气象咨询，指未在常规预报中预测但影响交通运行的有害天气条件。
+
+WAAS / 广域增强系统
+卫星导航系统，通过差分修正增强GPS标准定位服务的完整性、精度、可用性和连续性，支持精密进近。
+
+WAKE TURBULENCE / 尾流湍流
+航空器产生升力时形成一对反向旋转涡流的现象。详见航空器类别与尾流分类。
+
+WARNING AREA / 警告区
+特殊使用空域的一种，因活动性质需限制或禁止非参与航空器进入，通常包含高风险军事训练。
+
+WAYPOINT / 航路点
+用于航线定义、进度报告或过渡受控空域的预定地理坐标位置，相对于VORTAC或经纬度定义。
+
+WEATHER ADVISORY / 气象咨询
+NWS发布的关于影响航空交通运行的有害天气条件的表达，未包含在常规预报中。
+
+WEATHER RADAR PRECIPITATION INTENSITY / 雷达降水强度
+雷达显示的降水强度等级：轻(<26 dBZ)、中(26-40 dBZ)、重(40-50 dBZ)、极强(>50 dBZ)。若不可用则报告未知。
+
+WEATHER RECONNAISSANCE AREA (WRA) / 气象侦察区
+为支持气象侦察研究飞行而设立的空域，不提供ATC服务，仅允许特定侦察机运行。
+
+WHEN ABLE / 视情执行
+飞行员可根据情况延迟遵守指令直至条件满足，不同于“飞行员自由裁量”，需寻求首次机会执行。
+
+WIDE‐AREA AUGMENTATION SYSTEM (WAAS) / 广域增强系统
+卫星导航系统，增强GPS性能，提供差分修正以实现精密进近所需的更高精度和完整性。
+
+WIDE AREA MULTILATERATION (WAM) / 广域多点定位
+分布式监视技术，利用多种应答机和ADS-B信号，通过测量到达时间差确定 aircraft 位置。
+
+WILCO / 收到并执行
+表示已收到信息，理解内容，并将遵照执行。
+
+WIND GRID DISPLAY / 风场网格显示
+显示ARTCC区域最新预测风数据的地图，含特定高度的风速、温度和气压，由NWS自动更新。
+
+WIND SHEAR / 风切变
+短距离内风向或风速的剧烈变化，产生撕裂效应，可水平或垂直发生。
+
+WIND SHEAR ESCAPE / 风切变逃逸
+机长因机载系统检测到低空风切变而发起的非计划紧急机动，通常表现为最大推力爬升。
+
+WING TIP VORTICES / 翼尖涡流
+机翼尖端产生的快速旋转圆柱形气流，是尾流湍流的主要组成部分，对后方小飞机有危险。
+
+WORDS TWICE / 重复两遍
+请求：请每句话重复两次；通报：因通信困难，本消息每句将重复两次。
+
+WS / SIGMET
+重要气象情报，涉及对所有航空器安全显著的天气，如严重颠簸、结冰、尘暴等。
+
+WST / 对流SIGMET
+针对对流天气的气象咨询，涉及龙卷风、雷暴线、嵌入雷暴或覆盖率达40%以上的雷暴区。

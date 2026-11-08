@@ -1,0 +1,7 @@
+队形是位置，协同是分工；不自动开火。
+formation：echelon梯队=同侧斜后；trail纵队=前后；line_abreast横队=并列；combat_spread战斗疏开；wedge楔形=长机前、僚机斜后；fighting_wing战斗翼队；finger_four四指需四机，当前不能执行。
+改队形formation_change；集合join_formation；跟随follow_unit。unitIds受令机，targetId参照/被保护友机，不能是自己。side=left/right；明确间隔写rangeM米，不用distanceM。未指定参数不补。
+assign_role的role=lead长机/wingman僚机；绑定搭档、僚机随行。分工加掩护须全部保留。
+cover掩护=后上方支援；escort护航=侧后伴飞。targetId是被保护机，保留原航路。默认队形、高差由程序设定，不补altitudeM或攻击任务。未知运输机留targetRef，不编造ID。
+cooperate.mode：mutual_support相互支援；loose_deuce自由双机，engaged交战机/free自由机可换手；thach_weave萨奇剪=双机交叉掩护，非单机剪刀。这些高级战术未接入。bracket夹击目标是敌机，不猜左右分工。
+双机集合/跟随/改队形/掩护/护航可执行，默认间隔1200米（掩护1500米）、右侧，间隔限400–5000米。错层/扇区要求存constraints；条件/顺序存timing/condition。装订后仍需追赶，不声称已到位。

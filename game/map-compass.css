@@ -1,0 +1,10 @@
+#stage.clean-ui #map-compass{position:absolute;top:55px;left:50%;transform:translateX(-50%);width:330px;max-width:calc(100vw - 28px);height:40px;display:flex;align-items:center;gap:10px;padding:3px 8px;background:#09131fe8;border:1px solid #2a4054;box-sizing:border-box;z-index:42;pointer-events:none;color:#a5c8df;font:10px/1.3 Consolas,"Microsoft YaHei",monospace}
+.compass-north{position:relative;width:30px;height:32px;flex:none}.compass-north>span{position:absolute;top:-1px;left:0;color:#9cdfb7;font-size:9px}.compass-north svg{width:30px;height:30px;transform-origin:center}.compass-north path{fill:#9cdfb7}
+.compass-window{position:relative;overflow:hidden;flex:1;height:31px;min-width:0}.compass-tape{position:absolute;left:0;top:11px;height:20px;width:3240px;will-change:transform}.compass-tick{position:absolute;top:0;transform:translateX(-50%);padding-top:7px;white-space:nowrap;font-size:8px;color:#91a9bd}.compass-tick:before{position:absolute;content:'';top:0;left:50%;width:1px;height:4px;background:#526c83}.compass-tick.major:before{height:6px;background:#91a9bd}.compass-tick.cardinal{color:#cfe3f5;font-size:10px}.compass-tick.cardinal:before{height:7px;background:#9cdfb7}.compass-index{position:absolute;top:-3px;left:50%;transform:translateX(-50%);color:#9cdfb7;font-size:15px}
+#map-compass output{display:flex;flex-direction:column;float:none;text-align:right;min-width:54px;color:#cfe3f5}#map-compass output small{font:8px/1.4 "Microsoft YaHei",sans-serif;color:#91a9bd}#map-compass output b{font-size:13px;font-weight:500;letter-spacing:1px}
+@media(max-width:750px){
+ #stage.clean-ui #map-compass{top:52px;height:36px;width:310px;gap:7px}
+ #stage.clean-ui #unit-panel,#stage.clean-ui .utility-panel,#stage.clean-ui .command-panel{top:100px}
+ #stage.clean-ui:not(.training-active) #training-coach.walkthrough{top:100px}
+ #stage.clean-ui.training-active:has(#training-coach[data-mission=select][data-phase=brief]) #unit-panel{top:100px;max-height:160px}
+}

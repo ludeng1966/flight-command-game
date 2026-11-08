@@ -1,0 +1,17 @@
+/* 字幕是地图上的文字层，窗口可以覆盖它。 */
+#stage.clean-ui #radio-console{display:block;left:84px;right:auto;top:auto;bottom:96px;width:360px;max-width:calc(100vw - 104px);min-width:0;z-index:24;transform:none;background:none;border:0;box-shadow:none;backdrop-filter:none;padding:0;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .4s,visibility .4s;text-shadow:0 1px 3px #000,0 0 7px #000}
+#stage.clean-ui #radio-console[data-visible=true]{opacity:1;visibility:visible}
+#stage.clean-ui #radio-console[data-browsing=true]{pointer-events:auto}
+#stage.clean-ui #radio-console .radio-console-header{display:none;background:none;border:0;padding:0 0 7px}
+#stage.clean-ui #radio-console[data-browsing=true] .radio-console-header{display:flex}
+#stage.clean-ui #radio-console .radio-channel,#stage.clean-ui #radio-phase{display:none}
+.radio-history-hint{font:9px/1.6 "Microsoft YaHei",sans-serif;color:#91a9bd}
+#stage.clean-ui #radio-collapse{display:none;background:none;border:0;padding:2px 4px}
+#stage.clean-ui #radio-console[data-browsing=true] #radio-collapse{display:block}
+#stage.clean-ui #radio-transcript{max-height:min(28dvh,220px);padding:0 4px 0 0;margin:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;mask-image:linear-gradient(transparent,#000 10px)}
+#stage.clean-ui #radio-console[data-browsing=true] #radio-transcript{scrollbar-width:thin}
+#stage.clean-ui #radio-transcript li{padding:8px 0;border:0;background:none}
+#stage.clean-ui #radio-transcript .radio-speaker{font-size:10px;line-height:1.6}
+#stage.clean-ui #radio-transcript p{font-size:12px;line-height:1.7;margin:3px 0 0;color:#dbe9f2}
+@media(max-width:850px){#stage.clean-ui #radio-console{left:78px;right:14px;width:auto;max-width:none;bottom:88px}}
+@media(prefers-reduced-motion:reduce){#stage.clean-ui #radio-console{transition:none}}

@@ -1,0 +1,36 @@
+#stage.clean-ui #training-coach[data-mission=levels] h2{font-size:21px;margin:10px 0}
+#training-coach .coach-levels{display:grid;gap:10px;margin:18px 0}
+#training-coach .coach-level-card{padding:12px;border:1px solid #2a4054;background:#0b1926}
+#training-coach .coach-level-number{display:flex;justify-content:space-between;font:10px/1.6 Consolas,"Microsoft YaHei",sans-serif;color:#91a9bd}
+#training-coach .coach-level-number span{color:#9cdfb7}
+#training-coach .coach-level-card h3{margin:5px 0;font-size:17px;font-weight:500;color:#cfe3f5}
+#training-coach .coach-level-card p{font-size:12px;line-height:1.7;margin:6px 0;color:#a5c8df}
+#training-coach .coach-level-card .coach-level-subtitle{font-size:10px;color:#91a9bd}
+#training-coach .coach-level-card .coach-small{font-size:10px;color:#7893a8}
+#training-coach .coach-level-card button{font-size:12px;padding:7px 14px;margin-top:5px;white-space:normal}
+#training-coach .coach-exam-entry{border-top:1px solid #294157;padding-top:13px;font-size:12px;line-height:1.7}
+#training-coach .coach-exam-entry summary{cursor:pointer;color:#a5c8df}
+#training-coach .coach-concept{border-left:2px solid #597f9e;padding:9px 12px;margin:14px 0;background:#0d2030}
+#training-coach .coach-concept>span{font-size:11px;color:#9cdfb7}
+#training-coach .coach-concept p{font-size:12px;line-height:1.8;margin:6px 0;color:#cfe3f5}
+#training-coach .coach-concept .coach-concept-example{font-size:11px;color:#91a9bd}
+#training-coach .coach-task>span{font-size:10px;letter-spacing:1px;color:#9cdfb7}
+#training-coach .coach-task p{font-size:13px;line-height:1.8;margin:5px 0 12px}
+#training-coach .coach-look{font-size:11px;line-height:1.7;color:#91a9bd;margin:12px 0}
+#training-coach .coach-look b{font-weight:400;color:#a5c8df}
+#stage.clean-ui #training-coach[data-level]:not([data-level=""])[data-kind=choice] .coach-choices{grid-template-columns:1fr;gap:7px}
+#stage.clean-ui #training-coach[data-level]:not([data-level=""])[data-kind=choice] .coach-choices button{font-size:12px;text-align:left;padding:10px!important;line-height:1.6;white-space:normal}
+#stage.clean-ui #training-coach[data-level]:not([data-level=""]):is([data-kind=choice],[data-kind=compass],[data-kind=bullseye],[data-kind=tacan],[data-kind=dme]) .coach-live{display:none}
+#training-coach .coach-mission-head{gap:10px;flex-wrap:wrap}
+#training-coach .coach-mission-head>span:last-child{white-space:nowrap}
+#training-coach .coach-bottom{flex-wrap:wrap;gap:7px}
+#training-coach .coach-bottom button{white-space:normal}
+@media(max-width:750px){
+ #stage.clean-ui #training-coach[data-mission=levels]{top:calc(var(--selected-status-bottom,128px) + 10px);bottom:78px;max-height:none}
+ #training-coach .coach-level-card{padding:10px}
+ #training-coach .coach-level-card h3{font-size:16px}
+ #training-coach .coach-concept{padding:7px 9px}
+ #training-coach .coach-concept p{font-size:12px}
+}
+
+#stage.clean-ui #training-coach[data-kind="handoff-mode"] .coach-choices{grid-template-columns:1fr;gap:7px}#stage.clean-ui #training-coach[data-kind="handoff-mode"] .coach-choices button{font-size:12px;line-height:1.6;text-align:left;white-space:normal}#stage.clean-ui #training-coach[data-kind="handoff-mode"] .coach-live{display:none}

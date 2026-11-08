@@ -1,0 +1,43 @@
+飞行员自主规划与航空通联（2026-11-08）
+
+分工：指挥员模型理解并转达玩家意图，只有明显离谱、未知对象或关键目标确实缺失时才要求澄清。
+所有常规指令及附加要求都进入飞行员模型判断，包括指挥员给出的待澄清候选，不只减推力起飞。
+飞行员可组合已有动作、自主选择未指定的推力/速度/高度和航路细节；明确数值和条件必须保留。
+无法理解的要求点名说明，不替换成默认起飞/巡航。执行器仍检查真实参数和飞行物理，结果再交模型复核。
+
+接口：POST /api/tactical/pilot/plan 为通用意图/任务规划；
+POST /api/tactical/pilot/plan-departure 为起飞推力与离场路线规划。
+Flash 为默认飞行员；2B 仍显示暂不可下载，所有新接口同样检查所选模型。
+健康状态 commandPlanning=true，客户端因此使用统一飞行员规划流程。
+
+减推力起飞例子：飞行员输出 customPlan 的油门、加力、爬升速度、初始离场高度、航路长度。
+参考候选只是物理参考，不是参数白名单，模型可给出85%等候选之外的数值。
+程序检查滑跑距离、抬轮速度、推力/爬升余量、地形和边界，再装订。真实滑跑和爬升使用所选推力。
+离地初段先保持跑道方向；离场高度达到机场上方300米后衔接航点，避免把地面抬轮阶段误判为航路碰地。
+路线预测、存档和恢复保留推力方案，预测不能修改实际方案；人工新航路和重新停放会接管或清除旧方案。
+复述区分计划、正在执行和实际达到，不把装订成功当作已经离地或到达高度。
+
+通联用语：无法执行 / UNABLE；指令不明时请重发 / SAY AGAIN；已理解但不能执行时请求新的指示。
+保留原任务 / MAINTAINING PREVIOUS TASK，最后带呼号。澄清由飞行员报告，不用普通聊天式错误代替通联。
+中文不再把“起飞 / TAKEOFF”双语词典标签或 reduced_thrust 内部代码直接读出。
+中文用“起飞、减推力起飞”，英文用 TAKE OFF、REDUCED-THRUST TAKEOFF。
+
+术语层：sim/aviation-speech.js 只处理送入TTS的文本，字幕和任务数据保留原值。
+09L → 中文“洞九左”，英文“ZERO NINER LEFT”；L/R/C分别为左/右/中、LEFT/RIGHT/CENTER。
+支持跑道编号的空格、大小写、前后中文、RWY标签；不把F-16C、0.09L容量或未知编号当跑道。
+航向按位读；高度、速度等数量不逐位改写。常见ILS/DME/VOR/ATC等按中英文术语或字母读。
+塔台中文使用 Yichen（平稳男声），英文使用 Oliver（中性、清晰男声）；保留原指挥员与两位飞行员音色。
+配置项 INWORLD_VOICE_CONTROLLER_ZH / INWORLD_VOICE_CONTROLLER_EN，未指定时沿用通用塔台配置。
+
+验证记录：
+真实地图80%油门、无加力，从机位完成滑行、离地并爬升到初始目标附近，实际油门/加力均受方案约束。
+真实浏览器完成指挥员 → 飞行员通用规划 → 自主推力/航路规划 → 装订 → 模型检查复述，并实际离地爬升。
+真实Flash自主规划85%油门、无加力、140m/s爬升速度、1300米初始高度、12公里路线，程序物理检查通过。
+真实未识别机动返回空任务和明确“无法执行”说明，已有任务不被替换。
+实际Inworld音频回转写：中文塔台“阿尔法零一，洞九左跑道外等待”；英文正确识别RUNWAY ZERO NINER LEFT。
+完整回归252项通过；另含真实接口与浏览器诊断记录，保存在本机忽略目录.game-server。
+
+参考：
+https://www.faa.gov/Air_traffic/publications/atpubs/aim_html/chap2_section_3.html
+https://docs.inworld.ai/api-reference/voiceAPI/voiceservice/list-voices
+https://docs.inworld.ai/tts/capabilities/pronunciation-dictionaries

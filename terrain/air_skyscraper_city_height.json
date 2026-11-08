@@ -1,0 +1,13 @@
+{
+  "width": 1024,
+  "height": 1024,
+  "originEast": -32768.0,
+  "originNorth": -32768.0,
+  "step": 64.0312795927739,
+  "rowZero": "minNorth",
+  "source": "landmesh",
+  "waterLevel": 0,
+  "min": -59.824527740478516,
+  "max": 5145.251953125,
+  "data": "air_skyscraper_city_height.f32"
+}

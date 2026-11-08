@@ -1,0 +1,31 @@
+飞行员 AI 模型选择（2026-11-07）
+
+使用入口：设置 → 飞行员 AI。
+首次打开默认 Flash；之后记住本机浏览器的选择。
+Flash 使用百炼 qwen3.7-flash，沿用服务端 DASHSCOPE_API_KEY。
+可通过 QWEN_PILOT_MODEL 单独配置 Flash 飞行员的模型名称。
+
+Flash 接入两条现有流程：
+1. 程序先执行/装订任务，再采样真实状态，由飞行员检查并复述。
+2. 遇到需判断的事件时进行判断；常规自动驾驶不逐帧调用模型。
+编队与协同知识沿用项目手册。Flash 使用正常教材，已有 2B 实验接口保留精简教材。
+
+2B 当前作为本地模型选项预留。选择后显示“下载 2B 模型 · 暂未提供”，
+下载按钮禁用，AI 下令暂不可用；切回 Flash 可恢复。此版本无下载地址。
+服务端对 pilotModel=2b 返回 HTTP 409，不调用模型、不自动回退 Flash。
+选项切换会取消旧请求和未完成通话，已装订的飞机任务继续执行。
+
+飞行员默认值独立于 AI_PROVIDER。旧 hybrid 配置也使用 Flash 飞行员，
+不再按需加载本地 2B 飞行员。AI_PROVIDER=local 仍是已有指挥官实验配置。
+本地模型工具和模型文件保留，未增加自动下载或删除动作。
+
+接口：
+GET /api/tactical/pilot/models：默认模型与两种选项的可用/下载状态。
+GET /api/health：defaultPilotModel、pilotModels、pilotReady、pilotAssistant。
+POST /api/tactical/pilot/result 和 /assess：带 pilotModel=flash；省略时默认 flash。
+
+验证：195 项自动测试通过。新增默认模型、真实请求模型名称、2B 拒绝执行、
+取消上游请求、切换阻止迟到结果、界面禁用及恢复等测试。
+Edge 实际打开设置验证 2B 暂不可下载、刷新保留选择、切回 Flash；
+实际百炼请求“Bravo，掩护Alpha。”由 Flash 检查并复述，checkedBy=qwen3.7-flash。
+浏览器页面无异常；飞行员健康状态 pid=null，显存=0。

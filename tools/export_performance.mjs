@@ -1,0 +1,5 @@
+import fs from 'node:fs';import {performanceGrid} from '../sim/performance.js';
+const profiles=JSON.parse(fs.readFileSync('data/aircraft.json')),data={schemaVersion:1,generatedAt:new Date().toISOString(),units:'SI',source:'Current game FM; not measured War Thunder telemetry',aircraft:{}};
+const csv=['aircraft,altitude_m,tas_mps,mach,mass_kg,ps_dry_mps,ps_wet_mps,instant_g,sustained_wet_g,instant_turn_deg_s,sustained_wet_turn_deg_s,within_speed_limits'];
+for(const [id,p]of Object.entries(profiles)){const rows=performanceGrid(p);data.aircraft[id]={name:p.name,massKg:p.mass,profileProvenance:p.provenance,rows};for(const r of rows)csv.push([id,r.altitudeM,r.speedMps,r.dry.mach,p.mass,r.dry.specificExcessPowerMps,r.wet.specificExcessPowerMps,r.dry.instantaneousMaxG,r.wet.sustainedMaxG,r.dry.instantaneousTurn.rateDegSec,r.wet.sustainedTurn.rateDegSec,r.dry.withinSpeedLimits].join(','));}
+fs.mkdirSync('data/flight-research',{recursive:true});fs.writeFileSync('data/flight-research/performance.json',JSON.stringify(data,null,2)+'\n');fs.writeFileSync('data/flight-research/performance.csv',csv.join('\n')+'\n');console.log('performance rows',csv.length-1);

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WT · 空中指挥</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./style.css"><script type="importmap">{"imports":{"three":"../vendor/three/three.module.js"}}</script></head>
+<body><link rel="stylesheet" href="./compact.css"><main id="stage" class="clean-ui panels-hidden"><canvas id="scene" aria-label="三维战术地图"></canvas>
+<header><div><span class="eyebrow">TACTICAL FLIGHT / 01</span><h1>空中指挥 <small>SKYSCRAPER CITY</small></h1></div><span id="status">正在载入战场…</span></header>
+<nav id="panel-controls" aria-label="界面面板"><button id="toggle-panels" type="button" aria-pressed="false">编队</button><button id="voice-toggle" type="button" aria-expanded="false">指挥</button><button id="settings-toggle" type="button" aria-expanded="false" aria-controls="settings-panel">设置</button><details id="controls-help"><summary>操作</summary><div><b>观察</b><p>拖动旋转，滚轮缩放。WASD 移动，Shift 上升，Ctrl 下降。</p><b>下令</b><p>先打开“航线设置”。普通右键替换整条航路；按住CapsLock＋右键连续追加。左键单击不放点，滚轮调整光标航点的空间深度。</p><b>编辑航路</b><p>从飞机按住左键拖动手绘；按住已有蓝色航线可续绘，保留之前航段、替换后续。自动提取转折航点、识别直线；在已有航点按住左键拖动调整位置，Alt＋拖动只改高度。吸附首个航点可闭环循环飞行。</p><p>Esc 取消 · Ctrl+Z 撤销 · Ctrl+Y 重做 · 空格 暂停</p><p>蓝线：目标连线<br>绿线：安全预计路径</p></div></details></nav>
+<div id="route-controls"><button id="route-edit" type="button" aria-pressed="false">航线设置</button><button id="route-undo" type="button" title="Ctrl+Z" disabled>撤销</button><button id="route-redo" type="button" title="Ctrl+Y" disabled>重做</button><button id="camera-follow" type="button" aria-pressed="false" title="跟随选中飞机（F）；拖动环绕，滚轮调整距离，WASD退出跟随">跟随选中机</button></div>
+<div id="hud-readout" aria-live="off"></div>
+<div id="hud-message" role="status" hidden></div>
+<div id="waypoint-tools" hidden><span></span><button data-action="height" type="button" title="拖动调整高度">↕ 高度</button><button data-action="delete" type="button" title="Delete">删除</button></div>
+<aside id="unit-panel" aria-label="编队与指挥"><div class="section">飞行编队 <span>02 AIRCRAFT</span></div><div id="roster"></div><div class="divider"></div><div class="section">指挥参数 <span id="selected-name"></span></div>
+<label class="unit-system-control" for="unit-system">全局单位<select id="unit-system"><option value="metric">公制 · km/h · m · km</option><option value="imperial">航空英制 · kt · ft · NM</option></select></label>
+<label class="unit-system-control" for="execution-mode">执行严苛度<select id="execution-mode" title="放宽模式允许补全参数和安排已有流程；保留碰撞与跑道占用检查"><option value="strict">严苛模式 · 手动交接</option><option value="relaxed">宽松模式 · 自动交接</option></select></label>
+<p class="instruction">飞行员根据任务与飞机状态自主规划高度、速度。</p>
+<div class="auto-mode">自动能量管理 <span id="auto-g"></span></div>
+<div id="flight-details" class="flight-details"></div>
+<label class="append-option"><input id="append-waypoint" type="checkbox" checked> 追加航点到航路末尾</label>
+<div class="actions"><button id="hold">原地盘旋</button><button id="clear">清除航点</button></div>
+<p class="instruction">先开启航线设置，再从飞机或已有蓝色航线左键拖出手绘航路<br>普通右键替换航路 · CapsLock＋右键追加<br>拖动航点平移 · Alt＋拖动改高度<br>靠近起点闭环吸附 · Esc退出<br>蓝色为目标连线 · 绿色为安全预计轨迹</p><div id="route-message" role="status"></div><div id="flight-alert" role="status"></div><div id="orders"></div><div id="waypoint-list"></div></aside>
+<section id="settings-panel" class="utility-panel" aria-label="设置" hidden>
+<div class="panel-heading"><h2>设置</h2><button type="button" data-close-panel aria-label="关闭设置">关闭</button></div>
+<div class="settings-section"><h3>通用</h3><div id="settings-general"></div><p id="autosave-status" class="setting-hint" role="status">自动保存已开启 · 退出后可继续</p></div>
+<div class="settings-section"><h3>地图显示</h3>
+<label for="display-airport-labels">机场编号<select id="display-airport-labels"><option value="minimal">简洁</option><option value="full">详细</option><option value="off">隐藏</option></select></label>
+<label for="display-trails">飞机航迹<select id="display-trails"><option value="selected">仅选中机</option><option value="all">全部</option><option value="off">隐藏</option></select></label>
+<label for="display-waypoints">航点文字<select id="display-waypoints"><option value="selected">当前与选中点</option><option value="all">全部</option></select></label>
+<p class="setting-hint">简洁模式突出跑道与当前机位，靠近后显示更多编号。</p></div>
+<div class="settings-section"><h3>通联</h3><div id="settings-radio"></div></div>
+<div class="settings-section"><h3>语言</h3><label for="text-language">文字语言<select id="text-language"><option value="zh">中文</option><option value="en">English</option></select></label><label for="voice-language">语音语言<select id="voice-language"><option value="zh">中文</option><option value="en">English</option></select></label><label for="speech-rate">语音速度<select id="speech-rate"><option value="0.8">0.8×</option><option value="1">1×</option><option value="1.2">1.2×</option></select></label><p class="setting-hint">界面和通联文字、语音播报可分别选择，设置自动保存。</p></div>
+<div class="settings-section"><h3>飞行员 AI</h3><div id="settings-pilot"></div></div>
+<div class="settings-section"><h3>场景</h3><div id="settings-scenario"></div></div>
+<div class="settings-section"><h3>工具与帮助</h3><div id="settings-tools"></div></div>
+<details id="service-settings"><summary>服务与模型状态</summary><div id="settings-service"></div></details>
+</section>
+<div id="placement-info" hidden></div>
+<section class="command-panel" aria-label="指挥电台">
+<div class="section">语音指挥 <button id="command-connection" type="button" title="重新检查服务连接">检查连接…</button></div>
+<div class="command-model">正在检查模型…</div>
+<label class="command-style" for="pilot-model">飞行员 AI<select id="pilot-model"><option value="flash" selected>Flash（默认）</option><option value="2b">2B（本地模型）</option></select></label>
+<div id="pilot-model-download" hidden><button type="button" disabled>下载 2B 模型 · 暂未提供</button><p>2B 模型下载暂未提供，请选择 Flash。</p></div>
+<p id="command-ai-resource" hidden></p>
+<p id="pilot-assistant-status" hidden></p>
+<label class="command-style" for="command-style">通联风格<select id="command-style"><option value="pla">中文通联 · 洞幺两</option><option value="nato">北约 / ICAO · Alfa</option></select></label>
+<div class="command-record"><button id="command-mic" type="button" aria-pressed="false">开始录音</button><div id="command-level" aria-hidden="true"></div><kbd>按住 V</kbd></div>
+<label for="command-text" class="command-label">玩家意图 · AI 代指挥台发话</label>
+<textarea id="command-text" rows="3" maxlength="1000" placeholder="让 Alpha 向西飞，高度八千米，速度六百公里每小时" aria-describedby="command-help"></textarea>
+<label class="command-auto"><input id="command-auto" type="checkbox"> 录音结束后自动下达指令</label>
+<div class="actions"><button id="command-send" type="button">下达指令 <kbd>ENTER</kbd></button><button id="command-cancel" type="button" disabled>取消</button></div>
+<p id="command-status" role="status" aria-live="polite">正在连接指挥服务…</p>
+<section id="command-understanding" hidden><div class="command-understanding-title">指挥命令</div><ol id="command-intents"></ol></section>
+<p id="command-help">Alpha / 幺洞幺：一号机 · Bravo / 幺洞两：二号机。支持导航、编队、战斗与起降意图；执行能力见口令手册。录音将发送至百炼转写。</p>
+<details class="command-handbook"><summary>军事口令手册 · 执行能力</summary><div id="command-catalog"></div></details>
+<ol id="command-history" aria-label="最近指令"></ol>
+</section>
+<section id="radio-console" aria-label="指挥台与飞行员通联">
+<div class="radio-console-header"><div><span class="radio-channel">COMMAND NET</span><span id="radio-phase" role="status" aria-live="polite">等待玩家指令</span></div><button id="radio-audio" type="button" aria-pressed="true">通话语音：开</button><button id="radio-collapse" type="button" aria-expanded="true">收起</button></div>
+<ol id="radio-transcript" role="log" aria-live="polite" aria-label="通联字幕"></ol>
+</section>
+<link rel="stylesheet" href="./voice-command.css">
+<link rel="stylesheet" href="./hud.css">
+<link rel="stylesheet" href="./training.css">
+<link rel="stylesheet" href="./training-missions.css">
+<link rel="stylesheet" href="./interface.css">
+<link rel="stylesheet" href="./training-browser-fixes.css">
+<link rel="stylesheet" href="./map-compass.css">
+<link rel="stylesheet" href="./mission-report.css">
+<link rel="stylesheet" href="./aircraft-hud.css">
+<link rel="stylesheet" href="./radio-overlay.css">
+<link rel="stylesheet" href="./training-levels.css">
+<link rel="stylesheet" href="./control-authority.css">
+<link rel="stylesheet" href="./floating-windows.css">
+<link rel="stylesheet" href="./route-editor.css">
+<footer><button id="pause" class="primary">暂停 <kbd>SPACE</kbd></button><details id="speed-menu" class="dock-menu"><summary id="current-rate" aria-label="模拟速度">1×</summary><div id="speed-menu-content" class="dock-popover"></div></details><div id="rates"><button data-rate="1" class="active">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button><button data-rate="8">8×</button></div><span id="clock">T+00:00</span><div class="footer-right"><details id="route-menu" class="dock-menu"><summary>航路</summary><div id="route-menu-content" class="dock-popover"></div></details><details id="view-menu" class="dock-menu"><summary>视图</summary><div id="view-menu-content" class="dock-popover"></div></details><button id="radio-toggle" type="button" aria-expanded="false" aria-controls="radio-console">通联<span id="radio-unread" hidden></span></button><button id="focus">聚焦编队</button><button id="reset">重新开始</button></div></footer>
+<div class="legend"><i></i>友机 <i class="cyan"></i>航点 / 指挥路径 <span>W/S 沿视线移动 · A/D 横移 · Shift 上升 · Ctrl 下降</span></div>
+</main><script type="module" src="./main.js"></script></body></html>

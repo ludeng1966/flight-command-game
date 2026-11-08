@@ -19,7 +19,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 ROOT_FILES = ["ace.css", "mission.css", "mission.js", "scene3d3-loader.js",
               "web/wrpl-parse.js", "web/wrpl-worker.js", "web/airfields.js"]
 # (source dir, destination dir)
-DIRS = [("three3d", "three3d"), ("tables", "tables")]
+DIRS = [("three3d", "three3d"), ("tables", "tables"),
+        ("game", "game"), ("sim", "sim"), ("data", "data")]
 
 
 def main(argv=None):
@@ -52,6 +53,9 @@ def main(argv=None):
     shutil.copytree(ROOT / "web" / "vendor", vendor, dirs_exist_ok=True)
 
     pack_terrain.main(["--data", str(args.data), "--out", str(out / "terrain")])
+    for pattern in ('*_height.json','*_height.f32'):
+        for height_file in (ROOT/'terrain').glob(pattern):
+            shutil.copy2(height_file,out/'terrain'/height_file.name)
     # 机场目录是仓库自带的小表（不依赖地形数据集），单独拷进站点
     af = ROOT / "terrain" / "airfields.json"
     if af.exists():

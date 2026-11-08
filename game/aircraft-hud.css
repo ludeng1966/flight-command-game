@@ -1,0 +1,52 @@
+#stage.clean-ui #aircraft-rail{position:absolute;left:8px;top:106px;bottom:82px;width:62px;z-index:43;display:flex;flex-direction:column;align-items:center;gap:15px;overflow:auto;scrollbar-width:none;padding:3px 4px}
+.aircraft-rail-title{font:8px/1.4 "Microsoft YaHei",sans-serif;letter-spacing:2px;color:#91a9bd;margin-bottom:-7px}
+#aircraft-rail .aircraft-choice{display:block;padding:0;border:0;width:54px;min-height:54px;flex:none;white-space:normal;background:transparent;text-align:center;color:var(--aircraft-color);cursor:pointer}
+.aircraft-portrait{display:grid;place-items:center;position:relative;width:50px;height:50px;margin:0 auto;border:2px solid var(--aircraft-color);border-radius:50%;background:#0a1722;box-sizing:border-box;overflow:hidden;transition:box-shadow .15s,background .15s}
+.aircraft-portrait img{display:block;width:100%;height:100%;object-fit:contain;grid-area:1/1}.aircraft-portrait img[hidden],.portrait-fallback[hidden]{display:none}.portrait-fallback{font:12px Consolas,monospace;grid-area:1/1}.portrait-damage{display:none;position:absolute;right:3px;bottom:0;color:#ff8c86;font:16px Consolas,monospace}
+#aircraft-rail .aircraft-choice:hover .aircraft-portrait{background:#163044;box-shadow:0 0 0 3px color-mix(in srgb,var(--aircraft-color) 25%,transparent)}
+#aircraft-rail .aircraft-choice[aria-pressed=true] .aircraft-portrait{border-width:3px;box-shadow:0 0 0 3px color-mix(in srgb,var(--aircraft-color) 28%,transparent)}
+#aircraft-rail .aircraft-choice:focus-visible{outline:2px solid var(--aircraft-color);outline-offset:5px;border-radius:28px}
+.aircraft-callsign{display:none;font:9px/1.5 Consolas,"Microsoft YaHei",monospace;margin-top:7px;white-space:nowrap}
+.aircraft-choice[aria-pressed=true] .aircraft-callsign{display:block}.aircraft-choice.damaged .portrait-damage{display:block}.aircraft-choice.damaged img{filter:grayscale(.8)}
+#stage.clean-ui #selected-aircraft-status{position:absolute;left:84px;top:104px;width:264px;max-width:calc(100vw - 100px);padding:11px 13px;background:#09131fe8;border:1px solid #2a4054;border-top-color:var(--aircraft-color);z-index:31;pointer-events:none;box-sizing:border-box;color:#cfe3f5}
+/* Keep the status inside the compass's horizontal footprint. */
+#stage.clean-ui #map-compass{left:18px;transform:none}
+.aircraft-status-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.aircraft-status-heading h2{font:14px/1.5 Consolas,"Microsoft YaHei",monospace;margin:0;color:var(--aircraft-color)}.aircraft-status-heading>span{font:10px/1.5 "Microsoft YaHei",sans-serif;color:#a5c8df}
+#selected-aircraft-status #aircraft-status-toggle{pointer-events:auto;flex:none;cursor:pointer;font:9px/1.5 "Microsoft YaHei",sans-serif;padding:2px 4px;border:1px solid transparent;background:transparent;color:#91a9bd;white-space:nowrap}#selected-aircraft-status #aircraft-status-toggle:hover{border-color:#345268;color:#cfe3f5}#selected-aircraft-status #aircraft-status-toggle:focus-visible{outline:2px solid var(--aircraft-color);outline-offset:2px}#selected-aircraft-details[hidden]{display:none}
+#stage.clean-ui #selected-aircraft-status[data-collapsed=true]{width:46px;max-width:none;padding:0;border:0;background:transparent}
+#selected-aircraft-status[data-collapsed=true] .aircraft-status-heading{display:block}
+#selected-aircraft-status[data-collapsed=true] .aircraft-status-heading h2,#selected-aircraft-status[data-collapsed=true] .aircraft-phase{display:none}
+#selected-aircraft-status[data-collapsed=true] #aircraft-status-toggle{display:block;width:46px;height:24px;padding:0;border:1px solid #2a4054;border-left-color:var(--aircraft-color);background:#09131fe8;color:#a5c8df;font-size:10px}
+.aircraft-model{font:9px/1.6 Consolas,"Microsoft YaHei",monospace;color:#91a9bd;margin:2px 0 10px}
+#selected-aircraft-status[data-alert=danger] .aircraft-phase{color:#ff8c86}#selected-aircraft-status[data-alert=warning] .aircraft-phase{color:#e4c77e}
+#stage.clean-ui #selected-aircraft-status[data-collapsed=true][data-alert=danger] #aircraft-status-toggle{color:#ff8c86;border-color:#a65d59}#stage.clean-ui #selected-aircraft-status[data-collapsed=true][data-alert=warning] #aircraft-status-toggle{color:#e4c77e;border-color:#8b794e}
+.aircraft-status-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.aircraft-status-metrics small{display:block;font:8px/1.5 "Microsoft YaHei",sans-serif;color:#91a9bd;white-space:nowrap}.aircraft-status-metrics strong{display:block;font:11px/1.8 Consolas,"Microsoft YaHei",monospace;font-weight:400;white-space:nowrap;color:#cfe3f5}
+.aircraft-status-target{font:9px/1.7 Consolas,"Microsoft YaHei",monospace;color:#91a9bd;border-top:1px solid #223749;padding-top:6px;margin:8px 0 0}.aircraft-status-target span{display:block}
+#stage.clean-ui.aircraft-hud-ready #hud-readout{display:none}
+#stage.clean-ui.aircraft-hud-ready .command-panel{left:84px;top:calc(var(--selected-status-bottom,245px) + 12px)}
+#stage.clean-ui.aircraft-hud-ready #unit-panel{left:84px}
+@media(max-width:850px){
+ #stage.clean-ui #aircraft-rail{left:5px;top:102px;width:60px;gap:14px}
+ #stage.clean-ui #map-compass{left:14px;width:330px;max-width:calc(100vw - 28px)}
+ #stage.clean-ui #selected-aircraft-status{left:78px;top:99px;width:264px;max-width:calc(min(330px,100vw - 28px) - 64px);padding:8px 10px}
+ #stage.clean-ui.aircraft-hud-ready .command-panel{left:78px;right:12px;width:auto;top:calc(var(--selected-status-bottom,230px) + 10px)}
+ #stage.clean-ui.aircraft-hud-ready #unit-panel{left:78px;right:12px;width:auto;top:calc(var(--selected-status-bottom,230px) + 10px)}
+ #stage.clean-ui.aircraft-hud-ready #mission-brief{left:78px;right:12px;top:calc(var(--selected-status-bottom,230px) + 10px)}
+ #stage.clean-ui.aircraft-hud-ready #training-coach.walkthrough{left:78px;right:12px;width:auto;top:calc(var(--selected-status-bottom,230px) + 10px);max-height:calc(100dvh - var(--selected-status-bottom,230px) - 90px)}
+ #stage.clean-ui.aircraft-hud-ready.training-active #training-coach.walkthrough{top:auto;left:78px;right:12px;width:auto;max-height:min(55dvh,calc(100dvh - var(--selected-status-bottom,230px) - 90px))}
+ #stage.clean-ui.aircraft-hud-ready.training-active.training-card-open #scene{height:max(300px,calc(100% - var(--training-coach-height,280px) - 76px + var(--selected-status-bottom,220px)))}
+ #stage.clean-ui.aircraft-hud-ready #training-coach .coach-bottom{flex-wrap:wrap;gap:5px}
+}
+@media(max-width:560px){
+ .aircraft-status-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 5px}
+ .aircraft-status-heading h2{font-size:12px;white-space:nowrap}
+ .aircraft-status-heading .aircraft-phase{grid-column:1/-1;grid-row:2}
+ .aircraft-status-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+ .aircraft-status-target{overflow-wrap:anywhere}
+}
+@media(max-width:420px){
+ #stage.clean-ui #map-compass{left:78px;top:92px;width:calc(100vw - 92px);max-width:none}
+ #stage.clean-ui #selected-aircraft-status{top:138px;max-width:calc(100vw - 92px)}
+ #stage.clean-ui #aircraft-rail{top:138px}
+}
+@media(prefers-reduced-motion:reduce){.aircraft-portrait{transition:none}}

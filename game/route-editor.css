@@ -1,0 +1,13 @@
+#stage.route-edit-mode #scene{cursor:crosshair}
+#stage #route-cursor-preview{position:absolute;z-index:32;pointer-events:none;white-space:pre-line;min-width:180px;max-width:215px;padding:7px 10px;font:10px/1.7 Consolas,"Microsoft YaHei",monospace;color:#bde4d3;background:#091722ed;border:1px solid #51846f;box-shadow:0 3px 12px #0005}
+#stage #route-cursor-preview[data-valid=false]{color:#ffb9b2;border-color:#b76b64}
+#stage #route-cursor-preview[hidden]{display:none}
+#stage.route-edit-mode .ac-draft-label{display:none!important}
+#route-menu-content .append-option{display:none}
+#stage #route-edit-entry{background:transparent;border-color:transparent}
+#stage #route-edit-entry.active{border-color:#548d79;color:#bbdfca}
+/* 专注编辑：保留布局盒以便精确恢复，但界面既不可见也不能拦截鼠标。 */
+#stage.route-edit-mode>:not(#scene):not(.ac-labels):not(#route-cursor-preview),
+#stage.route-edit-mode>:not(#scene):not(.ac-labels):not(#route-cursor-preview) *{visibility:hidden!important;pointer-events:none!important}
+#stage.route-edit-mode #scene{width:100%!important;height:100%!important}
+#stage.route-edit-mode .ac-airport-label,#stage.route-edit-mode .ac-airport-label-leader{visibility:hidden!important}

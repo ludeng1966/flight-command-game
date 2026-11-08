@@ -1,0 +1,40 @@
+飞机编队与合作模式研究及游戏接入
+日期：2026-11-07（Asia/Shanghai）
+
+研究范围
+面向当前空中指挥沙盘的口令理解。队形是相对位置关系，协同是职责与任务关系；二者可以组合。采用公开训练资料与历史材料，具体字段是本游戏的工程映射，不声称复现某军种全部条令。未引用教材中的固定间隔、角度与过载作为所有机型的默认值。
+
+常用队形
+梯队 echelon：同侧斜后，便于有序集合与航渡；左右位置应明确。纵队 trail：前后跟进，路径跟随直观，但仍要处理追近、尾流和间隔。横队 line_abreast：左右大致并列，方便观察和互助；战斗疏开 combat_spread：强调疏开后的支援与机动空间，两者语义关联但保留玩家原词。楔形 wedge：长机前、僚机在斜后方区域，两机也能用。战斗翼队 fighting_wing：僚机在后方机动区域配合跟随。四指 finger_four：四架构成两个双机组，不是固定对称V字。不同任务、气象、地形与机型会影响适用队形。
+
+合作模式
+长僚配合：领队带任务与机动，僚机保持相对位置、观察、避碰和支援，长机也要照顾僚机。相互支援：分担观察并维持能够协助彼此的关系。双机自由配合 loose_deuce：交战机与自由机协调，角色按态势转换；不是固定几何队形或强制同时追击。攻击与掩护：分别保留攻击机的敌目标与掩护机的受保护友机。护航：保护指定对象及其行动，不自动授权攻击。夹击 bracket：从不同侧形成配合，不自行给每机分左右。萨奇剪 thach_weave：历史上的双机交叉掩护防御；与单机剪刀机动区分，不能推广为现代导弹防御效果保证。
+
+资料及核验位置
+1. CNATRA P-459，《Formation Flight》章节600–601：section与division、领队/僚机职责、parade与cruise的用途。
+https://www.cnatra.navy.mil/local/docs/pat-pubs/P-459.pdf
+2. AETCMAN 11-248，2025-08-13，附件3：双机战术队形、LAB与wedge、双机作为基本单元、职责及目视观察。用于支持双机/四机层次与战术队形的概括。
+https://static.e-publishing.af.mil/production/1/aetc/publication/aetcman11-248/aetcman11-248.pdf
+3. AETCMAN 11-251，2024-09-10，第6章与9.25：LAB、wedge、fighting wing及地形/机动条件。四指、梯队与纵队的几何解释为本游戏的概括，具体机型数值不移植。
+https://static.e-publishing.af.mil/production/1/aetc/publication/aetcman11-251/aetcman11-251.pdf
+4. CNATRA P-1221，《Tactical Formation》，Background：combat spread及loose deuce、free/engaged分工。旧训练文献的公开镜像，作为概念来源，不作为现行程序的保证。
+https://navyflightmanuals.tpub.com/P-1221/Background-P-12210016-16.htm
+5. U.S. Naval History and Heritage Command，Naval Aviation News，1993年7–8月，第32页：Thach Weave的历史用途与交叉掩护。
+https://www.history.navy.mil/content/dam/nhhc/browse-by-topic/commemorations/commemorations-toolkits/wwii/articles-on-world-war-ii-naval-aviation/pdf/ww2-25.pdf
+6. ALSSA，Brevity（项目已有公开术语来源）：交战与通联术语的上下文。口令映射及保护对象处理由本游戏定义。
+https://www.alssa.mil/mttps/brevity/
+
+实现
+sim/formation-doctrine.js：7种队形、3种cooperate模式、4种角色及中英文别名统一为标准值。
+data/pilot-handbook/07_编队与协同.txt：Flash完整说明；08_编队协同速记.txt：2B精简规则（不足700字）。按口令语义或规范意图名检索，仅加载对应版本。2B指挥官编队请求只加载速记，从入队、改队形、角色、攻防分工、合作模式中选一个相关短例子，避免同时注入全部教材；事件飞行员保留基础职责与事件规则。
+server/pilot-handbook.mjs：统一检索入口；云端指挥官、本地指挥官、事件飞行员共用，事件飞行员始终使用精简版。
+参数兼容原1.0协议：formation=队形，mode=合作方式，role=角色，targetId/targetRef=参照或任务对象，rangeM=明确间隔，side=明确左右，constraints=尚无专用字段的错层等约束。新增cooperate意图，已有bracket、cover、escort保留。
+编译器对少于所需数量的改队形、双机合作不足两机、跟随/保护自己或缺少对象请求澄清；未实现能力仍返回capability_unavailable且整批不执行。界面用中文显示队形、角色、受保护对象与间隔。
+
+限制
+研究阶段只增加知识、解释、检查和显示。后续已接入空中双机的集合、跟随和六种队形位置控制，详见docs/formation-flight-control.txt。高级协同作战、传感器或武器仍未接入。不会因为教材中出现一种战术而主动改变玩家作战意图。
+
+实测与修正
+node tools/benchmark-formations.mjs cloud / local：分别真实调用Qwen3.7-Flash与本地Qwen3.5-2B-Q4_K_M。9例包括右梯队与间隔、横队、双机楔形、自由配合、长僚分配、攻击/掩护对象分离、萨奇剪、四指人数不足和导航回归；最终两者均9/9。日志位于.game-server/formation-benchmark-{cloud,local}.json。
+初测发现2B会混用多例参数；改为按任务选一个例子。另发现llama.cpp的可选属性语法按schema顺序生成：示例若先写headingDeg，而schema把altitudeM放在前面，后者会被跳过；间隔字段同理。现把本地schema属性顺序与语义示例对齐，导航漏高度与编队漏间隔的回归均通过。这些是有限用例的识别验证，不代表任意自然语言或真实协同作战均已通过验收。
+事件2B对所需编队执行器尚未接入的任务，输出限定为notify_commander；能力状态由程序确认，模型负责解释任务并报告缺失，不能误报已组成编队。正常飞行的事件策略保持不变。node tools/benchmark-formation-pilot.mjs使用合成任务通过游戏HTTP接口核验双机自由配合、萨奇剪和掩护；每次结束卸载到sleeping，专用显存归零。

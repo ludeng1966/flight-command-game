@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "families": [
+    {"id":"aim120","name":"AIM-120","sourceIdPattern":"^us_aim_120(?:a|b|c_5|c_7|d)(?:_|$)","preferredId":"us_aim_120b"},
+    {"id":"aim7","name":"AIM-7P","sourceIdPattern":"^us_aim7p_sparrow(?:_|$)","preferredId":"us_aim7p_sparrow_fa_18"},
+    {"id":"aim9m","name":"AIM-9M","sourceIdPattern":"^us_aim9m_sidewinder(?:_|$)","preferredId":"us_aim9m_sidewinder"},
+    {"id":"pl12","name":"PL-12","sourceIdPattern":"^cn_pl12(?:_default)?$","preferredId":"cn_pl12"},
+    {"id":"pl5eii","name":"PL-5EII","sourceIdPattern":"^su_pl5e2(?:_default)?$","preferredId":"su_pl5e2"}
+  ]
+}

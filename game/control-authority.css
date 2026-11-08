@@ -1,0 +1,8 @@
+.aircraft-status-subline{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin:2px 0 10px}
+.aircraft-status-subline .aircraft-model{margin:0;min-width:0;overflow-wrap:anywhere}
+#selected-aircraft-status #control-authority{position:static;flex:none;max-width:105px;text-align:right;font:9px/1.6 "Microsoft YaHei",sans-serif;color:#a5c8df;overflow-wrap:anywhere;pointer-events:auto}
+#selected-aircraft-status #control-authority[data-phase=transferring],#selected-aircraft-status #control-authority[data-phase=ready]{color:#e4c77e}
+#command-route-hint{color:#9cdfb7;font-size:12px;line-height:1.65;border-left:2px solid #9cdfb7;padding-left:8px}
+#command-route-hint #authority-request{display:block;margin-top:6px;font-size:11px;padding:4px 8px}
+#command-route-hint .authority-error{display:block;color:#e4c77e}
+@media(max-width:560px){.aircraft-status-subline{flex-wrap:wrap;row-gap:2px}#selected-aircraft-status #control-authority{margin-left:auto}}

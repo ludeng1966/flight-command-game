@@ -25,6 +25,12 @@
 - **机场目录**：`terrain/airfields.json` 由 [wrpl-acmi](https://github.com/3794432/wrpl-acmi)（dev 分支，AGPL-3.0）的 `airfields_all.json` 整理而来，只保留地图 → 任务 → 跑道线段；该文件按 AGPL-3.0 分发，生成脚本为 `tools/build_airfields_catalogue.py`。
 - **格式参考**：[wrpl-inspector](https://github.com/maxsupermanhd/wrpl-inspector)（AGPL-3.0）用于理解回放容器与包结构；只作参考，没有复制其代码。
 
+## 航空术语参考
+
+- [FAA Pilot/Controller Glossary](https://www.faa.gov/air_traffic/publications/atpubs/pcg_html/index.html)：本次源网页标注Effective 7/9/26、Change 3。参考条目简化为项目中文释义，保留FAA与ICAO语境及来源链接。
+- [ALSSA Brevity，25 April 2025](https://www.alssa.mil/Portals/9/Documents/mttps/brevity_2025.pdf)：公开发布的多军种简语和战术聊天缩写表。项目仅整理词义与语境，不把定义当作作战授权或已实现的游戏功能。
+- `data/aviation/`和14、15号中文速查是项目整理的游戏参考摘要，不是上述机构的官方中文译本。部分常见词另外标注本游戏的单位、坐标与执行约束，参见`docs/aviation-terms.txt`。
+
 ## 游戏素材
 
 《战争雷霆》（War Thunder）及其素材版权归 Gaijin Entertainment 所有，本项目与 Gaijin 无关。仓库不包含游戏原始文件（`.wrpl`、关卡、贴图、模型）；示例数据是由玩家自己的回放与地形派生的结果。

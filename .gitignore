@@ -19,3 +19,10 @@ graphify-out/
 # OS / editor noise
 .DS_Store
 Thumbs.db
+
+# 本地 API 密钥及服务日志
+.env
+.env.*
+!.env.example
+.game-server/
+.local-ai/

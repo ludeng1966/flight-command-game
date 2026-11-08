@@ -1,0 +1,49 @@
+指挥员与飞行员共用的航空术语词库
+
+范围
+FAA Pilot/Controller Glossary字母页，以及ALSSA Brevity 2025第2、3表。
+抓取条目按来源身份合并重复行，保留原词、中文名称、中文简释、来源和页码链接。
+这些来源覆盖大量航空与通联用语，不表示穷尽所有语言、机型和专业分支的全部航空术语。
+
+本地文件
+data/aviation/reference-terms.json：公开参考词条的中文简释。
+data/aviation/core-terms.json：本游戏易混词的人工补充说明。
+data/pilot-handbook/13_航空术语速查.txt：共同阅读规则。
+data/pilot-handbook/14_FAA航空术语简释.txt：完整FAA中文速查。
+data/pilot-handbook/15_ALSSA简语简释.txt：完整公开简语中文速查。
+sim/military-commands.js：全部游戏意图，词库自动索引，不另建会失同步的能力名单。
+
+如何提供给模型
+指挥员解释原始口令时检索相关词义。
+飞行员规划任务、选择起飞候选、判断事件和检查执行结果时，同样检索相关词义。
+Flash单次最多14条、4200字符；本地2B路径最多4条、900字符。
+这只是附加术语片段的上限，其他提示词和实况数据另计。
+新词典不会自行启动模型，不新增GPU模型，不改变普通飞行事件的唤醒条件。
+编队精简提示发生替换时重新附加相关词义，不会丢失词库。
+knowledgeUsed中id=aviation_terms的termIds记录本次真实注入的条目。
+
+游戏规则
+词典中的规章背景、传统单位、磁北基准和定义示例，不自动覆盖游戏的明确设置。
+当前游戏坐标、全局单位、玩家明确单位与capabilities优先。
+TAS、IAS、CAS、地速；海拔、AGL、气压高度；航向、航迹、方位分别解释。
+收到、将执行、许可、通报、设置成功与实际到位分别核对。
+术语理解不会新增武器、雷达、气象、燃油或未实现的机动执行器。
+没有数据时指出缺什么，不把词典示例当作当前战场事实。
+
+查询
+GET /api/tactical/terms：数量、来源和版本。
+GET /api/tactical/terms?q=FOX%20THREE&limit=6：检索相关词义，limit为1到40。
+GET /api/tactical/handbook?id=aviation_faa：完整FAA中文速查。
+GET /api/tactical/handbook?id=aviation_brevity：完整公开简语中文速查。
+
+更新流程（手动执行，游戏启动不会调用下载或简化构建）
+1. node tools/download-aviation-sources.mjs；可加--refresh更新缓存。
+2. 用装有pdfplumber的Python执行tools/extract-aviation-terms.py。
+3. node tools/simplify-aviation-terms.mjs，使用本机.env已配置的云端模型生成短中文释义。
+下载源文和断点保存在.gitignore中的.game-server/aviation-import，已完成条目复用，不重复推理。
+最终JSON保留源数据SHA256；检索只读本地数据，不在玩家下令时联网查词。
+参考释义为游戏中文摘要，不是FAA或ALSSA的官方中文译本。
+
+来源
+https://www.faa.gov/air_traffic/publications/atpubs/pcg_html/index.html
+https://www.alssa.mil/Portals/9/Documents/mttps/brevity_2025.pdf

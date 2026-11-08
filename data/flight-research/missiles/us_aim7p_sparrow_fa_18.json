@@ -1,0 +1,1557 @@
+{
+  "id": "us_aim7p_sparrow_fa_18",
+  "family": "aim7",
+  "familyName": "AIM-7P",
+  "sourceBulletName": "us_aim7p_sparrow",
+  "bulletName": "us_aim7p_sparrow",
+  "kind": "semi_active_radar",
+  "massKg": 231.3321,
+  "finalMassKg": 170.0971,
+  "lengthM": 3.6676,
+  "diameterM": 0.2032,
+  "lifetimeSec": 75,
+  "motorStages": [
+    {
+      "sourceSuffix": "",
+      "startSec": 0.25,
+      "durationSec": 4.5,
+      "thrustN": 21479.88,
+      "initialMassKg": 231.3321,
+      "finalMassKg": 188.4676
+    },
+    {
+      "sourceSuffix": "1",
+      "startSec": 4.75,
+      "durationSec": 11,
+      "thrustN": 3765.95,
+      "initialMassKg": 188.4676,
+      "finalMassKg": 170.0971
+    }
+  ],
+  "aerodynamics": {
+    "dragCx": 0.018,
+    "CxK": 1.4125,
+    "wingAreaMult": 3.25,
+    "finsAoaHor": 0.16,
+    "finsAoaVer": 0.16,
+    "finsLatAccel": 29,
+    "distFromCmToStabM": 0.052,
+    "frontalAreaM2": 0.03242927866223985,
+    "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+  },
+  "flightControl": {
+    "timeToHitToGain0": [
+      5,
+      1
+    ],
+    "timeToHitToGain1": [
+      8,
+      0.9
+    ],
+    "timeToHitToGain2": [
+      12,
+      0.8
+    ],
+    "timeToHitToGain3": [
+      25,
+      0.5
+    ],
+    "timeToHitToGain4": [
+      50,
+      0.3
+    ],
+    "timeToGain0": [
+      0,
+      0
+    ],
+    "timeToGain1": [
+      1,
+      1
+    ],
+    "propNavMult": 6,
+    "reqAccelMax": 25,
+    "accelControlProp": 0.013481,
+    "accelControlIntg": 0.034835,
+    "accelControlDiff": 0.001341,
+    "baseIndSpeed": 1800,
+    "accelControlIntgLim": 1
+  },
+  "launch": {
+    "initialSpeedMps": 0,
+    "useStartSpeed": true,
+    "fireDelaySec": 0.25
+  },
+  "proximityFuse": {
+    "enabled": true,
+    "radiusM": 8,
+    "armingDelaySec": 1.8
+  },
+  "simulationLimits": {
+    "maxTravelM": 70000,
+    "speedLimitMps": 2000,
+    "autopilotMaxG": 25,
+    "guidanceDelaySec": null
+  },
+  "statCard": {
+    "rangeM": 100000,
+    "maxG": 25,
+    "mach": 4,
+    "usage": "Display values, not launch guarantees or flight-control limits"
+  },
+  "seeker": {
+    "fovDeg": null,
+    "lockAngleDeg": 35,
+    "gimbalAngleDeg": 60,
+    "trackingRateDegSec": 20,
+    "warmupSec": 0.5,
+    "workSec": 100
+  },
+  "rangeTables": [
+    {
+      "sourceKey": "table0",
+      "altitude": 1000,
+      "fighterMach": [
+        0.9,
+        1.2
+      ],
+      "targetMach": [
+        0.9,
+        0.9
+      ],
+      "targetMach2Mult": -1,
+      "rangeMin": [
+        833.69,
+        1227.26,
+        890.558,
+        1356.74
+      ],
+      "rangeMax": [
+        6842.04,
+        49792.5,
+        8285.52,
+        52265.9
+      ],
+      "rangeMinDogfight": [
+        774.7,
+        1443.98,
+        908.829,
+        1784.07
+      ],
+      "rangeMaxDogfight": [
+        13989.5,
+        16543.2,
+        15374,
+        18264.9
+      ],
+      "rangeMaxAltDiff": [
+        500,
+        0
+      ],
+      "rangeMaxDogfightAltDiff": [
+        500,
+        0
+      ],
+      "timeMax": [
+        25.8281,
+        73.3329,
+        26.2791,
+        74.8539
+      ],
+      "timeMaxAltDiff": [
+        500,
+        0
+      ]
+    },
+    {
+      "sourceKey": "table1",
+      "altitude": 5000,
+      "fighterMach": [
+        0.9,
+        1.2
+      ],
+      "targetMach": [
+        0.9,
+        0.9
+      ],
+      "targetMach2Mult": -1,
+      "rangeMin": [
+        939.136,
+        1565.11,
+        1144.83,
+        1530.49
+      ],
+      "rangeMax": [
+        11752.3,
+        55544.7,
+        13980.1,
+        57851.8
+      ],
+      "rangeMinDogfight": [
+        934.658,
+        2398.77,
+        1150.76,
+        2192.85
+      ],
+      "rangeMaxDogfight": [
+        18959.7,
+        22900.2,
+        27307.9,
+        25084.8
+      ],
+      "rangeMaxAltDiff": [
+        500,
+        0
+      ],
+      "rangeMaxDogfightAltDiff": [
+        500,
+        0
+      ],
+      "timeMax": [
+        39.0965,
+        75,
+        41.3876,
+        75
+      ],
+      "timeMaxAltDiff": [
+        500,
+        0
+      ]
+    },
+    {
+      "sourceKey": "table2",
+      "altitude": 10000,
+      "fighterMach": [
+        0.9,
+        1.2
+      ],
+      "targetMach": [
+        0.9,
+        0.9
+      ],
+      "targetMach2Mult": -1,
+      "rangeMin": [
+        1179.01,
+        1828.85,
+        1409.89,
+        1844.95
+      ],
+      "rangeMax": [
+        23559.6,
+        64378.4,
+        27151.5,
+        67729.2
+      ],
+      "rangeMinDogfight": [
+        2089.18,
+        2909.24,
+        1321.64,
+        2662.43
+      ],
+      "rangeMaxDogfight": [
+        39490.3,
+        34723.1,
+        42998,
+        37720.2
+      ],
+      "rangeMaxAltDiff": [
+        500,
+        0
+      ],
+      "rangeMaxDogfightAltDiff": [
+        500,
+        0
+      ],
+      "timeMax": [
+        72.3745,
+        75,
+        75,
+        75
+      ],
+      "timeMaxAltDiff": [
+        500,
+        0
+      ]
+    },
+    {
+      "sourceKey": "table3",
+      "altitude": 15000,
+      "fighterMach": [
+        0.9,
+        1.2
+      ],
+      "targetMach": [
+        0.9,
+        0.9
+      ],
+      "targetMach2Mult": -1,
+      "rangeMin": [
+        914.871,
+        1805.11,
+        1028.17,
+        2149.72
+      ],
+      "rangeMax": [
+        34906,
+        73809.4,
+        39300.5,
+        78234.9
+      ],
+      "rangeMinDogfight": [
+        1649.73,
+        4271.04,
+        1302.37,
+        2984.83
+      ],
+      "rangeMaxDogfight": [
+        42824.8,
+        55978.5,
+        50000,
+        60198.6
+      ],
+      "rangeMaxAltDiff": [
+        500,
+        0
+      ],
+      "rangeMaxDogfightAltDiff": [
+        500,
+        0
+      ],
+      "timeMax": [
+        75,
+        75,
+        75,
+        75
+      ],
+      "timeMaxAltDiff": [
+        500,
+        0
+      ]
+    }
+  ],
+  "provenance": {
+    "file": "gamedata/weapons/rocketguns/us_aim7p_sparrow_fa_18.blkx",
+    "sha256": "5c8e8f85a6fca5dad5e98381e4458d08abbb229c6656bcab0e94a4d3f0d77f98",
+    "scope": "Local game configuration; source variants remain separate",
+    "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+    "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+  },
+  "rawRocket": {
+    "dragCx": 0.018,
+    "bulletName": "us_aim7p_sparrow",
+    "iconType": "missile_type_b_air_to_air_midrange",
+    "useStartSpeed": true,
+    "endSpeed": 2000,
+    "price": 3000,
+    "statType": "hydra",
+    "maxDeltaAngle": 0,
+    "caliber": 0.2032,
+    "length": 3.6676,
+    "WdK": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "CxK": 1.4125,
+    "wingAreaMult": 3.25,
+    "finsAoaHor": 0.16,
+    "finsAoaVer": 0.16,
+    "finsLatAccel": 29,
+    "distFromCmToStab": 0.052,
+    "mass": 231.3321,
+    "massEnd": 188.4676,
+    "massEnd1": 170.0971,
+    "timeFire": 4.5,
+    "timeFire1": 11,
+    "force": 21479.88,
+    "force1": 3765.95,
+    "fireDelay": 0.25,
+    "timeLife": 75,
+    "startSpeed": 0,
+    "machMax": 4,
+    "maxDistance": 70000,
+    "minDistance": 400,
+    "rangeMax": 100000,
+    "extPressureToThrustMult": [
+      101300,
+      1,
+      26500,
+      1.075
+    ],
+    "CyK": 3.5,
+    "loadFactorMax": 25,
+    "guidanceType": "radar",
+    "guidanceSfx": "",
+    "explosiveType": "pbxn_4",
+    "explosiveMass": 11.79,
+    "warheadMass": 38.2832,
+    "normalizationPreset": "heat",
+    "ricochetPreset": "he",
+    "groundRicochetPreset": "he_ground",
+    "secondaryShattersPreset": "ap",
+    "stabilityThreshold": 0.05,
+    "stabilityCaliberToArmorThreshold": 5,
+    "stabilityReductionAfterRicochet": 0.5,
+    "stabilityReductionAfterPenetration": 0.15,
+    "bulletType": "aam",
+    "shellCollision": true,
+    "hasProximityFuse": true,
+    "fuseDelayDist": 0.4,
+    "explodeTreshold": 0.05,
+    "distanceFuse": false,
+    "explosionEffect": "explosion_midair_rocket_small",
+    "groundCollisionEffect": "hit_133_160mm_dirt_ap",
+    "ricochetEffect": "hit_106_132mm_metal_ap",
+    "waterCollisionEffect": "hit_133_160mm_water_he",
+    "waterRicochetEffect": "hit_106_132mm_water_ap",
+    "groundRicochetEffect": "hit_106_132mm_dirt_ap",
+    "explosionPatchRadius": 4,
+    "rendinstDamageRadius": 5,
+    "visualShattersWaterOffset": 1.2,
+    "visualShattersGroundOffset": 1.2,
+    "fireEffect": "fires_exhaust_jet_mach_discs_big",
+    "smokeEffect": "smoke_rocket_tail_long_big",
+    "smokeEffect2": "",
+    "hazeEffect": "haze_missile",
+    "endSmokeViscosity": 0.05,
+    "effectOffset": [
+      -1.95,
+      0,
+      0
+    ],
+    "CyMachMult": {
+      "CyMachMult0": [
+        0.8,
+        0.815
+      ],
+      "CyMachMult1": [
+        1,
+        1
+      ],
+      "CyMachMult2": [
+        1.2,
+        1
+      ],
+      "CyMachMult3": [
+        1.6,
+        0.874
+      ],
+      "CyMachMult4": [
+        2,
+        0.698
+      ],
+      "CyMachMult5": [
+        2.4,
+        0.629
+      ],
+      "CyMachMult6": [
+        2.8,
+        0.562
+      ],
+      "CyMachMult7": [
+        4,
+        0.436
+      ]
+    },
+    "guidance": {
+      "uncageBeforeLaunch": true,
+      "lockAfterLaunch": true,
+      "useTargetVel": true,
+      "lockTimeOut": 0.75,
+      "afterLaunchSpeedUp": 170,
+      "disableTOFInHud": true,
+      "warmUpTime": 0.5,
+      "workTime": 100,
+      "breakLockMaxTime": 75,
+      "timeTableCorrection": [
+        0.364,
+        0.752
+      ],
+      "inertialNavigation": true,
+      "radarSeeker": {
+        "band": 8,
+        "sideLobesAttenuation": -20,
+        "multipathEffect": [
+          0,
+          1,
+          60,
+          0
+        ],
+        "lockAngleMax": 35,
+        "angleMax": 60,
+        "rateMax": 20,
+        "angleGateRate": 30,
+        "prolongationTimeMax": 1,
+        "transmitter": {
+          "power": 600,
+          "antenna": {
+            "angleHalfSens": 3,
+            "sideLobesSensitivity": -32
+          }
+        },
+        "receiver": {
+          "rcs": 2,
+          "range": 50000,
+          "rangeMax": 75000,
+          "timeGainControl": false,
+          "antenna": {
+            "angleHalfSens": 13,
+            "sideLobesSensitivity": -17
+          }
+        },
+        "dopplerSpeed": {
+          "presents": true,
+          "minValue": -3000,
+          "maxValue": 3000,
+          "width": 20,
+          "refWidth": 100,
+          "signalWidthMin": 5
+        },
+        "dopplerSpeedGate": {
+          "filterAlpha": 0.25,
+          "filterBetta": 0.03,
+          "rateLimit": [
+            100,
+            250
+          ],
+          "limitTimeOut": 1,
+          "dopplerSpeedGateSearchRange": 150
+        }
+      },
+      "guidanceAutopilot": {
+        "timeToHitToGain0": [
+          5,
+          1
+        ],
+        "timeToHitToGain1": [
+          8,
+          0.9
+        ],
+        "timeToHitToGain2": [
+          12,
+          0.8
+        ],
+        "timeToHitToGain3": [
+          25,
+          0.5
+        ],
+        "timeToHitToGain4": [
+          50,
+          0.3
+        ],
+        "timeToGain0": [
+          0,
+          0
+        ],
+        "timeToGain1": [
+          1,
+          1
+        ],
+        "propNavMult": 6,
+        "reqAccelMax": 25,
+        "accelControlProp": 0.013481,
+        "accelControlIntg": 0.034835,
+        "accelControlDiff": 0.001341,
+        "baseIndSpeed": 1800,
+        "accelControlIntgLim": 1
+      },
+      "table0": {
+        "altitude": 1000,
+        "fighterMach": [
+          0.9,
+          1.2
+        ],
+        "targetMach": [
+          0.9,
+          0.9
+        ],
+        "targetMach2Mult": -1,
+        "rangeMin": [
+          833.69,
+          1227.26,
+          890.558,
+          1356.74
+        ],
+        "rangeMax": [
+          6842.04,
+          49792.5,
+          8285.52,
+          52265.9
+        ],
+        "rangeMinDogfight": [
+          774.7,
+          1443.98,
+          908.829,
+          1784.07
+        ],
+        "rangeMaxDogfight": [
+          13989.5,
+          16543.2,
+          15374,
+          18264.9
+        ],
+        "rangeMaxAltDiff": [
+          500,
+          0
+        ],
+        "rangeMaxDogfightAltDiff": [
+          500,
+          0
+        ],
+        "timeMax": [
+          25.8281,
+          73.3329,
+          26.2791,
+          74.8539
+        ],
+        "timeMaxAltDiff": [
+          500,
+          0
+        ]
+      },
+      "table1": {
+        "altitude": 5000,
+        "fighterMach": [
+          0.9,
+          1.2
+        ],
+        "targetMach": [
+          0.9,
+          0.9
+        ],
+        "targetMach2Mult": -1,
+        "rangeMin": [
+          939.136,
+          1565.11,
+          1144.83,
+          1530.49
+        ],
+        "rangeMax": [
+          11752.3,
+          55544.7,
+          13980.1,
+          57851.8
+        ],
+        "rangeMinDogfight": [
+          934.658,
+          2398.77,
+          1150.76,
+          2192.85
+        ],
+        "rangeMaxDogfight": [
+          18959.7,
+          22900.2,
+          27307.9,
+          25084.8
+        ],
+        "rangeMaxAltDiff": [
+          500,
+          0
+        ],
+        "rangeMaxDogfightAltDiff": [
+          500,
+          0
+        ],
+        "timeMax": [
+          39.0965,
+          75,
+          41.3876,
+          75
+        ],
+        "timeMaxAltDiff": [
+          500,
+          0
+        ]
+      },
+      "table2": {
+        "altitude": 10000,
+        "fighterMach": [
+          0.9,
+          1.2
+        ],
+        "targetMach": [
+          0.9,
+          0.9
+        ],
+        "targetMach2Mult": -1,
+        "rangeMin": [
+          1179.01,
+          1828.85,
+          1409.89,
+          1844.95
+        ],
+        "rangeMax": [
+          23559.6,
+          64378.4,
+          27151.5,
+          67729.2
+        ],
+        "rangeMinDogfight": [
+          2089.18,
+          2909.24,
+          1321.64,
+          2662.43
+        ],
+        "rangeMaxDogfight": [
+          39490.3,
+          34723.1,
+          42998,
+          37720.2
+        ],
+        "rangeMaxAltDiff": [
+          500,
+          0
+        ],
+        "rangeMaxDogfightAltDiff": [
+          500,
+          0
+        ],
+        "timeMax": [
+          72.3745,
+          75,
+          75,
+          75
+        ],
+        "timeMaxAltDiff": [
+          500,
+          0
+        ]
+      },
+      "table3": {
+        "altitude": 15000,
+        "fighterMach": [
+          0.9,
+          1.2
+        ],
+        "targetMach": [
+          0.9,
+          0.9
+        ],
+        "targetMach2Mult": -1,
+        "rangeMin": [
+          914.871,
+          1805.11,
+          1028.17,
+          2149.72
+        ],
+        "rangeMax": [
+          34906,
+          73809.4,
+          39300.5,
+          78234.9
+        ],
+        "rangeMinDogfight": [
+          1649.73,
+          4271.04,
+          1302.37,
+          2984.83
+        ],
+        "rangeMaxDogfight": [
+          42824.8,
+          55978.5,
+          50000,
+          60198.6
+        ],
+        "rangeMaxAltDiff": [
+          500,
+          0
+        ],
+        "rangeMaxDogfightAltDiff": [
+          500,
+          0
+        ],
+        "timeMax": [
+          75,
+          75,
+          75,
+          75
+        ],
+        "timeMaxAltDiff": [
+          500,
+          0
+        ]
+      },
+      "inertialGuidance": {
+        "inertialNavigationDriftSpeed": 10,
+        "datalink": true,
+        "reconnectDatalink": true
+      }
+    },
+    "stabilityRicochetModifier": {
+      "mod1": [
+        0,
+        0.05
+      ],
+      "mod2": [
+        20,
+        0.1
+      ],
+      "mod3": [
+        [
+          30,
+          0.2
+        ],
+        [
+          45,
+          0.3
+        ]
+      ]
+    },
+    "pressureDamage": {
+      "damageType": "pressure"
+    },
+    "damage": {
+      "shatter": {
+        "useRealShatters": true,
+        "countPortion": 0.505,
+        "realShattersSplicing": 0.5,
+        "segment": [
+          {
+            "radiusScale": 0.75,
+            "penetrationScale": 2.5,
+            "damageScale": 1.5,
+            "angles": [
+              0,
+              20
+            ],
+            "countPortion": 0.0375
+          },
+          {
+            "radiusScale": 0.33,
+            "penetrationScale": 2,
+            "damageScale": 1,
+            "angles": [
+              20,
+              60
+            ],
+            "countPortion": 0.075
+          },
+          {
+            "radiusScale": 0.5,
+            "penetrationScale": 2.85,
+            "damageScale": 1.5,
+            "angles": [
+              60,
+              80
+            ],
+            "countPortion": 0.1
+          },
+          {
+            "radiusScale": 1,
+            "penetrationScale": 2.85,
+            "damageScale": 1.5,
+            "angles": [
+              75,
+              100
+            ],
+            "countPortion": 0.6
+          },
+          {
+            "radiusScale": 0.5,
+            "penetrationScale": 2.5,
+            "damageScale": 1.5,
+            "angles": [
+              100,
+              120
+            ],
+            "countPortion": 0.1
+          },
+          {
+            "radiusScale": 0.33,
+            "penetrationScale": 2,
+            "damageScale": 1,
+            "angles": [
+              120,
+              160
+            ],
+            "countPortion": 0.075
+          },
+          {
+            "radiusScale": 0.3,
+            "penetrationScale": 2,
+            "damageScale": 0.8,
+            "angles": [
+              160,
+              180
+            ],
+            "countPortion": 0.0125
+          }
+        ]
+      },
+      "shatterDamage": {
+        "breachConeAngle": 45
+      },
+      "explosive": {
+        "radius": 0.25,
+        "offset": 0.9
+      }
+    },
+    "armorpower": {
+      "ArmorPower0m": [
+        28,
+        10
+      ],
+      "ArmorPower100m": [
+        25,
+        100
+      ],
+      "ArmorPower7000m": [
+        23,
+        7000
+      ],
+      "ArmorPower10000m": [
+        15,
+        10000
+      ]
+    },
+    "hitpower": {
+      "HitPower0m": [
+        1,
+        500
+      ],
+      "HitPower10000m": [
+        0.5,
+        10000
+      ]
+    },
+    "DamageParts": {
+      "body": {
+        "hp": 50,
+        "armorClass": "tank_structural_steel",
+        "armorThickness": 1
+      }
+    },
+    "DamageEffects": {
+      "part": {
+        "name": "body",
+        "onHit": [
+          {
+            "shellState": "inFlight",
+            "expl": 1
+          },
+          {
+            "shellState": "onUnit",
+            "damageType": [
+              "generic",
+              "genericLongRod"
+            ],
+            "expl": 0.05,
+            "fire": 0.45,
+            "break": 0.5,
+            "damage": 3,
+            "fHitCritical": true
+          },
+          {
+            "shellState": "onUnit",
+            "damageType": [
+              "generic",
+              "genericLongRod"
+            ],
+            "expl": 0.5,
+            "fire": 0.3,
+            "break": 0.2,
+            "damage": 30,
+            "fHitCritical": true
+          },
+          {
+            "shellState": "onUnit",
+            "damageType": "explosion",
+            "expl": 0.45,
+            "fire": 0.45,
+            "break": 0.1,
+            "damage": 50,
+            "fHitCritical": true
+          },
+          {
+            "shellState": "onUnit",
+            "damageType": "cumulative",
+            "expl": 0.4,
+            "fire": 0.4,
+            "break": 0.1,
+            "damage": 100,
+            "fHitCritical": true
+          }
+        ],
+        "onKill": [
+          {
+            "shellState": "inFlight",
+            "destruction": 1
+          },
+          {
+            "shellState": "onUnit",
+            "expl": 0.05,
+            "fire": 0.05,
+            "break": 0.9,
+            "fHitCritical": true
+          }
+        ]
+      }
+    },
+    "proximityFuse": {
+      "timeOut": 1.8,
+      "radius": 8,
+      "detectShells": true,
+      "shellCaliberRange": [
+        0.08,
+        0.2
+      ],
+      "hasUnitsOnlyMode": true
+    },
+    "explosionSmoke": {
+      "radius": 6,
+      "activateTime": 0,
+      "time": 3,
+      "blocksThermal": false
+    },
+    "collisions": {
+      "default": {
+        "fx": "hit_133_160mm_dirt_he",
+        "ricochetFx": "hit_106_132mm_dirt_ap",
+        "pierceFx": "hit_106_132mm_dirt_ap"
+      },
+      "horLandMesh": {
+        "fx": "hit_133_160mm_dirt_he",
+        "ricochetFx": "hit_106_132mm_dirt_ap",
+        "pierceFx": "hit_106_132mm_dirt_ap"
+      },
+      "soil": {
+        "fx": "hit_133_160mm_dirt_he",
+        "ricochetFx": "hit_106_132mm_dirt_ap",
+        "pierceFx": "hit_106_132mm_dirt_ap"
+      },
+      "dirt": {
+        "fx": "hit_133_160mm_dirt_he",
+        "ricochetFx": "hit_106_132mm_dirt_ap",
+        "pierceFx": "hit_106_132mm_dirt_ap"
+      },
+      "road": {
+        "fx": "hit_133_160mm_dirt_he",
+        "ricochetFx": "hit_106_132mm_dirt_ap",
+        "pierceFx": "hit_106_132mm_dirt_ap"
+      },
+      "roadSoil": {
+        "fx": "hit_133_160mm_dirt_he",
+        "ricochetFx": "hit_106_132mm_dirt_ap",
+        "pierceFx": "hit_106_132mm_dirt_ap"
+      },
+      "bricks_red": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "steppe": {
+        "fx": "hit_133_160mm_sand_he",
+        "ricochetFx": "hit_106_132mm_sand_ap",
+        "pierceFx": "hit_106_132mm_sand_ap"
+      },
+      "sand": {
+        "fx": "hit_133_160mm_sand_he",
+        "ricochetFx": "hit_106_132mm_sand_ap",
+        "pierceFx": "hit_106_132mm_sand_ap"
+      },
+      "duneSand": {
+        "fx": "hit_133_160mm_sand_he",
+        "ricochetFx": "hit_106_132mm_sand_ap",
+        "pierceFx": "hit_106_132mm_sand_ap"
+      },
+      "roadSand": {
+        "fx": "hit_133_160mm_sand_he",
+        "ricochetFx": "hit_106_132mm_sand_ap",
+        "pierceFx": "hit_106_132mm_sand_ap"
+      },
+      "quickSand": {
+        "fx": "hit_133_160mm_sand_he",
+        "ricochetFx": "hit_106_132mm_sand_ap",
+        "pierceFx": "hit_106_132mm_sand_ap"
+      },
+      "snow": {
+        "fx": "hit_133_160mm_snow_he",
+        "ricochetFx": "hit_106_132mm_snow_ap",
+        "pierceFx": "hit_106_132mm_snow_ap"
+      },
+      "ice": {
+        "fx": "hit_133_160mm_snow_he",
+        "ricochetFx": "hit_106_132mm_snow_ap",
+        "pierceFx": "hit_106_132mm_snow_ap"
+      },
+      "roadSnow": {
+        "fx": "hit_133_160mm_snow_he",
+        "ricochetFx": "hit_106_132mm_snow_ap",
+        "pierceFx": "hit_106_132mm_snow_ap"
+      },
+      "snowLower": {
+        "fx": "hit_133_160mm_snow_he",
+        "ricochetFx": "hit_106_132mm_snow_ap",
+        "pierceFx": "hit_106_132mm_snow_ap"
+      },
+      "glass": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "armoured_glass",
+        "pierceFx": "armoured_glass"
+      },
+      "wood": {
+        "fx": "hit_133_160mm_wood_he",
+        "ricochetFx": "hit_106_132mm_wood_ap",
+        "pierceFx": "hit_106_132mm_wood_ap"
+      },
+      "steel": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "transparentMetal": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "metal": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "ships": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "ship_metal": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "ship_armor": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "tank_structural_steel": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "aluminum_armor": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "tank_rubber_screens": {
+        "fx": "hit_133_160mm_metal_ap",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "buildings": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "verLandMesh": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "concrete": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "rocks": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "rocksSlippery": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "fabric": {
+        "fx": "hit_59_80mm_fabric",
+        "ricochetFx": "hit_59_80mm_fabric",
+        "pierceFx": "hit_59_80mm_fabric"
+      },
+      "stone_snow": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "ceramic": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "glass_car": {
+        "fx": "armoured_glass",
+        "ricochetFx": "armoured_glass",
+        "pierceFx": "armoured_glass"
+      },
+      "paper": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "plastic": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "rubber": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "sandbag_biege": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "sandbag_grey": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "softSteelDoor": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "hit_106_132mm_metal_ap",
+        "pierceFx": "hit_106_132mm_metal_ap"
+      },
+      "softWoodDoor": {
+        "fx": "hit_133_160mm_wood_he",
+        "ricochetFx": "hit_106_132mm_wood_ap",
+        "pierceFx": "hit_106_132mm_wood_ap"
+      },
+      "soil_brown": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "soil_sand": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "steel_thin": {
+        "fx": "hit_133_160mm_wood_he",
+        "ricochetFx": "hit_106_132mm_wood_ap",
+        "pierceFx": "hit_106_132mm_wood_ap"
+      },
+      "stone": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "stone_biege": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "stone_white": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "window_wood": {
+        "fx": "hit_133_160mm_wood_he",
+        "ricochetFx": "hit_106_132mm_wood_ap",
+        "pierceFx": "hit_106_132mm_wood_ap"
+      },
+      "wood_aim_transparent": {
+        "fx": "hit_133_160mm_wood_he",
+        "ricochetFx": "hit_106_132mm_wood_ap",
+        "pierceFx": "hit_106_132mm_wood_ap"
+      },
+      "wood_solid": {
+        "fx": "hit_133_160mm_wood_he",
+        "ricochetFx": "hit_106_132mm_wood_ap",
+        "pierceFx": "hit_106_132mm_wood_ap"
+      },
+      "airfield": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "concrete_snow": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "football_ramp": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "rocksSlipperyHigh": {
+        "fx": "hit_133_160mm_stone_he",
+        "ricochetFx": "hit_106_132mm_stone_ap",
+        "pierceFx": "hit_106_132mm_stone_ap"
+      },
+      "glass_small": {
+        "fx": "hit_133_160mm_metal_he",
+        "ricochetFx": "armoured_glass",
+        "pierceFx": "armoured_glass"
+      },
+      "ship_wood": {
+        "fx": "hit_133_160mm_wood_he",
+        "ricochetFx": "hit_106_132mm_wood_ap",
+        "pierceFx": "hit_106_132mm_wood_ap"
+      }
+    },
+    "shatterCollisions": {
+      "groundCollisionEffect": "hit_8_11mm_dirt_ap",
+      "waterCollisionEffect": "hit_8_11mm_water",
+      "default": {
+        "fx": "hit_8_11mm_dirt_ap"
+      },
+      "horLandMesh": {
+        "fx": "hit_8_11mm_dirt_ap"
+      },
+      "soil": {
+        "fx": "hit_8_11mm_dirt_ap"
+      },
+      "dirt": {
+        "fx": "hit_8_11mm_dirt_ap"
+      },
+      "road": {
+        "fx": "hit_8_11mm_dirt_ap"
+      },
+      "bricks_red": {
+        "fx": "hit_8_11mm_red_brick_ap"
+      },
+      "roadSoil": {
+        "fx": "hit_8_11mm_dirt_ap"
+      },
+      "steppe": {
+        "fx": "hit_8_11mm_sand_ap"
+      },
+      "sand": {
+        "fx": "hit_8_11mm_sand_ap"
+      },
+      "duneSand": {
+        "fx": "hit_8_11mm_sand_ap"
+      },
+      "roadSand": {
+        "fx": "hit_8_11mm_sand_ap"
+      },
+      "quickSand": {
+        "fx": "hit_8_11mm_sand_ap"
+      },
+      "snow": {
+        "fx": "hit_8_11mm_snow_ap"
+      },
+      "ice": {
+        "fx": "hit_8_11mm_snow_ap"
+      },
+      "roadSnow": {
+        "fx": "hit_8_11mm_snow_ap"
+      },
+      "snowLower": {
+        "fx": "hit_8_11mm_snow_ap"
+      },
+      "glass": {
+        "fx": "armoured_glass"
+      },
+      "wood": {
+        "fx": "hit_8_11mm_wood_ap"
+      },
+      "steel": {
+        "fx": "hit_8_11mm_metal_ap"
+      },
+      "metal": {
+        "fx": "hit_8_11mm_metal_ap"
+      },
+      "ships": {
+        "fx": "hit_8_11mm_metal_ap"
+      },
+      "ship_metal": {
+        "fx": "hit_8_11mm_metal_ap"
+      },
+      "ship_armor": {
+        "fx": "hit_8_11mm_metal_ap"
+      },
+      "tank_structural_steel": {
+        "fx": "hit_8_11mm_metal_ap"
+      },
+      "aluminum_armor": {
+        "fx": "hit_8_11mm_metal_ap"
+      },
+      "tank_rubber_screens": {
+        "fx": "hit_8_11mm_stone_ap"
+      },
+      "buildings": {
+        "fx": "hit_8_11mm_stone_ap"
+      },
+      "verLandMesh": {
+        "fx": "hit_8_11mm_stone_ap"
+      },
+      "concrete": {
+        "fx": "hit_8_11mm_stone_ap"
+      },
+      "rocks": {
+        "fx": "hit_8_11mm_stone_ap"
+      },
+      "rocksSlippery": {
+        "fx": "hit_8_11mm_stone_ap"
+      },
+      "fabric": {
+        "fx": "hit_8_11mm_fabric"
+      },
+      "stone_snow": {
+        "fx": "hit_8_11mm_snow_ap"
+      }
+    },
+    "survivedEngineSmokeFx": {
+      "part": [
+        {
+          "fx": "smoke_rocket_survived_engine",
+          "lifeTime": 4,
+          "mass": 100,
+          "size": 0.1,
+          "stability": 1.1,
+          "turbulenceRadius": 6,
+          "angVelocity": 3,
+          "startAngle": [
+            0,
+            0,
+            0
+          ],
+          "velocityMult": 1,
+          "minVelocity": 150,
+          "maxVelocity": 200
+        },
+        {
+          "fx": "smoke_rocket_survived_engine_small",
+          "lifeTime": 3,
+          "mass": 10,
+          "size": 0.1,
+          "stability": 0.1,
+          "turbulenceRadius": 2,
+          "angVelocity": 1,
+          "startAngle": [
+            0,
+            -10,
+            -13
+          ],
+          "velocityMult": 1,
+          "minVelocity": 100,
+          "maxVelocity": 150
+        },
+        {
+          "fx": "smoke_rocket_survived_engine_small",
+          "lifeTime": 2.3,
+          "mass": 5,
+          "size": 0.1,
+          "stability": 0.1,
+          "turbulenceRadius": 3,
+          "angVelocity": 1,
+          "startAngle": [
+            0,
+            -10,
+            -10
+          ],
+          "velocityMult": 1,
+          "minVelocity": 100,
+          "maxVelocity": 150
+        },
+        {
+          "fx": "smoke_rocket_survived_engine_small",
+          "lifeTime": 3.2,
+          "mass": 10,
+          "size": 0.1,
+          "stability": 0.1,
+          "turbulenceRadius": 2,
+          "angVelocity": 1,
+          "startAngle": [
+            0,
+            10,
+            -10
+          ],
+          "velocityMult": 1,
+          "minVelocity": 100,
+          "maxVelocity": 150
+        },
+        {
+          "fx": "smoke_rocket_survived_engine_small",
+          "lifeTime": 2,
+          "mass": 2,
+          "size": 0.1,
+          "stability": 0.1,
+          "turbulenceRadius": 3,
+          "angVelocity": 1,
+          "startAngle": [
+            0,
+            10,
+            -5
+          ],
+          "velocityMult": 1,
+          "minVelocity": 100,
+          "maxVelocity": 150
+        },
+        {
+          "fx": "smoke_rocket_survived_engine_small",
+          "lifeTime": 2.8,
+          "mass": 5,
+          "size": 0.1,
+          "stability": 0.1,
+          "turbulenceRadius": 2,
+          "angVelocity": 1,
+          "startAngle": [
+            0,
+            10,
+            2
+          ],
+          "minVelocity": 100,
+          "maxVelocity": 150
+        },
+        {
+          "fx": "smoke_rocket_survived_engine_small",
+          "lifeTime": 3.2,
+          "mass": 4,
+          "size": 0.1,
+          "stability": 0.1,
+          "turbulenceRadius": 2,
+          "angVelocity": 1,
+          "startAngle": [
+            0,
+            10,
+            7
+          ],
+          "velocityMult": 1,
+          "minVelocity": 50,
+          "maxVelocity": 100
+        },
+        {
+          "fx": "smoke_rocket_survived_engine_small",
+          "lifeTime": 2.8,
+          "mass": 5,
+          "size": 0.1,
+          "stability": 0.1,
+          "turbulenceRadius": 2,
+          "angVelocity": 1,
+          "startAngle": [
+            0,
+            -10,
+            10
+          ],
+          "velocityMult": 1,
+          "minVelocity": 100,
+          "maxVelocity": 150
+        },
+        {
+          "fx": "smoke_rocket_survived_engine_small",
+          "lifeTime": 2.5,
+          "mass": 2,
+          "size": 0.1,
+          "stability": 0.1,
+          "turbulenceRadius": 2,
+          "angVelocity": 1,
+          "startAngle": [
+            0,
+            -10,
+            15
+          ],
+          "velocityMult": 1,
+          "minVelocity": 50,
+          "maxVelocity": 100
+        }
+      ]
+    }
+  }
+}

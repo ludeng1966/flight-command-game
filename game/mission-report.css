@@ -1,0 +1,16 @@
+#stage.clean-ui #mission-toolbar{position:absolute;top:55px;right:18px;display:flex;gap:6px;align-items:center;z-index:44}
+#mission-toolbar button{font:11px/1.5 "Microsoft YaHei",sans-serif;padding:6px 10px;background:#09131ff2;border:1px solid #345268;color:#cfe3f5}
+#mission-toolbar #mission-report-toggle{min-width:110px;color:#bbdfca}#mission-toolbar button[aria-expanded=true]{background:#163044;border-color:#597f9e}#mission-toolbar button:focus-visible{outline:2px solid #9cdfb7;outline-offset:3px}
+#stage.clean-ui #mission-brief{top:100px;bottom:82px;right:18px;width:min(390px,calc(100vw - 36px));z-index:36}
+#mission-brief .brief-kicker{font:9px/1.6 Consolas,"Microsoft YaHei",monospace;color:#91a9bd;letter-spacing:1px}#mission-brief h3{font:18px/1.6 Consolas,"Microsoft YaHei",monospace;color:#cfe3f5;margin:10px 0}#mission-brief .brief-objective{color:#9cdfb7;font:14px/1.8 "Microsoft YaHei",sans-serif;margin:12px 0 20px}#mission-brief dl{display:grid;grid-template-columns:1fr 1fr;gap:8px;font:11px/1.8 Consolas,"Microsoft YaHei",monospace}#mission-brief dt{color:#91a9bd}#mission-brief dd{margin:0;text-align:right;color:#cfe3f5}#mission-brief h4{font-size:11px;font-weight:500;margin:24px 0 10px}#mission-brief .brief-event,#mission-brief .brief-empty,#mission-brief .brief-result p{font-size:11px;line-height:1.8;color:#91a9bd}.brief-caution{font-size:12px;color:#e4c77e}.brief-tools{border-top:1px solid #2a4054;margin-top:20px;padding-top:15px}.brief-tools button{font-size:11px;white-space:normal}#mission-result-details{border-top:1px solid #2a4054;margin-top:20px;padding-top:16px;font-size:12px}#mission-result-details summary{cursor:pointer;color:#a5c8df}.brief-result{border-bottom:1px solid #2a4054;padding:14px 0}.brief-result b{color:#cfe3f5;font-size:12px;font-weight:500}
+/* Two independent lanes: commands on the left, brief / tutorial on the right. */
+#stage.clean-ui .command-panel{left:18px;right:auto;top:100px;width:310px}
+#stage.clean-ui.voice-open .command-panel{display:block}
+#stage.clean-ui.report-open.voice-open #training-coach.walkthrough:not([hidden]){display:block;left:auto;right:18px;width:min(390px,calc(100vw - 36px))}
+@media(max-width:850px){
+ #stage.clean-ui #mission-toolbar{top:52px;right:14px;gap:4px}#mission-toolbar button{padding:6px 8px;font-size:10px}#mission-toolbar #mission-report-toggle{min-width:102px}
+ #stage.clean-ui #map-compass{left:14px;transform:none;max-width:calc(100vw - 232px);width:220px}
+ #stage.clean-ui .command-panel{left:12px;right:auto;width:calc(100vw - 24px);top:100px}
+ #stage.clean-ui #mission-brief{left:12px;right:12px;width:auto}
+ #stage.clean-ui.report-open.voice-open #training-coach.walkthrough,#stage.clean-ui.report-open.voice-open #mission-brief{display:none}
+}

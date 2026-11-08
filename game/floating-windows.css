@@ -1,0 +1,25 @@
+/* 窗口层高于字幕；拖动后使用各自保存的位置。 */
+#stage.clean-ui [data-floating-window]{z-index:var(--window-z,50)!important}
+#stage.clean-ui #selected-aircraft-status[data-floating-window]{pointer-events:auto}
+#stage.clean-ui [data-floating-window]::after{content:'';position:absolute;right:3px;bottom:3px;width:7px;height:7px;border-right:1px solid #597f9e;border-bottom:1px solid #597f9e;pointer-events:none;opacity:.65}
+#stage.clean-ui #selected-aircraft-status[data-collapsed=true]::after{display:none}
+#stage.clean-ui [data-floating-window][data-window-position=custom]{left:var(--window-x)!important;top:var(--window-y)!important;right:auto!important;bottom:auto!important;transform:none!important;width:var(--window-width)!important;height:var(--window-height)!important;max-width:calc(100% - 16px)!important;max-height:calc(100% - 80px)!important;min-width:0;overflow:auto;box-sizing:border-box}
+#stage.clean-ui #selected-aircraft-status[data-window-position=custom]{width:var(--window-width)!important;height:var(--window-height)!important;max-width:calc(100% - 16px)!important}
+#stage.clean-ui #selected-aircraft-status[data-window-position=custom][data-collapsed=true]{width:46px!important;height:auto!important}
+#stage.clean-ui [data-window-handle]{cursor:grab;touch-action:none;user-select:none;pointer-events:auto}
+#stage.clean-ui [data-window-handle]:focus-visible{outline:1px solid #8cdda6;outline-offset:3px}
+#stage.clean-ui [data-window-position=custom] [data-window-handle]{position:sticky;top:0;z-index:1;background:#09131f}
+#stage.clean-ui [data-window-handle] button{cursor:pointer;touch-action:manipulation}
+#stage.clean-ui .window-dragging [data-window-handle]{cursor:grabbing}
+#stage.window-dragging,#stage.window-dragging *{user-select:none!important}
+#stage.window-dragging #scene{pointer-events:none}
+#stage.clean-ui.aircraft-hud-ready:has(#selected-aircraft-status[data-window-position=custom]) .command-panel:not([data-window-position=custom]){top:100px}
+.window-resize-overlay{position:absolute;pointer-events:none}
+.window-resize-overlay[hidden]{display:none}
+.window-resize-overlay>[data-resize-edge]{position:absolute;pointer-events:auto;touch-action:none}
+.window-resize-overlay>[data-resize-edge=n],.window-resize-overlay>[data-resize-edge=s]{left:8px;right:8px;height:10px;cursor:ns-resize}
+.window-resize-overlay>[data-resize-edge=n]{top:-4px}.window-resize-overlay>[data-resize-edge=s]{bottom:-4px}
+.window-resize-overlay>[data-resize-edge=w],.window-resize-overlay>[data-resize-edge=e]{top:8px;bottom:8px;width:10px;cursor:ew-resize}
+.window-resize-overlay>[data-resize-edge=w]{left:-4px}.window-resize-overlay>[data-resize-edge=e]{right:-4px}
+.window-resize-overlay>[data-resize-edge=nw],.window-resize-overlay>[data-resize-edge=ne],.window-resize-overlay>[data-resize-edge=sw],.window-resize-overlay>[data-resize-edge=se]{width:14px;height:14px}
+.window-resize-overlay>[data-resize-edge=nw]{left:-5px;top:-5px;cursor:nwse-resize}.window-resize-overlay>[data-resize-edge=ne]{right:-5px;top:-5px;cursor:nesw-resize}.window-resize-overlay>[data-resize-edge=sw]{left:-5px;bottom:-5px;cursor:nesw-resize}.window-resize-overlay>[data-resize-edge=se]{right:-5px;bottom:-5px;cursor:nwse-resize}

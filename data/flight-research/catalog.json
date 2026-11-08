@@ -1,0 +1,2650 @@
+{
+  "schemaVersion": 2,
+  "importedAt": "2026-11-07T18:23:58.284Z",
+  "scope": {
+    "families": [
+      {
+        "id": "aim120",
+        "name": "AIM-120",
+        "preferredId": "us_aim_120b",
+        "variantCount": 15
+      },
+      {
+        "id": "aim7",
+        "name": "AIM-7P",
+        "preferredId": "us_aim7p_sparrow_fa_18",
+        "variantCount": 2
+      },
+      {
+        "id": "aim9m",
+        "name": "AIM-9M",
+        "preferredId": "us_aim9m_sidewinder",
+        "variantCount": 3
+      },
+      {
+        "id": "pl12",
+        "name": "PL-12",
+        "preferredId": "cn_pl12",
+        "variantCount": 2
+      },
+      {
+        "id": "pl5eii",
+        "name": "PL-5EII",
+        "preferredId": "su_pl5e2",
+        "variantCount": 2
+      }
+    ],
+    "policy": "Only these five requested families; aircraft-specific and default variants remain distinct; Only AIM-7P within AIM-7; PL-12A, other AIM-9 and PL-5 versions excluded"
+  },
+  "source": {
+    "kind": "local-war-thunder",
+    "archiveName": "aces.vromfs.bin",
+    "archiveSha256": "d75b48aa85f04c27cb89049d1b1b5634a32017112cdf9824ba32ab07615a3b53",
+    "archiveBytes": 18864017
+  },
+  "counts": {
+    "families": 5,
+    "missileVariants": 24,
+    "uniqueBulletNames": 9,
+    "variantsWithoutBulletName": 0
+  },
+  "missiles": [
+    {
+      "id": "cn_pl12",
+      "family": "pl12",
+      "familyName": "PL-12",
+      "sourceBulletName": "cn_pl12",
+      "bulletName": "cn_pl12",
+      "kind": "active_radar",
+      "massKg": 198,
+      "finalMassKg": 132,
+      "lengthM": 3.934,
+      "diameterM": 0.203,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 2.5,
+          "thrustN": 34960,
+          "initialMassKg": 198,
+          "finalMassKg": 160
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 2.5,
+          "durationSec": 5,
+          "thrustN": 12880,
+          "initialMassKg": 160,
+          "finalMassKg": 132
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.325,
+        "wingAreaMult": 1.8,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 38,
+        "distFromCmToStabM": 0.5,
+        "frontalAreaM2": 0.03236547291544545,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 20,
+        "loftTargetElevation": -2.25,
+        "loftAngleToAccelMult": 20,
+        "loftTargetOmegaMax": 0.5,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeToGain0": [
+          0.3,
+          0
+        ],
+        "timeToGain1": [
+          0.31,
+          1
+        ],
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 38,
+        "accelControlProp": 0.001784,
+        "accelControlIntg": 0.018364,
+        "accelControlDiff": 0.000051,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 10,
+        "armingDelaySec": 1.7
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 38,
+        "guidanceDelaySec": null
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 38,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 60,
+        "gimbalAngleDeg": 60,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/cn_pl12.blkx",
+        "sha256": "0aca5cbc554989e8632ead3535a02d15adb9ed7319a348c44b69fdd1d04968ec",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/cn_pl12.json"
+    },
+    {
+      "id": "cn_pl12_default",
+      "family": "pl12",
+      "familyName": "PL-12",
+      "sourceBulletName": "cn_pl12",
+      "bulletName": "cn_pl12",
+      "kind": "active_radar",
+      "massKg": 198,
+      "finalMassKg": 132,
+      "lengthM": 3.934,
+      "diameterM": 0.203,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 2.5,
+          "thrustN": 34960,
+          "initialMassKg": 198,
+          "finalMassKg": 160
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 2.5,
+          "durationSec": 5,
+          "thrustN": 12880,
+          "initialMassKg": 160,
+          "finalMassKg": 132
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.325,
+        "wingAreaMult": 1.8,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 38,
+        "distFromCmToStabM": 0.5,
+        "frontalAreaM2": 0.03236547291544545,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 20,
+        "loftTargetElevation": -2.25,
+        "loftAngleToAccelMult": 20,
+        "loftTargetOmegaMax": 0.5,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeToGain0": [
+          0.3,
+          0
+        ],
+        "timeToGain1": [
+          0.31,
+          1
+        ],
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 38,
+        "accelControlProp": 0.001784,
+        "accelControlIntg": 0.018364,
+        "accelControlDiff": 0.000051,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 10,
+        "armingDelaySec": 1.7
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 38,
+        "guidanceDelaySec": null
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 38,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 60,
+        "gimbalAngleDeg": 60,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/cn_pl12_default.blkx",
+        "sha256": "0aca5cbc554989e8632ead3535a02d15adb9ed7319a348c44b69fdd1d04968ec",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/cn_pl12_default.json"
+    },
+    {
+      "id": "su_pl5e2",
+      "family": "pl5eii",
+      "familyName": "PL-5EII",
+      "sourceBulletName": "pl_5e2",
+      "bulletName": "pl_5e2",
+      "kind": "infrared",
+      "massKg": 83,
+      "finalMassKg": 58.2,
+      "lengthM": 2.892,
+      "diameterM": 0.127,
+      "lifetimeSec": 23,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 2,
+          "thrustN": 27900,
+          "initialMassKg": 83,
+          "finalMassKg": 58.2
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 3.3,
+        "wingAreaMult": 1.4,
+        "finsAoaHor": 0.22,
+        "finsAoaVer": 0.22,
+        "finsLatAccel": 31,
+        "distFromCmToStabM": 0.1,
+        "frontalAreaM2": 0.012667686977437444,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "timeOut": 0.5,
+        "propNavMult": 4,
+        "reqAccelMax": 35,
+        "accelControlProp": 0.0021,
+        "accelControlIntg": 0.0336,
+        "accelControlDiff": 0.0005,
+        "baseIndSpeed": 1800,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 7,
+        "armingDelaySec": 0.5
+      },
+      "simulationLimits": {
+        "maxTravelM": 18000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.5
+      },
+      "statCard": {
+        "rangeM": 16000,
+        "maxG": 35,
+        "mach": 3,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": 3.6,
+        "lockAngleDeg": 30,
+        "gimbalAngleDeg": 40,
+        "trackingRateDegSec": 60,
+        "warmupSec": 1,
+        "workSec": 20
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/su_pl5e2.blkx",
+        "sha256": "9d94e14fe65e41f4aaa2bbb2d071cd9f110265230410f76cdda084a7c3cc7fb8",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/su_pl5e2.json"
+    },
+    {
+      "id": "su_pl5e2_default",
+      "family": "pl5eii",
+      "familyName": "PL-5EII",
+      "sourceBulletName": "pl_5e2",
+      "bulletName": "pl_5e2",
+      "kind": "infrared",
+      "massKg": 83,
+      "finalMassKg": 58.2,
+      "lengthM": 2.892,
+      "diameterM": 0.127,
+      "lifetimeSec": 23,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 2,
+          "thrustN": 27900,
+          "initialMassKg": 83,
+          "finalMassKg": 58.2
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 3.3,
+        "wingAreaMult": 1.4,
+        "finsAoaHor": 0.22,
+        "finsAoaVer": 0.22,
+        "finsLatAccel": 31,
+        "distFromCmToStabM": 0.1,
+        "frontalAreaM2": 0.012667686977437444,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "timeOut": 0.5,
+        "propNavMult": 4,
+        "reqAccelMax": 35,
+        "accelControlProp": 0.0021,
+        "accelControlIntg": 0.0336,
+        "accelControlDiff": 0.0005,
+        "baseIndSpeed": 1800,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 7,
+        "armingDelaySec": 0.5
+      },
+      "simulationLimits": {
+        "maxTravelM": 18000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.5
+      },
+      "statCard": {
+        "rangeM": 16000,
+        "maxG": 35,
+        "mach": 3,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": 3.6,
+        "lockAngleDeg": 30,
+        "gimbalAngleDeg": 40,
+        "trackingRateDegSec": 60,
+        "warmupSec": 1,
+        "workSec": 20
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/su_pl5e2_default.blkx",
+        "sha256": "9d94e14fe65e41f4aaa2bbb2d071cd9f110265230410f76cdda084a7c3cc7fb8",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/su_pl5e2_default.json"
+    },
+    {
+      "id": "us_aim7p_sparrow_fa_18",
+      "family": "aim7",
+      "familyName": "AIM-7P",
+      "sourceBulletName": "us_aim7p_sparrow",
+      "bulletName": "us_aim7p_sparrow",
+      "kind": "semi_active_radar",
+      "massKg": 231.3321,
+      "finalMassKg": 170.0971,
+      "lengthM": 3.6676,
+      "diameterM": 0.2032,
+      "lifetimeSec": 75,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0.25,
+          "durationSec": 4.5,
+          "thrustN": 21479.88,
+          "initialMassKg": 231.3321,
+          "finalMassKg": 188.4676
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 4.75,
+          "durationSec": 11,
+          "thrustN": 3765.95,
+          "initialMassKg": 188.4676,
+          "finalMassKg": 170.0971
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.4125,
+        "wingAreaMult": 3.25,
+        "finsAoaHor": 0.16,
+        "finsAoaVer": 0.16,
+        "finsLatAccel": 29,
+        "distFromCmToStabM": 0.052,
+        "frontalAreaM2": 0.03242927866223985,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "timeToHitToGain0": [
+          5,
+          1
+        ],
+        "timeToHitToGain1": [
+          8,
+          0.9
+        ],
+        "timeToHitToGain2": [
+          12,
+          0.8
+        ],
+        "timeToHitToGain3": [
+          25,
+          0.5
+        ],
+        "timeToHitToGain4": [
+          50,
+          0.3
+        ],
+        "timeToGain0": [
+          0,
+          0
+        ],
+        "timeToGain1": [
+          1,
+          1
+        ],
+        "propNavMult": 6,
+        "reqAccelMax": 25,
+        "accelControlProp": 0.013481,
+        "accelControlIntg": 0.034835,
+        "accelControlDiff": 0.001341,
+        "baseIndSpeed": 1800,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0.25
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 8,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 70000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 25,
+        "guidanceDelaySec": null
+      },
+      "statCard": {
+        "rangeM": 100000,
+        "maxG": 25,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 35,
+        "gimbalAngleDeg": 60,
+        "trackingRateDegSec": 20,
+        "warmupSec": 0.5,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim7p_sparrow_fa_18.blkx",
+        "sha256": "5c8e8f85a6fca5dad5e98381e4458d08abbb229c6656bcab0e94a4d3f0d77f98",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim7p_sparrow_fa_18.json"
+    },
+    {
+      "id": "us_aim7p_sparrow_fa_18_default",
+      "family": "aim7",
+      "familyName": "AIM-7P",
+      "sourceBulletName": "us_aim7p_sparrow",
+      "bulletName": "us_aim7p_sparrow",
+      "kind": "semi_active_radar",
+      "massKg": 231.3321,
+      "finalMassKg": 170.0971,
+      "lengthM": 3.6676,
+      "diameterM": 0.2032,
+      "lifetimeSec": 75,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0.25,
+          "durationSec": 4.5,
+          "thrustN": 21479.88,
+          "initialMassKg": 231.3321,
+          "finalMassKg": 188.4676
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 4.75,
+          "durationSec": 11,
+          "thrustN": 3765.95,
+          "initialMassKg": 188.4676,
+          "finalMassKg": 170.0971
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.4125,
+        "wingAreaMult": 3.25,
+        "finsAoaHor": 0.16,
+        "finsAoaVer": 0.16,
+        "finsLatAccel": 29,
+        "distFromCmToStabM": 0.052,
+        "frontalAreaM2": 0.03242927866223985,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "timeToHitToGain0": [
+          5,
+          1
+        ],
+        "timeToHitToGain1": [
+          8,
+          0.9
+        ],
+        "timeToHitToGain2": [
+          12,
+          0.8
+        ],
+        "timeToHitToGain3": [
+          25,
+          0.5
+        ],
+        "timeToHitToGain4": [
+          50,
+          0.3
+        ],
+        "timeToGain0": [
+          0,
+          0
+        ],
+        "timeToGain1": [
+          1,
+          1
+        ],
+        "propNavMult": 6,
+        "reqAccelMax": 25,
+        "accelControlProp": 0.013481,
+        "accelControlIntg": 0.034835,
+        "accelControlDiff": 0.001341,
+        "baseIndSpeed": 1800,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0.25
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 8,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 70000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 25,
+        "guidanceDelaySec": null
+      },
+      "statCard": {
+        "rangeM": 100000,
+        "maxG": 25,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 35,
+        "gimbalAngleDeg": 60,
+        "trackingRateDegSec": 20,
+        "warmupSec": 0.5,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim7p_sparrow_fa_18_default.blkx",
+        "sha256": "5c8e8f85a6fca5dad5e98381e4458d08abbb229c6656bcab0e94a4d3f0d77f98",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim7p_sparrow_fa_18_default.json"
+    },
+    {
+      "id": "us_aim9m_sidewinder",
+      "family": "aim9m",
+      "familyName": "AIM-9M",
+      "sourceBulletName": "us_aim9m_sidewinder",
+      "bulletName": "us_aim9m_sidewinder",
+      "kind": "infrared",
+      "massKg": 84.46,
+      "finalMassKg": 57.06,
+      "lengthM": 2.85,
+      "diameterM": 0.127,
+      "lifetimeSec": 60,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 5.3,
+          "thrustN": 10800,
+          "initialMassKg": 84.46,
+          "finalMassKg": 57.06
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 3.4,
+        "wingAreaMult": 1.4,
+        "finsAoaHor": 0.25,
+        "finsAoaVer": 0.25,
+        "finsLatAccel": 37.5,
+        "distFromCmToStabM": 0.1,
+        "frontalAreaM2": 0.012667686977437444,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "timeOut": 0.4,
+        "propNavMult": 4,
+        "reqAccelMax": 30,
+        "accelControlProp": 0.002,
+        "accelControlIntg": 0.0361,
+        "accelControlDiff": 0.0006,
+        "baseIndSpeed": 1800,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 5,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 18000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 30,
+        "guidanceDelaySec": 0.4
+      },
+      "statCard": {
+        "rangeM": 18000,
+        "maxG": 30,
+        "mach": 2.5,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": 3.6,
+        "lockAngleDeg": 40,
+        "gimbalAngleDeg": 45,
+        "trackingRateDegSec": 22,
+        "warmupSec": 1,
+        "workSec": 20
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim9m_sidewinder.blkx",
+        "sha256": "c6c1b91effce70b39d2c3c4f886502acb18e51f1dbef7b0350b1b0bdf002a711",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim9m_sidewinder.json"
+    },
+    {
+      "id": "us_aim9m_sidewinder_bol_pod",
+      "family": "aim9m",
+      "familyName": "AIM-9M",
+      "sourceBulletName": "us_aim9m_sidewinder",
+      "bulletName": "us_aim9m_sidewinder",
+      "kind": "infrared",
+      "massKg": 84.46,
+      "finalMassKg": 57.06,
+      "lengthM": 2.85,
+      "diameterM": 0.127,
+      "lifetimeSec": 60,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 5.3,
+          "thrustN": 10800,
+          "initialMassKg": 84.46,
+          "finalMassKg": 57.06
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 3.4,
+        "wingAreaMult": 1.4,
+        "finsAoaHor": 0.25,
+        "finsAoaVer": 0.25,
+        "finsLatAccel": 37.5,
+        "distFromCmToStabM": 0.1,
+        "frontalAreaM2": 0.012667686977437444,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "timeOut": 0.4,
+        "propNavMult": 4,
+        "reqAccelMax": 30,
+        "accelControlProp": 0.002,
+        "accelControlIntg": 0.0361,
+        "accelControlDiff": 0.0006,
+        "baseIndSpeed": 1800,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 5,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 18000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 30,
+        "guidanceDelaySec": 0.4
+      },
+      "statCard": {
+        "rangeM": 18000,
+        "maxG": 30,
+        "mach": 2.5,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": 3.6,
+        "lockAngleDeg": 40,
+        "gimbalAngleDeg": 45,
+        "trackingRateDegSec": 22,
+        "warmupSec": 1,
+        "workSec": 20
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim9m_sidewinder_bol_pod.blkx",
+        "sha256": "c6c1b91effce70b39d2c3c4f886502acb18e51f1dbef7b0350b1b0bdf002a711",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim9m_sidewinder_bol_pod.json"
+    },
+    {
+      "id": "us_aim9m_sidewinder_default",
+      "family": "aim9m",
+      "familyName": "AIM-9M",
+      "sourceBulletName": "us_aim9m_sidewinder",
+      "bulletName": "us_aim9m_sidewinder",
+      "kind": "infrared",
+      "massKg": 84.46,
+      "finalMassKg": 57.06,
+      "lengthM": 2.85,
+      "diameterM": 0.127,
+      "lifetimeSec": 60,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 5.3,
+          "thrustN": 10800,
+          "initialMassKg": 84.46,
+          "finalMassKg": 57.06
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 3.4,
+        "wingAreaMult": 1.4,
+        "finsAoaHor": 0.25,
+        "finsAoaVer": 0.25,
+        "finsLatAccel": 37.5,
+        "distFromCmToStabM": 0.1,
+        "frontalAreaM2": 0.012667686977437444,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "timeOut": 0.4,
+        "propNavMult": 4,
+        "reqAccelMax": 30,
+        "accelControlProp": 0.002,
+        "accelControlIntg": 0.0361,
+        "accelControlDiff": 0.0006,
+        "baseIndSpeed": 1800,
+        "accelControlIntgLim": 1
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 5,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 18000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 30,
+        "guidanceDelaySec": 0.4
+      },
+      "statCard": {
+        "rangeM": 18000,
+        "maxG": 30,
+        "mach": 2.5,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": 3.6,
+        "lockAngleDeg": 40,
+        "gimbalAngleDeg": 45,
+        "trackingRateDegSec": 22,
+        "warmupSec": 1,
+        "workSec": 20
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim9m_sidewinder_default.blkx",
+        "sha256": "c6c1b91effce70b39d2c3c4f886502acb18e51f1dbef7b0350b1b0bdf002a711",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim9m_sidewinder_default.json"
+    },
+    {
+      "id": "us_aim_120a",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120a",
+      "bulletName": "us_aim_120a",
+      "kind": "active_radar",
+      "massKg": 156.4894,
+      "finalMassKg": 109.7694,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 1.4,
+          "thrustN": 26687.5,
+          "initialMassKg": 156.4894,
+          "finalMassKg": 140.3415
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 1.4,
+          "durationSec": 5.3,
+          "thrustN": 13346.5,
+          "initialMassKg": 140.3415,
+          "finalMassKg": 109.7694
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.745,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000073,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000028,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 35,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120a.blkx",
+        "sha256": "539fa5f9d7eb907b66d5bd6eee1d393fd6c85d5faee019b35651e20cc6eb76b3",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120a.json"
+    },
+    {
+      "id": "us_aim_120a_default",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120a",
+      "bulletName": "us_aim_120a",
+      "kind": "active_radar",
+      "massKg": 156.4894,
+      "finalMassKg": 109.7694,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 1.4,
+          "thrustN": 26687.5,
+          "initialMassKg": 156.4894,
+          "finalMassKg": 140.3415
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 1.4,
+          "durationSec": 5.3,
+          "thrustN": 13346.5,
+          "initialMassKg": 140.3415,
+          "finalMassKg": 109.7694
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.745,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000073,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000028,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 35,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120a_default.blkx",
+        "sha256": "539fa5f9d7eb907b66d5bd6eee1d393fd6c85d5faee019b35651e20cc6eb76b3",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120a_default.json"
+    },
+    {
+      "id": "us_aim_120b",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120b",
+      "bulletName": "us_aim_120b",
+      "kind": "active_radar",
+      "massKg": 156.4894,
+      "finalMassKg": 109.7694,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 1.4,
+          "thrustN": 26687.5,
+          "initialMassKg": 156.4894,
+          "finalMassKg": 140.3415
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 1.4,
+          "durationSec": 5.3,
+          "thrustN": 13346.5,
+          "initialMassKg": 140.3415,
+          "finalMassKg": 109.7694
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.745,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000073,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000028,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 35,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120b.blkx",
+        "sha256": "e4f41740635e64cb9ddab8be3286f6b370ac234bd1a4c796a4f9781adeccf420",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120b.json"
+    },
+    {
+      "id": "us_aim_120b_bol_pod",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120b",
+      "bulletName": "us_aim_120b",
+      "kind": "active_radar",
+      "massKg": 156.4894,
+      "finalMassKg": 109.7694,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 1.4,
+          "thrustN": 26687.5,
+          "initialMassKg": 156.4894,
+          "finalMassKg": 140.3415
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 1.4,
+          "durationSec": 5.3,
+          "thrustN": 13346.5,
+          "initialMassKg": 140.3415,
+          "finalMassKg": 109.7694
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.745,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000073,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000028,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 35,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120b_bol_pod.blkx",
+        "sha256": "e4f41740635e64cb9ddab8be3286f6b370ac234bd1a4c796a4f9781adeccf420",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120b_bol_pod.json"
+    },
+    {
+      "id": "us_aim_120b_default",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120b",
+      "bulletName": "us_aim_120b",
+      "kind": "active_radar",
+      "massKg": 156.4894,
+      "finalMassKg": 109.7694,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 1.4,
+          "thrustN": 26687.5,
+          "initialMassKg": 156.4894,
+          "finalMassKg": 140.3415
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 1.4,
+          "durationSec": 5.3,
+          "thrustN": 13346.5,
+          "initialMassKg": 140.3415,
+          "finalMassKg": 109.7694
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.745,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000073,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000028,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 35,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120b_default.blkx",
+        "sha256": "e4f41740635e64cb9ddab8be3286f6b370ac234bd1a4c796a4f9781adeccf420",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120b_default.json"
+    },
+    {
+      "id": "us_aim_120b_default_switzerland",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120b",
+      "bulletName": "us_aim_120b",
+      "kind": "active_radar",
+      "massKg": 156.4894,
+      "finalMassKg": 109.7694,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 1.4,
+          "thrustN": 26687.5,
+          "initialMassKg": 156.4894,
+          "finalMassKg": 140.3415
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 1.4,
+          "durationSec": 5.3,
+          "thrustN": 13346.5,
+          "initialMassKg": 140.3415,
+          "finalMassKg": 109.7694
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.745,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000073,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000028,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 35,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120b_default_switzerland.blkx",
+        "sha256": "e4f41740635e64cb9ddab8be3286f6b370ac234bd1a4c796a4f9781adeccf420",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120b_default_switzerland.json"
+    },
+    {
+      "id": "us_aim_120b_switzerland",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120b",
+      "bulletName": "us_aim_120b",
+      "kind": "active_radar",
+      "massKg": 156.4894,
+      "finalMassKg": 109.7694,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 80,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 1.4,
+          "thrustN": 26687.5,
+          "initialMassKg": 156.4894,
+          "finalMassKg": 140.3415
+        },
+        {
+          "sourceSuffix": "1",
+          "startSec": 1.4,
+          "durationSec": 5.3,
+          "thrustN": 13346.5,
+          "initialMassKg": 140.3415,
+          "finalMassKg": 109.7694
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.745,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000073,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000542,
+          "intg": 0.02081,
+          "diff": 0.000028,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 80000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 80000,
+        "maxG": 35,
+        "mach": 4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120b_switzerland.blkx",
+        "sha256": "e4f41740635e64cb9ddab8be3286f6b370ac234bd1a4c796a4f9781adeccf420",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120b_switzerland.json"
+    },
+    {
+      "id": "us_aim_120c_5",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120c_5",
+      "bulletName": "us_aim_120c_5",
+      "kind": "active_radar",
+      "massKg": 161.4789,
+      "finalMassKg": 110.223,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 120,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 7.75,
+          "thrustN": 15542,
+          "initialMassKg": 161.4789,
+          "finalMassKg": 110.223
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.7,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000095,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000023,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 120000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 120000,
+        "maxG": 35,
+        "mach": 4.4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120c_5.blkx",
+        "sha256": "f10262fffc80281d770fad7dd023201d0c8910b70e887275c0874021161ca87f",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120c_5.json"
+    },
+    {
+      "id": "us_aim_120c_5_default",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120c_5",
+      "bulletName": "us_aim_120c_5",
+      "kind": "active_radar",
+      "massKg": 161.4789,
+      "finalMassKg": 110.223,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 120,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 7.75,
+          "thrustN": 15542,
+          "initialMassKg": 161.4789,
+          "finalMassKg": 110.223
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.7,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000095,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000023,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 120000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 120000,
+        "maxG": 35,
+        "mach": 4.4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120c_5_default.blkx",
+        "sha256": "f10262fffc80281d770fad7dd023201d0c8910b70e887275c0874021161ca87f",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120c_5_default.json"
+    },
+    {
+      "id": "us_aim_120c_5_default_switzerland",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120c_5",
+      "bulletName": "us_aim_120c_5",
+      "kind": "active_radar",
+      "massKg": 161.4789,
+      "finalMassKg": 110.223,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 120,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 7.75,
+          "thrustN": 15542,
+          "initialMassKg": 161.4789,
+          "finalMassKg": 110.223
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.7,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000095,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000023,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 120000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 120000,
+        "maxG": 35,
+        "mach": 4.4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120c_5_default_switzerland.blkx",
+        "sha256": "f10262fffc80281d770fad7dd023201d0c8910b70e887275c0874021161ca87f",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120c_5_default_switzerland.json"
+    },
+    {
+      "id": "us_aim_120c_5_switzerland",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120c_5",
+      "bulletName": "us_aim_120c_5",
+      "kind": "active_radar",
+      "massKg": 161.4789,
+      "finalMassKg": 110.223,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 120,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 7.75,
+          "thrustN": 15542,
+          "initialMassKg": 161.4789,
+          "finalMassKg": 110.223
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.7,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000095,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000023,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 120000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 120000,
+        "maxG": 35,
+        "mach": 4.4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120c_5_switzerland.blkx",
+        "sha256": "f10262fffc80281d770fad7dd023201d0c8910b70e887275c0874021161ca87f",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120c_5_switzerland.json"
+    },
+    {
+      "id": "us_aim_120c_7",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120c_7",
+      "bulletName": "us_aim_120c_7",
+      "kind": "active_radar",
+      "massKg": 161.4789,
+      "finalMassKg": 110.223,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 120,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 7.75,
+          "thrustN": 15542,
+          "initialMassKg": 161.4789,
+          "finalMassKg": 110.223
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.7,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000095,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000023,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 120000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 120000,
+        "maxG": 35,
+        "mach": 4.4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120c_7.blkx",
+        "sha256": "b0952b5a3c11a1d21d38b00c0d1d94bd019da0abcff20dfa14b84229c147388c",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120c_7.json"
+    },
+    {
+      "id": "us_aim_120c_7_default",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120c_7",
+      "bulletName": "us_aim_120c_7",
+      "kind": "active_radar",
+      "massKg": 161.4789,
+      "finalMassKg": 110.223,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 120,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 7.75,
+          "thrustN": 15542,
+          "initialMassKg": 161.4789,
+          "finalMassKg": 110.223
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.7,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000095,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000023,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 120000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 120000,
+        "maxG": 35,
+        "mach": 4.4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120c_7_default.blkx",
+        "sha256": "b0952b5a3c11a1d21d38b00c0d1d94bd019da0abcff20dfa14b84229c147388c",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120c_7_default.json"
+    },
+    {
+      "id": "us_aim_120d",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120d",
+      "bulletName": "us_aim_120d",
+      "kind": "active_radar",
+      "massKg": 162.3861,
+      "finalMassKg": 111.1302,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 180,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 7.75,
+          "thrustN": 15542,
+          "initialMassKg": 162.3861,
+          "finalMassKg": 111.1302
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.7,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000095,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000023,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 185000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 185000,
+        "maxG": 35,
+        "mach": 4.4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120d.blkx",
+        "sha256": "2c659f914d0f6ff2f9a470cb758ac74e64309449c72ad4b901e240490060fc25",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120d.json"
+    },
+    {
+      "id": "us_aim_120d_default",
+      "family": "aim120",
+      "familyName": "AIM-120",
+      "sourceBulletName": "us_aim_120d",
+      "bulletName": "us_aim_120d",
+      "kind": "active_radar",
+      "massKg": 162.3861,
+      "finalMassKg": 111.1302,
+      "lengthM": 3.66,
+      "diameterM": 0.1778,
+      "lifetimeSec": 180,
+      "motorStages": [
+        {
+          "sourceSuffix": "",
+          "startSec": 0,
+          "durationSec": 7.75,
+          "thrustN": 15542,
+          "initialMassKg": 162.3861,
+          "finalMassKg": 111.1302
+        }
+      ],
+      "aerodynamics": {
+        "dragCx": 0.018,
+        "CxK": 1.225,
+        "wingAreaMult": 1.7,
+        "finsAoaHor": 0.452936,
+        "finsAoaVer": 0.452936,
+        "finsLatAccel": 35,
+        "distFromCmToStabM": 0.9,
+        "frontalAreaM2": 0.024828666475777392,
+        "interpretation": "Source coefficients retained without inventing a Cd(Mach, alpha) polar. Frontal area is derived geometry, not a verified solver reference area. Fin source values are not angles in radians."
+      },
+      "flightControl": {
+        "loftEnabled": true,
+        "loftElevation": 22,
+        "loftTargetElevation": -3.5,
+        "loftAngleToAccelMult": 5,
+        "loftTargetOmegaMax": 0.95,
+        "timeToHitToGain0": [
+          10,
+          1
+        ],
+        "timeToHitToGain1": [
+          25,
+          0.8
+        ],
+        "timeToHitToGain2": [
+          50,
+          0.5
+        ],
+        "timeOut": 0.6,
+        "baseIndSpeed": 1800,
+        "propNavMult": 6,
+        "reqAccelMax": 35,
+        "pid0": {
+          "time": 2.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000095,
+          "intgLim": 1
+        },
+        "pid1": {
+          "time": 3.5,
+          "prop": 0.000532,
+          "intg": 0.017227,
+          "diff": 0.000023,
+          "intgLim": 1
+        }
+      },
+      "launch": {
+        "initialSpeedMps": 0,
+        "useStartSpeed": true,
+        "fireDelaySec": 0
+      },
+      "proximityFuse": {
+        "enabled": true,
+        "radiusM": 12,
+        "armingDelaySec": 1.8
+      },
+      "simulationLimits": {
+        "maxTravelM": 185000,
+        "speedLimitMps": 2000,
+        "autopilotMaxG": 35,
+        "guidanceDelaySec": 0.6
+      },
+      "statCard": {
+        "rangeM": 185000,
+        "maxG": 35,
+        "mach": 4.4,
+        "usage": "Display values, not launch guarantees or flight-control limits"
+      },
+      "seeker": {
+        "fovDeg": null,
+        "lockAngleDeg": 55,
+        "gimbalAngleDeg": 55,
+        "trackingRateDegSec": 60,
+        "warmupSec": 0.3,
+        "workSec": 100
+      },
+      "provenance": {
+        "file": "gamedata/weapons/rocketguns/us_aim_120d_default.blkx",
+        "sha256": "2c659f914d0f6ff2f9a470cb758ac74e64309449c72ad4b901e240490060fc25",
+        "scope": "Local game configuration; source variants remain separate",
+        "tableLayout": "Source arrays preserved; no inferred axis order, NEZ or hit probability",
+        "motorInterpretation": "Numbered stages treated as sequential durations for inspection; raw source authoritative"
+      },
+      "rangeTableCount": 4,
+      "file": "missiles/us_aim_120d_default.json"
+    }
+  ],
+  "aircraftIds": [
+    "f16",
+    "f86"
+  ],
+  "limitations": [
+    "Game configuration, not verified real-world aerodynamic data",
+    "No original War Thunder solver copied; full Mach/angle-of-attack polars and inertia are not supplied",
+    "No weapons enabled by importing data",
+    "Range tables are source scenario data, not guaranteed range or NEZ"
+  ]
+}

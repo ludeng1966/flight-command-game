@@ -1,0 +1,8 @@
+#rwr-control{--rwr-line:#29473b;--rwr-muted:#8aa79a;--rwr-text:#b9d9c8;margin:18px 0;border-top:1px solid var(--rwr-line);padding-top:12px;text-wrap:pretty;color:var(--rwr-text)}
+#rwr-control summary{cursor:pointer;color:#b5d6c7;font-size:13px}#rwr-control .rwr-head{display:flex;gap:8px;justify-content:space-between;margin:12px 0;font-size:11px}#rwr-control .rwr-head span{color:var(--rwr-muted)}
+#rwr-state[data-level="launch"]{color:#efb68d}#rwr-state[data-level="track"]{color:#ffd38c}#rwr-scope{display:block;width:100%;height:auto;border:1px solid var(--rwr-line);border-radius:3px}
+#rwr-contacts{float:none;clear:both;display:block;width:100%;white-space:pre-line;font:11px/1.8 Consolas,"Microsoft YaHei",monospace;margin-top:10px;overflow-wrap:anywhere}
+#rwr-control label{display:block;font-size:11px;margin:9px 0}#rwr-control select{display:block;width:100%;min-width:0;font:inherit;margin-top:5px}#rwr-control .rwr-delays{display:flex;gap:12px;flex-wrap:wrap}#rwr-control input{display:inline-block;width:50px;min-width:0;margin:4px;font:inherit}
+#rwr-control .rwr-help,#rwr-control .rwr-practice p{font-size:10px;line-height:1.7;color:var(--rwr-muted)}#rwr-control .rwr-practice{border-top:1px solid var(--rwr-line);padding-top:10px;margin-top:10px}#rwr-action,#rwr-message{font-size:11px;line-height:1.7;color:#efb68d}
+#rwr-control .rwr-buttons{display:flex;gap:5px;flex-wrap:wrap}#rwr-control button{font:inherit;font-size:11px;padding:6px 8px}#rwr-control :focus-visible{outline:2px solid #78c99d;outline-offset:2px}#rwr-control :disabled{opacity:.45}
+@media(max-width:600px){#rwr-control .rwr-head{flex-wrap:wrap}}

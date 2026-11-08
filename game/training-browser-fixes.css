@@ -1,0 +1,29 @@
+/* Keep the real aircraft visible while the narrow desktop sidebar is in use. */
+#stage.clean-ui.training-active #training-coach.walkthrough{top:auto;bottom:82px;height:auto;max-height:calc(100dvh - 155px)}
+#training-coach.walkthrough[data-phase=working] #coach-radio-log{display:none}
+#training-coach.walkthrough[data-phase=working] .coach-feedback{margin:6px 0;min-height:0}
+#training-coach.walkthrough[data-phase=working] .coach-live{margin-top:9px;padding-top:9px}
+#training-coach.walkthrough[data-phase=working] .coach-bottom{margin-top:12px;padding-top:10px}
+@media(max-width:750px){
+  #stage.clean-ui.training-active.training-card-open #scene{height:max(150px,calc(100% - var(--training-coach-height,280px) - 76px))}
+  #stage.clean-ui.training-active #training-coach.walkthrough{top:auto;left:12px;right:12px;bottom:76px;width:auto;max-height:55dvh;padding:14px}
+  #stage.clean-ui.training-active #training-coach.walkthrough[data-phase=working]{max-height:45dvh}
+  #stage.clean-ui.training-active #training-coach.walkthrough h2{font-size:18px;margin:9px 0}
+  #stage.clean-ui.training-active #training-coach.walkthrough .coach-topline{margin-bottom:10px}
+  #stage.clean-ui.training-active #training-coach.walkthrough progress{margin:7px 0 10px}
+  #stage.clean-ui.training-active #training-coach.walkthrough .coach-bottom{margin-top:12px;padding-top:10px}
+  #stage.clean-ui.training-active:has(#training-coach[data-mission=select][data-phase=brief]) #unit-panel{top:61px;bottom:auto;max-height:180px;z-index:37;overflow:hidden}
+  #stage.clean-ui.training-active:has(#training-coach[data-mission=select][data-phase=brief]) #unit-panel>:not(.panel-heading):not(#roster),
+  #stage.clean-ui.training-active:has(#training-coach[data-mission=select][data-phase=brief]) #roster>.unit:not(#blue-1){display:none}
+  #stage.clean-ui.training-active:has(#training-coach[data-mission=select][data-phase=success]) #unit-panel{display:none}
+  #stage.clean-ui.training-active #training-coach[data-mission=map][data-phase=brief]{max-height:34dvh}
+  #stage.clean-ui.training-active #training-coach[data-mission=map][data-phase=brief] .coach-live,
+  #stage.clean-ui.training-active #training-coach[data-mission=map][data-phase=brief] .coach-bottom,
+  #stage.clean-ui.training-active #training-coach[data-mission=map][data-phase=brief] .coach-map-steps{display:none}
+  #stage.clean-ui.training-active #training-coach[data-kind=compass] .coach-compass,
+  #stage.clean-ui.training-active #training-coach[data-kind=bullseye] .coach-compass{grid-template-rows:32px 48px 32px;gap:5px;padding:8px 2px;margin:12px 0}
+  #stage.clean-ui.training-active #training-coach:is([data-kind=choice],[data-kind=compass],[data-kind=bullseye],[data-kind=tacan],[data-kind=dme]) .coach-live{display:none}
+  #stage.clean-ui.training-active #training-coach .coach-choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:12px 0}
+  #stage.clean-ui.training-active #training-coach .coach-choices button{padding:8px!important;font-size:11px;text-align:center}
+  #stage.clean-ui.training-active #training-coach:is([data-kind=tacan],[data-kind=dme]) svg{max-height:100px}
+}
