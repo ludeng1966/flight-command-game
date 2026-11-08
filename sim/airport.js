@@ -299,7 +299,7 @@ export class AirportOperations{
       if(!s.route.length&&u.speed===0){if(['holding','parked'].includes(s.phase))this.traffic.complete(u,'taxi',world);if(s.phase==='lined_up')this.traffic.complete(u,'line_up',world);}
     }
     if(s.grounded){
-      const vx=Math.sin(s.heading)*u.speed,vy=Math.cos(s.heading)*u.speed;u.velocity=[vx,vy,0];u.mach=u.speed/atmosphere(a.elevation).soundSpeed;u.position[0]+=vx*dt;u.position[1]+=vy*dt;u.position[2]=a.elevation+1.6;
+      const vx=Math.sin(s.heading)*u.speed,vy=Math.cos(s.heading)*u.speed;u.velocity=[vx,vy,0];u.mach=u.speed/atmosphere(a.elevation).soundSpeed;u.position[0]+=vx*dt;u.position[1]+=vy*dt;u.position[2]=a.elevation+(u.profile.groundClearanceM??1.6);
       if(s.phase==='taxi'&&!s.depart&&Math.abs(u.position[1]-r.y)>132){if(this.leases[r.stripId]===u.id)this.log(u,'已越过跑道等待线，跑道释放',world.time);this.release(u.id);}
     }
     return true;

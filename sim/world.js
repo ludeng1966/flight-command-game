@@ -157,6 +157,7 @@ export class World {
     const candidate=resetPower?{...u,pilotPowerPlan:null,departurePowerPlan:null}:u;
     if(!prepared)return planSafeRoute(candidate,points,this.terrain);
     const seed=prepared.seed;
+    if(seed?.profileId&&seed.profileId!==u.profileId)throw Error('机型已变化，正在重新规划');
     if(!seed||seed.key!==JSON.stringify(points.map(p=>p.slice(0,3)))||seed.targetSpeed!==u.targetSpeed)throw Error('飞行状态已变化，正在重新规划');
     const travel=Math.hypot(...u.position.map((v,i)=>v-seed.position[i]));let cursor=0;
     if(travel>Math.max(150,u.speed*.8)||Math.abs(u.bank-seed.bank)>.3){

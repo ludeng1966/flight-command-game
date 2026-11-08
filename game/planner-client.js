@@ -1,6 +1,6 @@
 import {getUnitSystem} from '../sim/units.js';
 export function plannerUnit(unit,includePath=false){
-  const keys=['id','profile','position','velocity','bank','cl','speed','loadFactor','throttle','afterburner','targetSpeed','targetAltitude','holdAltitude','orbit','flightState','recoveryTime','recoveryCause','control','energy','guidance','navCursor','departurePowerPlan','pilotPowerPlan','stalled','gearDown','flaps','speedBrake'];
+  const keys=['id','profileId','profile','position','velocity','bank','cl','speed','loadFactor','throttle','afterburner','targetSpeed','targetAltitude','holdAltitude','orbit','flightState','recoveryTime','recoveryCause','control','energy','guidance','navCursor','departurePowerPlan','pilotPowerPlan','stalled','gearDown','flaps','speedBrake'];
   const snapshot=Object.fromEntries(keys.map(k=>[k,unit[k]]));
   snapshot.wind=unit.wind;snapshot.groundVelocity=unit.groundVelocity;
   if(unit.pilotExecution?.constraints)snapshot.pilotExecution={constraints:structuredClone(unit.pilotExecution.constraints)};
