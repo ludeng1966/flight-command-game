@@ -114,6 +114,12 @@
     "maxG": 9,
     "bankRate": 2.0943951023931953,
     "clRate": 1.2,
+    "dimensions": {
+      "lengthM": 15.1,
+      "wingspanM": 9.44,
+      "bodyHeightM": 3
+    },
+    "groundClearanceM": 1.6,
     "thrust": {
       "altitudes": [
         0,
@@ -501,6 +507,12 @@
     "maxG": 9,
     "bankRate": 1.7453292519943295,
     "clRate": 1.2,
+    "dimensions": {
+      "lengthM": 21.93,
+      "wingspanM": 14.7,
+      "bodyHeightM": 4
+    },
+    "groundClearanceM": 2.2,
     "thrust": {
       "altitudes": [
         0,
@@ -888,6 +900,12 @@
     "maxG": 9,
     "bankRate": 1.7453292519943295,
     "clRate": 1.2,
+    "dimensions": {
+      "lengthM": 21.93,
+      "wingspanM": 14.7,
+      "bodyHeightM": 4
+    },
+    "groundClearanceM": 2.2,
     "thrust": {
       "altitudes": [
         0,
@@ -1289,11 +1307,13 @@
     "configurations": {
       "takeoff": {
         "clMax": 2,
-        "cl0": 0.4
+        "cl0": 0.4,
+        "maxG": 2
       },
       "landing": {
         "clMax": 2.7,
-        "cl0": 0.6
+        "cl0": 0.6,
+        "maxG": 2
       }
     },
     "configurationDrag": {
@@ -1502,8 +1522,10 @@
       "mach": 0.78
     },
     "airportRotationSpeed": 65,
+    "airportApproachMinMps": 60,
     "rotationMargin": 1.05,
     "climbSpeedMps": 145,
+    "groundClearanceM": 3.7,
     "dimensions": {
       "lengthM": 37.57,
       "wingspanM": 34.1,
@@ -1583,11 +1605,13 @@
     "configurations": {
       "takeoff": {
         "clMax": 2,
-        "cl0": 0.4
+        "cl0": 0.4,
+        "maxG": 2
       },
       "landing": {
         "clMax": 2.7,
-        "cl0": 0.6
+        "cl0": 0.6,
+        "maxG": 2
       }
     },
     "configurationDrag": {
@@ -1796,8 +1820,10 @@
       "mach": 0.85
     },
     "airportRotationSpeed": 75,
+    "airportApproachMinMps": 70,
     "rotationMargin": 1.05,
     "climbSpeedMps": 145,
+    "groundClearanceM": 6.2,
     "dimensions": {
       "lengthM": 76.3,
       "wingspanM": 68.4,

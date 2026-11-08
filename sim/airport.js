@@ -144,7 +144,7 @@ export class AirportOperations{
   nearestNode(position){return Object.keys(this.airport.nodes).sort((a,b)=>distance(position,this.airport.nodes[a])-distance(position,this.airport.nodes[b]))[0];}
   park(u,stand){
     if(!this.airport.stands.includes(stand))throw Error('机位不存在');
-    this.release(u.id);u.position=[...this.airport.nodes[stand]];u.velocity=[0,0,0];u.speed=0;u.bank=0;u.cl=0;u.throttle=0;u.afterburner=0;u.gearDown=true;u.flaps='takeoff';u.flightState='normal';u.waypoints=[];u.headingRoute=null;
+    this.release(u.id);u.position=[...this.airport.nodes[stand]];u.position[2]=this.airport.elevation+(u.profile.groundClearanceM??1.6);u.velocity=[0,0,0];u.speed=0;u.bank=0;u.cl=0;u.throttle=0;u.afterburner=0;u.gearDown=true;u.flaps='takeoff';u.flightState='normal';u.waypoints=[];u.headingRoute=null;
     u.surface={phase:'parked',grounded:true,node:stand,heading:0,route:[],station:'ground',message:'停机位就绪'};
     u.alive=true;u.mach=0;u.loadFactor=1;u.navLegs=[];u.navCursor=0;u.navigationBlocked=null;u.navigationKey=null;u.speedBrake=false;u.headingTarget=null;u.departurePowerPlan=null;u.pilotPowerPlan=null;u.pilotExecution=null;u.control={bank:0,cl:0,throttle:0,afterburner:0};
   }
@@ -228,21 +228,21 @@ export class AirportOperations{
         if(atMinima&&u.gearFailure){this.goAround(u,world,'起落架无法确认放下锁定，请求故障处置');return false;}
         if(atMinima&&(!s.landCleared||a.weather.visibilityM<(minima.minimumVisibilityM??550)||a.weather.ceilingM<(minima.minimumCeilingM??61))){this.goAround(u,world,!s.landCleared?'未取得有效着陆许可':'天气低于程序最低标准');return false;}
         if(this.occupied(r,world.units,u.id)||d<0&&Math.abs(lateral)>18){this.goAround(u,world,'跑道侵入或未稳定对正');return false;}
-        const groundSpeed=Math.max(40,Math.hypot(...(u.groundVelocity??u.velocity).slice(0,2))),height=a.elevation+1.6+Math.max(0,d)*Math.tan(Math.PI/60),desiredVz=d<450?-clamp((u.position[2]-a.elevation-1.6)*.14+.6,.6,3):clamp(-groundSpeed*.052+(height-u.position[2])*.25,-7,3);
+        const clearance=u.profile.groundClearanceM??1.6,groundSpeed=Math.max(40,Math.hypot(...(u.groundVelocity??u.velocity).slice(0,2))),height=a.elevation+clearance+Math.max(0,d)*Math.tan(Math.PI/60),desiredVz=d<450?-clamp((u.position[2]-a.elevation-clearance)*.14+.6,.6,3):clamp(-groundSpeed*.052+(height-u.position[2])*.25,-7,3);
         const wind=u.wind??[0,0,0],runwayHeading=r.headingDeg*Math.PI/180,cross=wind[0]*Math.cos(runwayHeading)-wind[1]*Math.sin(runwayHeading);
         const heading=runwayHeading-Math.asin(clamp(cross/Math.max(40,u.speed),-.3,.3))-clamp(r.direction*lateral/1200,-.2,.2),error=angle(heading-Math.atan2(u.velocity[0],u.velocity[1]));
-        const env=energyEnvelope(u.profile,u.position[2],u.speed),target=Math.max(78,env.safeSpeed(1)*1.02),energy=controlEnergy(u,{gamma:Math.asin(clamp(desiredVz/u.speed,-.12,.1)),loadFactor:1.15,targetSpeed:target,envelope:env},dt);
+        const env=energyEnvelope(u.profile,u.position[2],u.speed,u),target=Math.max(u.profile.airportApproachMinMps??78,env.safeSpeed(1)*(u.profile.category==='transport'?1.1:1.02)),energy=controlEnergy(u,{gamma:Math.asin(clamp(desiredVz/u.speed,-.12,.1)),loadFactor:1.15,targetSpeed:target,envelope:env},dt);
         u.targetSpeed=target;u.control={bank:clamp(error*.9,-.35,.35),cl:clamp((1+(desiredVz-u.velocity[2])*.5/G)*u.profile.mass*G/(.5*density(u.position[2])*u.speed**2*u.profile.area),0,env.aero.clMax*.9),maxG:2,throttle:energy.throttle,afterburner:energy.afterburner};
-        if(u.position[2]<=a.elevation+2.4&&u.position[0]>=r.x0&&u.position[0]<=r.x1){
+        if(u.position[2]<=a.elevation+clearance+.8&&u.position[0]>=r.x0&&u.position[0]<=r.x1){
           const groundVelocity=u.groundVelocity??u.velocity;
           if(!u.gearDown||Math.abs(u.bank)>.12||Math.abs(angle(Math.atan2(groundVelocity[0],groundVelocity[1])-r.headingDeg*Math.PI/180))>.12||Math.abs(u.velocity[2])>4||Math.abs(lateral)>r.width/2-5||u.speed<60||u.speed>130){u.alive=false;u.flightState='crashed';this.log(u,'着陆碰撞：姿态/速度超限',world.time);return true;}
-          s.grounded=true;s.phase='rollout';s.heading=r.headingDeg*Math.PI/180;u.speed=Math.hypot(...groundVelocity.slice(0,2));u.position[2]=a.elevation+1.6;u.bank=0;this.traffic.complete(u,'land',world);this.log(u,'接地，减速脱离跑道',world.time);
+          s.grounded=true;s.phase='rollout';s.heading=r.headingDeg*Math.PI/180;u.speed=Math.hypot(...groundVelocity.slice(0,2));u.position[2]=a.elevation+clearance;u.bank=0;this.traffic.complete(u,'land',world);this.log(u,'接地，减速脱离跑道',world.time);
         }
         if(d< -r.length+300&& !s.grounded){this.goAround(u,world,'剩余跑道不足');return false;}
       }
       if(!s.grounded)return false;
     }
-    u.throttle=0;u.afterburner=0;u.bank=0;u.loadFactor=1;u.maneuverMode=s.message??s.phase;
+    u.position[2]=a.elevation+(u.profile.groundClearanceM??1.6);u.throttle=0;u.afterburner=0;u.bank=0;u.loadFactor=1;u.maneuverMode=s.message??s.phase;
     if(s.phase==='waiting_gate'&&!world.units.some(v=>v.id!==u.id&&v.alive&&distance(v.position,a.nodes[s.destination])<25)){s.route=taxiPath(a,s.node,s.destination).slice(1);s.phase='taxi';}
     if(s.phase==='holding'&&(s.lineUp||s.depart)&&this.traffic.permitted(u,'line_up')){
       if(!this.occupied(r,world.units,u.id)){this.leases[r.stripId]=u.id;s.route=[r.entry];s.phase='lineup_taxi';}else s.message='跑道占用，保持等待';
@@ -251,7 +251,7 @@ export class AirportOperations{
     if(s.phase==='takeoff_roll'){
       if(this.occupied(r,world.units,u.id,{includeApproach:false})){s.phase='rejected';this.log(u,'跑道侵入，中断起飞',world.time);}
       else{
-        const power=u.departurePowerPlan,throttle=power?.throttle??1,afterburner=power?.afterburner??1;
+        const power=u.departurePowerPlan,throttle=power?.throttle??1,afterburner=hasAfterburner(u.profile)?power?.afterburner??1:0;
         const speed=u.speed,airSpeed=Math.max(0,speed+windComponents(a.weather,r.headingDeg).headwindMps),thrust=thrustAt(u.profile,a.elevation,Math.max(1,airSpeed),afterburner)*dryFraction(u.profile,throttle),drag=dragAt(u.profile,a.elevation,airSpeed,.2);
         const rolling=(a.weather.runwayCondition==='wet'?.025:.02)*u.profile.mass*G;
         u.speed=Math.max(0,speed+(thrust-drag-rolling)/u.profile.mass*dt);s.heading=r.headingDeg*Math.PI/180;u.throttle=throttle;u.afterburner=afterburner;

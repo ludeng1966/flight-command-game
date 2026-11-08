@@ -6,7 +6,7 @@ export function energyEnvelope(p,h,V,configuration){
   const vs=Math.sqrt(2*p.mass*G/(rho*p.area*a.clMax)),margin=1.16;
   const military=thrustAt(p,h,V),maximum=thrustAt(p,h,V,1);
   const parasite=q*p.area*(a.cd0+configurationDrag(configuration,p)),induced=a.k*(p.mass*G)**2/(q*p.area),dragFor=n=>parasite+induced*n*n;
-  const liftG=Math.min(p.maxG*.9,q*p.area*a.clMax/(p.mass*G*margin*margin));
+  const liftG=Math.min(a.maxG*.9,q*p.area*a.clMax/(p.mass*G*margin*margin));
   const sustainable=thrust=>{
     return clamp(Math.sqrt(Math.max(0,(thrust-parasite)/Math.max(1,induced))),0,liftG);
   };
@@ -21,7 +21,7 @@ export function energyEnvelope(p,h,V,configuration){
 }
 
 export function controlEnergy(u,{gamma,loadFactor,targetSpeed,heightError=0,urgent=false,envelope,previewClimb=0},dt=.1){
-  dt=clamp(dt,0,.25);const p=u.profile,V=Math.max(20,Math.hypot(...u.velocity)),base=envelope??energyEnvelope(p,u.position[2],V),plan=u.pilotPowerPlan?.active?u.pilotPowerPlan:u.departurePowerPlan;
+  dt=clamp(dt,0,.25);const p=u.profile,V=Math.max(20,Math.hypot(...u.velocity)),base=envelope??energyEnvelope(p,u.position[2],V,u),plan=u.pilotPowerPlan?.active?u.pilotPowerPlan:u.departurePowerPlan;
   const limited=plan?.active&&(plan.executionId||u.position[2]<plan.altitudeM-50)&&V>base.safeSpeed(1)*.95&&u.flightState!=='stall-recovery';
   if(plan?.active&&!limited)plan.active=false;
   const ceiling=limited?thrustAt(p,u.position[2],V,plan.afterburner)*dryFraction(p,plan.throttle):base.maximum;

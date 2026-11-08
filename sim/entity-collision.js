@@ -1,9 +1,10 @@
 import {basis,cross,norm,dot} from './flight.js';
 const subtract=(a,b)=>a.map((v,i)=>v-b[i]);
-export function aircraftBox(u){const b=basis(u);return {position:u.position,axes:[b.forward,norm(cross(b.forward,b.up)),b.up],half:[7.5,5,1.5]};}
+export function aircraftBox(u){const b=basis(u),d=u.profile?.dimensions;return {position:u.position,axes:[b.forward,norm(cross(b.forward,b.up)),b.up],half:d?[d.lengthM/2,d.wingspanM/2,d.bodyHeightM/2]:[7.5,5,1.5]};}
 export function terrainBodyCollision(u,before,terrain){
   if(!terrain?.collision)return null;const box=aircraftBox(u);
-  for(const [forward,side]of [[7,0],[-6,0],[0,4.8],[0,-4.8],[0,0]]){
+  const [length,span]=box.half;
+  for(const [forward,side]of [[length*.93,0],[-length*.8,0],[0,span*.96],[0,-span*.96],[0,0]]){
     const offset=box.axes[0].map((v,i)=>v*forward+box.axes[1][i]*side-box.axes[2][i]*.5),start=before.map((v,i)=>v+offset[i]),end=u.position.map((v,i)=>v+offset[i]);
     const hit=terrain.collision(start,end);if(hit)return hit.map((v,i)=>v-offset[i]);
   }

@@ -23,7 +23,7 @@ export function hasAfterburner(p){return p.engine?.afterburnerAvailable!==false&
 export function aeroAt(p,h,v,configuration){
   const mach=v/atmosphere(h).soundSpeed,m=p.machPolar;
   const cfg=p.configurations?.[configuration?.flaps],wave=p.transonicDrag,compressibility=wave?wave.coefficient*Math.max(0,mach-wave.criticalMach)**4:0;
-  return {mach,cl0:cfg?.cl0??p.cl0,clAlpha:p.clAlpha*machFactor(m?.['2'],mach),clMax:(cfg?.clMax??p.clMax)*machFactor(m?.['3'],mach),
+  return {mach,maxG:cfg?.maxG??p.maxG,cl0:cfg?.cl0??p.cl0,clAlpha:p.clAlpha*machFactor(m?.['2'],mach),clMax:(cfg?.clMax??p.clMax)*machFactor(m?.['3'],mach),
     cd0:p.cd0+(p.storesCd0??0)+compressibility+(p.waveDrag??[]).reduce((sum,w)=>sum+w.cd*(machFactor(w.factor,mach)-1),0),
     k:p.k,criticalAlpha:(p.criticalAlpha??29*Math.PI/180)*machFactor(m?.['5'],mach)};
 }
@@ -80,7 +80,7 @@ export function stepFlight(u,dt) {
   const bankResponse=1-Math.exp(-dt/(p.bankResponseSeconds??.18));
   u.bank+=clamp((u.control.bank-u.bank)*bankResponse,-p.bankRate*dt,p.bankRate*dt);
   // 航路可以请求超出稳定升力区的迎角；越过临界后升力下降、阻力增加。
-  const maxCl=Math.min(aero.clMax*1.35,(u.control.maxG??p.maxG)*p.mass*G/(q*p.area));
+  const maxCl=Math.min(aero.clMax*1.35,Math.min(u.control.maxG??p.maxG,p.maxG,aero.maxG)*p.mass*G/(q*p.area));
   u.cl+=clamp(clamp(u.control.cl,0,maxCl)-u.cl,-p.clRate*dt,p.clRate*dt);
   u.cl=clamp(u.cl,0,maxCl);
   const excess=Math.max(0,u.cl/aero.clMax-1);
