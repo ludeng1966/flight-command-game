@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "测试：准备本地输出目录",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "-e",
+        "require('node:fs').mkdirSync('.game-server',{recursive:true})"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "游戏：运行自动化测试",
+      "type": "shell",
+      "command": "node --test tests/*.test.mjs",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "dependsOn": "测试：准备本地输出目录"
+    },
+    {
+      "label": "Git：检查工作区",
+      "type": "process",
+      "command": "git",
+      "args": [
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
