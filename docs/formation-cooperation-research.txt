@@ -1,6 +1,8 @@
 飞机编队与合作模式研究及游戏接入
 日期：2026-11-07（Asia/Shanghai）
 
+历史验证说明：本文部分验证使用已停用的本地 2B 实验；当前产品只支持云端模型，本地配置不再提供。
+
 研究范围
 面向当前空中指挥沙盘的口令理解。队形是相对位置关系，协同是职责与任务关系；二者可以组合。采用公开训练资料与历史材料，具体字段是本游戏的工程映射，不声称复现某军种全部条令。未引用教材中的固定间隔、角度与过载作为所有机型的默认值。
 
@@ -35,6 +37,6 @@ server/pilot-handbook.mjs：统一检索入口；云端指挥官、本地指挥�
 研究阶段只增加知识、解释、检查和显示。后续已接入空中双机的集合、跟随和六种队形位置控制，详见docs/formation-flight-control.txt。高级协同作战、传感器或武器仍未接入。不会因为教材中出现一种战术而主动改变玩家作战意图。
 
 实测与修正
-node tools/benchmark-formations.mjs cloud / local：分别真实调用Qwen3.7-Flash与本地Qwen3.5-2B-Q4_K_M。9例包括右梯队与间隔、横队、双机楔形、自由配合、长僚分配、攻击/掩护对象分离、萨奇剪、四指人数不足和导航回归；最终两者均9/9。日志位于.game-server/formation-benchmark-{cloud,local}.json。
+node tools/benchmark-formations.mjs cloud：真实调用Qwen3.7-Flash。9例包括右梯队与间隔、横队、双机楔形、自由配合、长僚分配、攻击/掩护对象分离、萨奇剪、四指人数不足和导航回归；日志位于.game-server/formation-benchmark-cloud.json。早期本地 2B 对照已停用。
 初测发现2B会混用多例参数；改为按任务选一个例子。另发现llama.cpp的可选属性语法按schema顺序生成：示例若先写headingDeg，而schema把altitudeM放在前面，后者会被跳过；间隔字段同理。现把本地schema属性顺序与语义示例对齐，导航漏高度与编队漏间隔的回归均通过。这些是有限用例的识别验证，不代表任意自然语言或真实协同作战均已通过验收。
 事件2B对所需编队执行器尚未接入的任务，输出限定为notify_commander；能力状态由程序确认，模型负责解释任务并报告缺失，不能误报已组成编队。正常飞行的事件策略保持不变。node tools/benchmark-formation-pilot.mjs使用合成任务通过游戏HTTP接口核验双机自由配合、萨奇剪和掩护；每次结束卸载到sleeping，专用显存归零。

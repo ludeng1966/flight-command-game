@@ -1,66 +1,46 @@
-# Qwen 指挥服务与本地 2B 实验
+# Qwen 指挥服务（云端）
 
-## 当前默认：3.7-Flash 指挥官 + 程序飞行 + 2B检查后复述
+## 当前默认：3.7-Flash 指挥官 + 程序飞行 + 结果检查后复述
 
-本机和 .env.example 设置 AI_PROVIDER=hybrid。双击 start_game.cmd 启动，Qwen3.7-Flash理解玩家口令，程序完成气动预演、地形检查、装订和连续控制。每次指令得到程序结果后，POST /api/tactical/pilot/result 唤醒本地2B检查，再复述关键参数与结果。所有飞机共用一份模型、一个串行队列，逐机检查。
+本机和 .env.example 固定 AI_PROVIDER=cloud。双击 start_game.cmd 启动，Qwen3.7-Flash 理解玩家口令，程序完成气动预演、地形检查、装订和连续控制。每次指令得到程序结果后，POST /api/tactical/pilot/result 唤醒飞行员模型（默认 Flash）检查，再复述关键参数与结果。所有飞机共用一个串行队列，逐机检查。
 
 检查提供明确的指令、实际装订值、当前测量值、时间和任务版本；区分执行中、达到目标、无法执行、装订不一致和只读报告。程序校验单位、数值、对象和结果，不允许把刚装订说成已经到达；失败最多修复一次，仍失败则明确显示检查未完成，飞机继续已装订任务。人工改令、切换单位或重置会使旧复述作废。
 
-2B检查后立即卸载。正常航路不持续推理；每秒的轻量事件检查不使用模型，只在新威胁、未检查过的新战术任务或持续航路失败时调用 /api/tactical/pilot/assess。已检查的同一任务不重复唤醒。模型报告和事件建议不会直接改写航点、物理状态或飞控输入。
+检查完成后立即结束本次模型调用。正常航路不持续推理；每秒的轻量事件检查不使用模型，只在新威胁、未检查过的新战术任务或持续航路失败时调用 /api/tactical/pilot/assess。已检查的同一任务不重复唤醒。模型报告和事件建议不会直接改写航点、物理状态或飞控输入。
 
 默认显示km/h、m、km，可切换kt、ft、NM。省略单位的命令按context.unitSystem理解；明确单位优先，API始终使用SI。马赫数是无量纲比值，两套单位均使用M。单位转换由sim/units.js统一实现，界面、航点、通联和结果检查共用。
 通联高度按10米/10英尺、速度按整数播报，避免换算小数冗长。客户端先完成指挥员通联，再把实际`speechText`捕获为`commanderMessage`提交给飞行员；任务规划、离场方案、结果检查和持续执行监控均使用该通话，不转交玩家原始输入。通话中的数字由程序解码换算成SI并绑定到模型输出字段，防止090被读成270或重新换算错误。物理状态和未下新令的计划不因格式化改变。详见[指挥员与飞行员接令说明](../docs/commander-pilot-radio.txt)。
 
-GET /api/health 的pilotAssistant显示休眠/加载/结果检查状态、模型调用次数、resultChecks与专用显存。改用AI_PROVIDER=cloud可停用本地2B。VRAM监控在1900 MiB采样保护线上停止模型，不是驱动硬分配上限。
+GET /api/health 的pilotAssistant显示休眠/加载/结果检查状态、模型调用次数与resultChecks；服务固定使用云端模型，不加载本地模型。
 
-2026-11-07真实验证：3.7-Flash和2B在Edge浏览器完成英制、公制各一条省略单位的指令；从下令到检查后复述约12秒（含云端理解、逐点预览、冷加载、推理）。本地2B的独立结果检查约2.8–3.1秒，执行中、达到目标、装订不一致和无法执行均覆盖。专用显存采样峰值1338.78 MiB（约1.31 GiB），结束后进程退出、专用显存归零。后续40秒模拟飞行没有新增模型调用。马赫显示与单位切换不改变物理状态，浏览器无运行时错误。这是结果检查与资源验证，尚不能证明战术飞行能力改善。
+2026-11-07 真实验证：3.7-Flash 在 Edge 浏览器完成英制、公制各一条省略单位的指令；从下令到检查后复述约 12 秒（含云端理解、逐点预览与推理）。这是结果检查与云端链路验证，尚不能证明战术飞行能力改善。
 
 本机记录：.game-server/pilot-result-live.json、.game-server/units-result-browser.json；截图：.game-server/units-result-browser.png。这些目录被Git忽略。
 
-本地实验的真实测试记录保存在 `.game-server/local-ai-benchmark.json`，混合分工对照记录保存在 `.game-server/hybrid-evaluation.json`。这些测试主要覆盖口令解析与复诵，不能用来判断 2B 飞行员的接敌和战术机动能力。后续战术评估需要目标数据、可执行机动和任务结果指标；当前未据此判定小模型没有战术价值。
-
 ## 飞行员可读文件
 
-航路责任由 `sim/command-planning.js` 统一声明，编译结果的 `execution.planning` 包含每条命令的航路类型、航点提供方、是否要求玩家路线、战术选择责任和缺失信息，界面直接展示。Flash读取 `12_谁来规划航路.txt`；2B精简请求不额外加载这份长说明。
+航路责任由 `sim/command-planning.js` 统一声明，编译结果的 `execution.planning` 包含每条命令的航路类型、航点提供方、是否要求玩家路线、战术选择责任和缺失信息，界面直接展示。Flash读取 `12_谁来规划航路.txt`。
 
 巡航可直接执行，无现有航路时保持当前航向；有航路时保留各航点高度，不因巡航改为单一高度。标记点带有目标高度，玩家另行明确高度时优先。靶眼导航使用 `mode=bullseye`、`bearingDeg`、`rangeM`，由程序按正北0度、顺时针方位和水平距离换算，模型不计算中间航点。场景可配置 `bullseye: { name: "训练靶眼", position: [eastM, northM, referenceAltitudeM] }`；未配置时请求靶眼基准，不借用本机或地图标记。靶眼坐标通报不触发导航，明确接敌才是接敌意图；现有战术/雷达能力状态继续由执行层检查。
 
-`data/pilot-handbook/` 包括职责、数据、口令、编队、机场、结果检查、统一单位和航路分工说明。新增FAA与ALSSA公开词库的2188条中文简释，并补充47条本游戏易混解释、自动索引全部游戏意图。完整速查在14、15号文件；指挥员及飞行员的任务规划、起飞方案、事件判断、结果复述请求均会附带相关词义。Flash每次最多14条/4200字符，本地2B路径最多4条/900字符，额外片段不触发模型加载。`knowledgeUsed`中的`aviation_terms.termIds`记录实际注入的词条。词库覆盖范围、来源及构建方法见[航空术语说明](../docs/aviation-terms.txt)。
+`data/pilot-handbook/` 包括职责、数据、口令、编队、机场、结果检查、统一单位和航路分工说明。新增FAA与ALSSA公开词库的2188条中文简释，并补充47条本游戏易混解释、自动索引全部游戏意图。完整速查在14、15号文件；指挥员及飞行员的任务规划、起飞方案、事件判断、结果复述请求均会附带相关词义。Flash每次最多14条/4200字符，额外片段不触发模型加载。`knowledgeUsed`中的`aviation_terms.termIds`记录实际注入的词条。词库覆盖范围、来源及构建方法见[航空术语说明](../docs/aviation-terms.txt)。
 
-云端指挥官和本地模型请求都会按口令读取相关文件，并在响应的 `knowledgeUsed` 中列出本次加载的文件。默认导航读取职责与数据说明；涉及接敌或军事术语时读取职责、口令和动作说明。文件改动在下一次请求生效。
+云端指挥官请求会按口令读取相关文件，并在响应的 `knowledgeUsed` 中列出本次加载的文件。默认导航读取职责与数据说明；涉及接敌或军事术语时读取职责、口令和动作说明。文件改动在下一次请求生效。
 
 `GET /api/tactical/handbook` 列出文件；`GET /api/tactical/handbook?id=terms` 读取某份文件。仅支持列表中的文件ID。这里提供的是阅读和术语依据，不表示战术执行器已经实现。
 `GET /api/tactical/terms`返回词库数量、版本和来源；加`?q=FOX%20THREE&limit=6`查询相关简释。检索只读本地文件，不调用模型、不占GPU，也不需要新增外部服务。
 
-## 保留的本地 2B 实验（默认停用）
+## 本地模型实验（已停用）
 
-显式设置 `AI_PROVIDER=local` 后，启动器可自动加载一份 Qwen3.5-2B Q4_K_M；指挥官和飞行员通过串行队列共用该进程。无需启动 LM Studio 或 Ollama。此模式尚未通过完整真实口令语义验收，仅供实验。
+当前产品与文档只支持云端模型。早期本地 2B 实验已停止支持，不再提供安装、配置或基准步骤；相关代码、测试和历史记录保留在仓库中，但不要在新的部署中启用。
 
-首次在其他机器部署，先执行 `powershell -ExecutionPolicy Bypass -File tools/setup-local-ai.ps1`。安装脚本下载固定版本的 llama.cpp b12189 Windows Vulkan 与固定提交的 GGUF，校验两者 SHA256。资产保存在被 Git 忽略、不能通过游戏静态服务访问的 `.local-ai/`。模型文件约 1.28 GB，磁盘大小不代表运行显存。
-
-```dotenv
-AI_PROVIDER=local
-LOCAL_AI_GPU_LAYERS=99
-```
-
-模型随游戏服务启动；游戏页面自动轮询加载状态，右侧显示 AI 专用显存和本次进程峰值。关闭网页只关闭客户端；双击 `stop_game.cmd` 可关闭游戏服务并释放模型，也可使用启动器 `-Restart` 重启。后台独立监控进程会在父游戏服务退出后结束对应模型进程，避免重启遗留模型。
-
-- `POST /api/tactical/interpret`：指挥官模型理解口令，精简输出转换为原有军事协议并完整校验。
-- `POST /api/tactical/pilot`：同一模型以飞行员角色核对并独立复诵标准化任务。对象、动作、数量或关键参数不一致则拒绝装订。
-- 飞行员通过核对后，沿用原有气动预演、地形检查和批次提交。10 Hz 自动驾驶和 60 Hz 物理积分不等待模型。
-- 显存配置：4096 token 上下文、一个推理槽、128 batch / 64 microbatch、关闭思考输出。没有加载视觉投影或语音模型。
-- 显存测量：Windows `GPU Process Memory` 的目标 PID `DedicatedUsage`，每次查询后间隔 500 ms 采样，含该进程的驱动/计算分配；共享系统内存单独记录。超过 1900 MiB 保护线停止推理，监控失败也停止。此为采样保护，并非驱动提供的硬分配上限。降低 `LOCAL_AI_GPU_LAYERS` 可让更多权重使用系统内存。
-- 本地推理错误直接显示，不自动改用云端。语音转写仍使用下面配置的百炼 ASR；直接文字指令不需要云端密钥。
-- 双机集合、跟随和六种队形由程序飞控执行；高级协同、武器、雷达与条件调度仍按缺失能力处理，小模型不会补齐仿真功能。详见[双机控制说明](../docs/formation-flight-control.txt)。
+历史第三方组件：llama.cpp（MIT）、Qwen3.5-2B（Apache-2.0）、Unsloth GGUF 量化。历史对照数据保存在 `.game-server/local-ai-benchmark.json` 与 `.game-server/hybrid-evaluation.json`，仅用于说明早期实验，不代表当前支持范围。
 
 回归：`node --test tests/*.test.mjs`。
-真实模型基准：游戏就绪后运行 `node tools/benchmark-local-ai.mjs`，结果写入 `.game-server/local-ai-benchmark.json`。基准包括口令语义、飞行员核对、任务应用、240 秒气动飞行与进程显存采样。准确率仅代表该测试集，不能代表任意自由口令。
 
-来源与许可：[llama.cpp / MIT](https://github.com/ggml-org/llama.cpp)、[Qwen3.5-2B / Apache-2.0](https://huggingface.co/Qwen/Qwen3.5-2B)、[Unsloth GGUF 量化](https://huggingface.co/unsloth/Qwen3.5-2B-GGUF)。
+## 云端配置
 
-## 可选云端模式
-
-设置 `AI_PROVIDER=cloud` 并重启即可使用原有云端口令解释器。以下介绍云端与语音识别配置。
+服务固定使用云端模式，`.env.example` 已设置 `AI_PROVIDER=cloud`，无需修改。以下介绍云端与语音识别配置。
 
 链路：浏览器麦克风 → 单声道 PCM16 WAV → 本地 `/api/voice/transcribe` → `qwen3-asr-flash` → 可编辑识别文字 → `/api/tactical/interpret` → `qwen3.7-flash` → 校验 → 原有 Pilot / Flight。
 

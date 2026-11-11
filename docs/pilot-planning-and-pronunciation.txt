@@ -7,7 +7,7 @@
 
 接口：POST /api/tactical/pilot/plan 为通用意图/任务规划；
 POST /api/tactical/pilot/plan-departure 为起飞推力与离场路线规划。
-Flash 为默认飞行员；2B 仍显示暂不可下载，所有新接口同样检查所选模型。
+飞行员固定使用云端 Flash；2B 选项标记为不可用，所有新接口同样检查所选模型。
 健康状态 commandPlanning=true，客户端因此使用统一飞行员规划流程。
 
 减推力起飞例子：飞行员输出 customPlan 的油门、加力、爬升速度、初始离场高度、航路长度。
