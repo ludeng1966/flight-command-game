@@ -4,6 +4,8 @@
 
 GitHub 已接通，源码已首次上传，本机同步工具已提供。各成员在自己的电脑初始化并开启；程序把已保存的修改上传到独立个人备份分支，正式任务仍按评审流程合并。
 
+项目方向、总路线、换引擎前的短期计划与分工见 [ROADMAP.md](ROADMAP.md)。新增第三方代码、数据或素材时记录来源、版本与许可；不要把 AGPL/GPL 内容混入声明为 MIT 的部分，详见 [LICENSE-RISKS.md](LICENSE-RISKS.md)。
+
 ## 常用入口
 
 - [任务与讨论 Issues](https://github.com/ludeng1966/flight-command-game/issues)
