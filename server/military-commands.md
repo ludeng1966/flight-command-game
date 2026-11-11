@@ -65,7 +65,7 @@
 
 队形 `formation` 支持：梯队 `echelon`、纵队 `trail`、横队 `line_abreast`、战斗疏开 `combat_spread`、楔形 `wedge`、战斗翼队 `fighting_wing`、四指 `finger_four`。四指需四机，两机可用楔形。协同 `cooperate.mode` 使用相互支援 `mutual_support`、双机自由配合 `loose_deuce`、萨奇剪 `thach_weave`；夹击、护航、掩护仍使用各自意图。
 
-`targetId` 是参照或受保护机，`rangeM` 保存明确间隔，`side` 为 `left/right`，角色使用 `lead/wingman/engaged/free`。Flash 按需读取完整编队手册，2B 读取不足700字的速记；本地指挥官仅附一个相关短例子。来源及工程映射见 [研究说明](../docs/formation-cooperation-research.txt)。
+`targetId` 是参照或受保护机，`rangeM` 保存明确间隔，`side` 为 `left/right`，角色使用 `lead/wingman/engaged/free`。Flash 按需读取完整编队手册，口令解析只附一个相关短例子。来源及工程映射见 [研究说明](../docs/formation-cooperation-research.txt)。
 
 当前实际支持六种双机队形，四指暂不执行。间隔限400–5000米；默认1200米，默认右侧或沿用现有关系。首次“全体改队形”使用选中机作长机，之后保留原长机。长机继续原任务，僚机通过真实飞控追赶，左右换位从长机后方进行。给僚机独立命令可退出编队。见[双机控制说明](../docs/formation-flight-control.txt)。
 
