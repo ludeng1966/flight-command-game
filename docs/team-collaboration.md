@@ -1,13 +1,13 @@
 # 飞行指挥游戏小组协作流程
 
-统一采用 **GitHub 私有仓库＋本机同步程序**。资料空间用于安排任务、讨论和查看入口；GitHub 保存源码、版本和代码评审；成员在各自电脑运行游戏。本阶段不购买云服务器或域名。
+自 2026 年 11 月 11 日起，所有项目协作统一使用 **GitHub＋本机同步程序**。任务与讨论放在 Issues，代码评审放在 Pull Requests，流程与项目说明放在仓库 docs。成员在各自电脑运行游戏，本阶段不购买云服务器或域名。
 
 GitHub 已接通，源码已首次上传，本机同步工具已提供。各成员在自己的电脑初始化并开启；程序把已保存的修改上传到独立个人备份分支，正式任务仍按评审流程合并。
 
 ## 常用入口
 
-- [小组资料空间中的协作流程](https://chatgpt.com/space/page_38dc6ef2d96481918b5f7b3442330928)
-- [私有源码仓库](https://github.com/ludeng1966/flight-command-game)
+- [任务与讨论 Issues](https://github.com/ludeng1966/flight-command-game/issues)
+- [源码仓库](https://github.com/ludeng1966/flight-command-game)
 - [代码修改与评审](https://github.com/ludeng1966/flight-command-game/pulls)
 - [运行和本机配置说明](../server/README.md)
 
@@ -15,12 +15,14 @@ GitHub 已接通，源码已首次上传，本机同步工具已提供。各成�
 
 仓库维护人目前为 `ludeng1966`，负责邀请成员和合并修改。每项任务指定一名负责人；涉及游戏行为的修改，请另一名组员看过再合并。评审人可以轮换，小范围改错字、补说明可由维护人检查后直接提交。
 
-每位成员使用自己的 GitHub 账号和本地工作目录。空间与仓库分别邀请成员；能进入空间不代表已经能访问私有代码。成员需要从 ChatGPT 操作仓库时，使用各自账号连接 GitHub。
+每位成员使用自己的 GitHub 账号和本地工作目录，所有任务决定记录在相关 Issue 或 PR 中。仓库当前公开；写入仍须接受协作者邀请。
+
+仓库属于 ludeng1966 的个人账号，目前仅所有者有管理员权限，协作者为读写权限。beacon-of-science 和 liyixin1023 已加入；XY0xiaoyu 和 cyberwalker0419 已收到读写邀请，接受后生效。若需要多人管理员，需另行迁移到 GitHub 组织仓库。
 
 ## 成员第一次加入
 
-1. 把 GitHub 用户名交给维护人，由维护人邀请加入私有仓库，并接受邀请。
-2. 接受资料空间的邀请，阅读本流程。
+1. 把 GitHub 用户名交给维护人，由维护人邀请加入仓库，并接受邀请。
+2. 在 GitHub 阅读本流程，并在 Issues 中确认自己的任务。
 3. 在自己的电脑克隆仓库，按运行说明准备 Node、依赖和本机配置。
 4. 用一个小任务完成一次“修改、推送、评审、合并”，再开始较大的工作。
 
@@ -33,9 +35,9 @@ cd flight-command-game
 
 ## 每项任务怎么做
 
-**空间里领任务 → 建个人任务分支 → 本机修改与同步 → 提交合并请求 → 组员检查 → 合并到 main。**
+**GitHub Issues 里领任务 → 建个人任务分支 → 本机修改与同步 → 提交合并请求 → 组员检查 → 合并到 main。**
 
-开始前在空间写清四件事：要做什么、谁负责、主要改哪些文件、怎样算完成。状态只用“待做、进行中、待评审、已合并”。同时改同一模块时，先在任务下说明各自负责的文件。
+开始前在 Issue 写清四件事：要做什么、谁负责、主要改哪些文件、怎样算完成。状态只用“待做、进行中、待评审、已合并”。同时改同一模块时，先在 Issue 评论中说明各自负责的文件。
 
 本地工作区没有未提交修改时，更新 `main`，再为本次任务建立分支：
 
@@ -64,7 +66,9 @@ git push -u origin HEAD
 程序入口为 `tools/local-sync.mjs`，配置与日志保存在本机 Git 目录内，不进入源码仓库。维护人电脑使用 `private` 远端；新克隆的目录使用 `origin`。每位成员首次设置时，在项目目录运行下面的命令，并把用户名换成自己的 GitHub 用户名：
 
 ```powershell
+git credential-manager github login --username 你的用户名 --browser
 powershell -NoProfile -ExecutionPolicy Bypass -File .\sync_project.ps1 -Action Init -Member 你的用户名 -Remote origin
+powershell -NoProfile -ExecutionPolicy Bypass -File .\sync_project.ps1 -Action Once
 ```
 
 初始化会确认当时已有的源代码目录和根目录文件。此后双击 `start_sync.cmd` 开始、`sync_status.cmd` 查看状态、`stop_sync.cmd` 停止。工具需要本机 Node 和 Git；首次推送时先完成自己的 GitHub 登录。同步不会设置开机自启动，关机后下次需重新开启。
@@ -96,7 +100,7 @@ node tools/local-sync.mjs approve --path 新目录
 
 ## 评审和合并
 
-任务准备好后，从自己的任务分支向 `main` 发起 Pull Request，并在空间任务下贴上链接。描述用下面四行即可：
+任务准备好后，从自己的任务分支向 `main` 发起 Pull Request，并在 PR 中用 Closes #议题编号 关联对应 Issue。描述用下面四行即可：
 
 ```text
 改了什么：
@@ -113,7 +117,7 @@ node --test tests/相关模块.test.mjs
 node --test tests/*.test.mjs
 ```
 
-由另一名组员查看差异和验证结果，代码问题直接在 PR 对应位置评论；空间里记录任务决定和最终结果。维护人确认后使用 **Squash and merge**，把 WIP 提交整理成一次任务提交。先保留任务分支，后续统一清理。这里的一人评审是小组约定，本次没有配置付费保护规则或自动审批。
+由另一名组员查看差异和验证结果，代码问题直接在 PR 对应位置评论；Issue 和 PR 中记录任务决定和最终结果。维护人确认后使用 **Squash and merge**，把 WIP 提交整理成一次任务提交。先保留任务分支，后续统一清理。这里的一人评审是小组约定，本次没有配置付费保护规则或自动审批。
 
 合并完成后，各成员在工作区干净时更新 `main`，后续任务从新的 `main` 建分支。已经 squash 合并的旧任务分支不继续用于下一个任务。
 
@@ -131,14 +135,14 @@ node --test tests/*.test.mjs
 
 ## 当前完成情况
 
-- [x] 建立 GitHub 私有仓库，完成首次源码上传。
+- [x] 建立 GitHub 仓库并完成源码上传；当前可见性为公开。
 - [x] 维护人账号和本机 Git 已连接。
 - [x] 确定小组协作流程与本机同步规则。
-- [ ] 收集组员 GitHub 用户名，分别邀请加入仓库与空间。
+- [x] 已邀请四名组员加入 GitHub 仓库；新成员需自行接受邀请。
 - [x] 提供本机同步工具、启停入口和状态日志；每位成员分别初始化并开启。
 - [ ] 由第二名成员完成一次任务、评审、合并和本机运行。
 
-后续修改这份流程时，仓库文档和空间页面一并更新，保持约定一致。
+后续以 GitHub 仓库内这份文档为准，所有任务、讨论、评审与流程更新都在 GitHub 完成。
 
 ## 参考
 

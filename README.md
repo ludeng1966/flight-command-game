@@ -1,5 +1,7 @@
 # WTACRP — 战争雷霆回放 → Ace Combat 风格 3D 播放器
 
+项目协作统一使用 GitHub：[协作与自动同步流程](docs/team-collaboration.md) · [任务与讨论](https://github.com/ludeng1966/flight-command-game/issues) · [代码评审](https://github.com/ludeng1966/flight-command-game/pulls)。
+
 把《战争雷霆》的 `.wrpl` 回放变成一段可拖动的极简 3D 演出：航迹、击杀、地面单位、地形等高线与陆水掩膜、可切换机位与播放控制。解析全部在浏览器内完成，页面本身不发任何网络请求。
 
 [English](#english) · [回放格式](docs/REPLAY-FORMAT.md) · [解码](docs/REPLAY-DECODE.md) · [数据说明](docs/DATA-NOTES.md)
