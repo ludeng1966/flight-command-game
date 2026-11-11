@@ -26,3 +26,6 @@ Thumbs.db
 !.env.example
 .game-server/
 .local-ai/
+
+# local project prompt (kept on each machine)
+CLAUDE.md
