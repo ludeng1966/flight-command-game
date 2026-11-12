@@ -1,5 +1,5 @@
 import {altitudeMeters} from '../sim/units.js';
-import {pickWaypoint,pickUnit,pickRouteSegment,pointOnPlane,spaceWaypoint,cameraDistanceTo,verticalDragScale,projectLive,previewWaypoint} from '../three3d/scene.js';
+import {pickWaypoint,pickUnit,pickRouteSegment,pointOnPlane,pointOnTerrain,spaceWaypoint,cameraDistanceTo,verticalDragScale,projectLive,previewWaypoint} from '../three3d/scene.js';
 import {showSoft,hideSoft} from './ui-motion.js';
 import {routeDraft} from './route-replanner.js';
 import {RoutePreview,estimateRoute} from './route-preview.js';
@@ -8,7 +8,7 @@ import {simplifySketch,snapSketchPoint,pointDistance,continueSketchRoute} from '
 // 所有地图航路输入只在此处处理；观察模式没有编辑入口。
 export function initRouteEditor({canvas,getWorld,getSelected,onChange,onCommitted=()=>{},onPointPreview=()=>{},message,planner,replanner}){
   const stage=canvas.parentNode,modeButton=document.getElementById('route-edit'),toolbar=document.getElementById('waypoint-tools'),info=document.getElementById('placement-info');
-  let mode=false,capsHeld=false,gesture=null,selection=null,hover=null,mouse=null,rightStart=null,worldRef=getWorld(),selectedRef=getSelected(),clicks=[];
+  let mode=false,capsHeld=false,gesture=null,selection=null,hover=null,mouse=null,rightStart=null,worldRef=getWorld(),selectedRef=getSelected(),clicks=[],lastRightAt=0,lastContextAt=0;
   const unit=()=>getWorld().units.find(u=>u.id===getSelected());
   const movingRoute=(u,ref,p)=>u.waypoints.map(w=>w===ref||u.routeLoop&&w.loopIndex===ref.loopIndex?p:w.slice(0,3));
   function clearHover(){hover?.forecaster?.stop();hover=null;}
@@ -41,7 +41,8 @@ export function initRouteEditor({canvas,getWorld,getSelected,onChange,onCommitte
   }
   function updateHover(){
     if(!mode||gesture&&gesture.kind!=='place'||!mouse?.inside||unit().surface?.grounded)return;
-    const u=unit(),raw=spaceWaypoint(mouse.x,mouse.y,mouse.depth??cameraDistanceTo(u.position));
+    const u=unit(),ground=pointOnTerrain(mouse.x,mouse.y);
+    const raw=ground?[ground[0],ground[1],Math.max(u.position[2]??0,ground[2]+300)]:null;if(!raw)return;
     const targets=capsHeld&&u.waypoints.length>=3?[u.waypoints[0]]:[],anchor=capsHeld?u.waypoints.at(-1)??u.position:u.position,previous=capsHeld?u.waypoints.at(-2):null;
     const snapped=snap(raw,{anchor,previous,targets}),point=snapped.point;
     hover??={kind:'hover'};Object.assign(hover,{point,snap:snapped.kind,loop:snapped.kind==='point',route:capsHeld?[...u.waypoints,point]:[point]});if(validPoint(point))onPointPreview(point);
@@ -58,11 +59,12 @@ export function initRouteEditor({canvas,getWorld,getSelected,onChange,onCommitte
     const g=gesture;if(!g||g.committing)return;mouse={...mouse,x:e.clientX,y:e.clientY,inside:true};
     if(g.kind==='move'){
       const u=unit();if(!u.waypoints.includes(g.reference)){finish();message('该航点已通过，结束编辑');return;}
-      const raw=g.vertical?[g.anchor[0],g.anchor[1],g.anchor[2]+(g.startY-e.clientY)*g.scale]:pointOnPlane(e.clientX,e.clientY,g.anchor[2]);if(!raw)return;
+      const ground=g.vertical?null:pointOnTerrain(e.clientX,e.clientY);
+      const raw=g.vertical?[g.anchor[0],g.anchor[1],g.anchor[2]+(g.startY-e.clientY)*g.scale]:(ground?[ground[0],ground[1],Math.max(g.anchor[2],ground[2]+300)]:null);if(!raw)return;
       const targets=g.index===u.waypoints.length-1&&u.waypoints.length>=4?[u.waypoints[0]]:[],snapped=g.vertical?{point:raw}:snap(raw,{anchor:u.waypoints[g.index-1]??u.position,previous:u.waypoints[g.index-2],targets});
       g.point=snapped.point;g.snap=snapped.kind;g.loop=snapped.kind==='point';g.route=movingRoute(u,g.reference,g.point);
     }else if(g.kind==='draw'){
-      const raw=pointOnPlane(e.clientX,e.clientY,g.altitude);if(!raw)return;
+      const ground=pointOnTerrain(e.clientX,e.clientY),raw=ground?[ground[0],ground[1],Math.max(g.altitude,ground[2]+300)]:null;if(!raw)return;
       const last=g.samples.at(-1);if(Math.hypot(e.clientX-last.x,e.clientY-last.y)>5){g.stroke.push(raw);g.samples.push({x:e.clientX,y:e.clientY});g.moved=true;}
       const start=projectLive(g.stroke[0]),length=g.samples.reduce((sum,p,i)=>sum+(i?Math.hypot(p.x-g.samples[i-1].x,p.y-g.samples[i-1].y):0),0);
       g.loop=g.moved&&g.stroke.length>=4&&length>90&&start.visible&&Math.hypot(e.clientX-start.x,e.clientY-start.y)<16;
@@ -104,10 +106,20 @@ export function initRouteEditor({canvas,getWorld,getSelected,onChange,onCommitte
   canvas.addEventListener('pointermove',e=>{mouse={...mouse,x:e.clientX,y:e.clientY,inside:true};if(!mode)return;if(gesture){if(!gesture.committing)gesture.pendingMove={clientX:e.clientX,clientY:e.clientY};e.stopImmediatePropagation();}},true);
   canvas.addEventListener('pointerup',e=>{
     if(!mode)return;
-    if(e.button===2){e.preventDefault();e.stopImmediatePropagation();if(rightStart&&Math.hypot(e.clientX-rightStart[0],e.clientY-rightStart[1])<5){updateHover();const point=hover?.point;if(validPoint(point)){if(!capsHeld)clicks=[];clicks.push({point:point.slice(),append:capsHeld,loop:!!hover.loop,world:getWorld(),id:getSelected()});processClicks();}}rightStart=null;return;}
+    if(e.button===2){e.preventDefault();e.stopImmediatePropagation();if(performance.now()-lastContextAt<200){rightStart=null;return;}if(rightStart&&Math.hypot(e.clientX-rightStart[0],e.clientY-rightStart[1])<5){updateHover();const point=hover?.point;if(validPoint(point)){if(!capsHeld)clicks=[];clicks.push({point:point.slice(),append:capsHeld,loop:!!hover.loop,world:getWorld(),id:getSelected()});processClicks();lastRightAt=performance.now();}}rightStart=null;return;}
     if(gesture&&e.button===0&&gesture.kind!=='place'){e.stopImmediatePropagation();move(e);commit();}
   },true);
   canvas.addEventListener('pointercancel',()=>{finish();clearHover();},true);
+  // 右键兜底：某些设备/浏览器只发 contextmenu，不保证 pointerup。
+  canvas.addEventListener('contextmenu',e=>{
+    if(!mode)return;e.preventDefault();e.stopImmediatePropagation();
+    if(performance.now()-lastRightAt<200)return;
+    if(rightStart&&Math.hypot(e.clientX-rightStart[0],e.clientY-rightStart[1])>=5){rightStart=null;return;}
+    rightStart=null;lastContextAt=performance.now();
+    mouse={...mouse,x:e.clientX,y:e.clientY,inside:true,depth:mouse?.depth??cameraDistanceTo(unit().position)};
+    updateHover();const point=hover?.point;
+    if(validPoint(point)){if(!capsHeld)clicks=[];clicks.push({point:point.slice(),append:capsHeld,loop:!!hover.loop,world:getWorld(),id:getSelected()});processClicks();}
+  },true);
   canvas.addEventListener('wheel',e=>{
     if(!mode||!mouse?.inside)return;e.preventDefault();e.stopImmediatePropagation();
     if(gesture&&!gesture.committing){const g=gesture,direction=Math.sign(-e.deltaY);if(g.kind==='draw')g.altitude+=direction*altitudeMeters(100);else if(g.kind==='move')g.anchor[2]+=direction*altitudeMeters(100);move(mouse);}

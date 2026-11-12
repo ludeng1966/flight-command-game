@@ -6,6 +6,14 @@ import {TerrainHeight} from '../sim/terrain.js';
 import {basis} from '../sim/flight.js';
 import {initVoiceCommands} from './voice-command.js';
 import {initRouteEditor} from './route-editor.js';
+import {initClickFly} from './click-fly.js';
+import {initRadarTutorial} from './radar-tutorial.js';
+import {initEmergencyTutorial} from './emergency-tutorial.js';
+import {initAirspaceControl} from './airspace-control.js';
+import {initNavigationPanel} from './navigation-panel.js';
+import {resolveMap,mapAssetUrls} from './map-catalog.js';
+import {initTacticalOverlay} from './tactical-overlay.js';
+import {initUnitSelection} from './unit-selection.js';
 import {PlannerClient} from './planner-client.js';
 import {RouteReplanner} from './route-replanner.js';
 import {showSoft,hideSoft} from './ui-motion.js';
@@ -20,6 +28,7 @@ import {getUnitSystem,setUnitSystem,unitLabels,altitudeValue,altitudeMeters,form
 import {initAirportControl} from './airport-control.js';
 import {initAtcControl} from './atc-control.js';
 import {initRadarControl} from './radar-control.js';
+import {initRadarCommand} from './radar-command.js';
 import {initWeaponControl} from './weapon-control.js';
 import {initSettingsMemory} from './settings-store.js';
 import {initTrainingCoach} from './training-coach.js';
@@ -41,7 +50,7 @@ if(routeRadio)new ResizeObserver(entries=>canvas.parentNode.style.setProperty('-
 let mapPoint=null,voiceControl=null,routeEditor=null,messageTimer=null,planner=null,replanner=null,predictionAt=0,predictionBusy=false,pilotSupervisor=null;
 let radarPilot=null,attackPilot=null,rwrPilot=null,rwrControl=null;
 const cameraKeys=new Set();
-let airportControl=null,atcControl=null,radarControl=null,weaponControl=null,trainingCoach=null,missionReport=null,aircraftHud=null,authorityHud=null;
+let airportControl=null,atcControl=null,radarControl=null,radarCommand=null,weaponControl=null,trainingCoach=null,missionReport=null,aircraftHud=null,authorityHud=null,clickFly=null,radarTutorial=null,emergencyTutorial=null,airspaceControl=null,navigationPanel=null,tacticalOverlay=null,unitSelection=null;
 const cameraCodes=new Set(['KeyW','KeyA','KeyS','KeyD','ShiftLeft','ShiftRight','ControlLeft','ControlRight']);
 const editing=el=>el?.matches('input,textarea,select,[contenteditable="true"]');
 function cameraInput(){
@@ -64,12 +73,12 @@ function endPlacement(){routeEditor?.cancel();}
 function syncUnitControls(){
   const system=getUnitSystem();world.unitSystem=system;$('#unit-system').value=system;
 }
-function select(id){routeEditor?.cancel();endPlacement();if(selectedId!==id){world.prediction={points:[],warnings:[]};predictionAt=0;}selectedId=id;const u=selected();if(getFollowLiveId()!==null&&getFollowLiveId()!==id)setFollowLive(u.alive===false?null:u);syncUnitControls();trainingCoach?.onSelect(id);updateUI();}
+function select(id){routeEditor?.cancel();endPlacement();if(selectedId!==id){world.prediction={points:[],warnings:[]};predictionAt=0;}selectedId=id;unitSelection?.setPrimary(id);const u=selected();if(getFollowLiveId()!==null&&getFollowLiveId()!==id)setFollowLive(u.alive===false?null:u);syncUnitControls();trainingCoach?.onSelect(id);updateUI();}
 function updateUI(){
   $('#stage').dataset.grounded=String(selected().surface?.grounded===true);
   airportControl?.update();
   atcControl?.update();
-  radarControl?.update();rwrControl?.update();
+  radarControl?.update();radarCommand?.update();rwrControl?.update();clickFly?.update();radarTutorial?.update();emergencyTutorial?.update();airspaceControl?.update();navigationPanel?.update();
   weaponControl?.update();
   trainingCoach?.update();
   missionReport?.update();
@@ -108,10 +117,15 @@ function updateUI(){
 function toggle(){world.revision++;playing=!playing;acc=0;updateUI();}
 async function boot(){
   await initLanguages();
-  const [scenario,profiles,terrain,landmask,heightfield]=await Promise.all([read('../data/scenarios/demo.json'),read('../data/aircraft.json'),read('../terrain/air_skyscraper_city_contours.json'),read('../terrain/air_skyscraper_city_landmask.json'),TerrainHeight.load('../terrain/air_skyscraper_city')]);
+  const [scenario,profiles]=await Promise.all([read('../data/scenarios/demo.json'),read('../data/aircraft.json')]);
+const mapCatalog=await read('../terrain/maps.json'),map=resolveMap(mapCatalog,scenario.map),mapUrls=mapAssetUrls(map);
+const [terrain,landmask,heightfield]=await Promise.all([read(mapUrls.contours),read(mapUrls.landmask),TerrainHeight.load(mapUrls.heightPrefix)]);
   let spawnMode=scenario.defaultSpawnMode??'stands';try{const saved=localStorage.getItem('flight-spawn-mode');if(['stands','airborne'].includes(saved))spawnMode=saved;}catch{}
+  if(new URLSearchParams(location.search).get('tutorial')==='radar')spawnMode='airborne';
+  if(new URLSearchParams(location.search).get('tutorial')==='emergency')spawnMode='stands';
   let mode='strict';try{const saved=localStorage.getItem('flight-execution-mode');if(['strict','relaxed'].includes(saved))mode=saved;}catch{}
   world=new World(scenario,profiles,heightfield,{spawnMode,mode});selectedId=world.units[0].id;
+  unitSelection=initUnitSelection({getWorld:()=>world,getSelected:()=>selectedId,onChange:updateUI,isRouteEdit:()=>!!routeEditor?.enabled});
   let restoredState=null;
   const formFields=['command-style','command-auto','command-text','append-waypoint','airport-runway','airport-gate','airport-taxiways'];
   const autosave=new AutoSave({storage:{getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)},fingerprint:saveFingerprint(scenario,profiles),
@@ -148,7 +162,7 @@ async function boot(){
     };
   };configureWorld();
   const focusSpawn=()=>spawnMode==='stands'?focusLive([{position:[...world.airportOps.airport.center,world.airportOps.airport.elevation]}],.25):focusLive(world.units);
-  const restart=()=>{trainingCoach?.reset();setFollowLive(null);voiceControl?.reset();pilotSupervisor?.reset();radarPilot?.reset();attackPilot?.reset();endPlacement();mapPoint=null;world=new World(scenario,profiles,heightfield,{spawnMode,mode});configureWorld();playing=true;acc=0;select(world.units[0].id);focusSpawn();autosave.newGame();};
+  const restart=()=>{if(radarTutorial||emergencyTutorial){location.reload();return;}trainingCoach?.reset();setFollowLive(null);voiceControl?.reset();pilotSupervisor?.reset();radarPilot?.reset();attackPilot?.reset();endPlacement();mapPoint=null;world=new World(scenario,profiles,heightfield,{spawnMode,mode});configureWorld();playing=true;acc=0;select(world.units[0].id);focusSpawn();autosave.newGame();};
   const runways=(terrain.airfields||[]).filter(r=>['t1_airfield','t2_airfield'].includes(r.name)).map(r=>({x1:r.ends[0][0],y1:r.ends[0][1],x2:r.ends[1][0],y2:r.ends[1][1],altM:r.altM,z1:r.altM,z2:r.altM}));
   initLive(canvas,{terrain,landmask,runways,units:world.units,heightfield,airport:world.airportOps?.airport});
   for(const u of world.units){const el=document.createElement('div');el.id=u.id;el.className='unit';el.tabIndex=0;el.setAttribute('role','button');el.innerHTML=`<div class="unit-title">${u.callsign}<span>${u.profile.name}</span></div><div class="metrics"></div>`;el.onclick=()=>select(u.id);el.onkeydown=e=>{if(e.key==='Enter')select(u.id);};$('#roster').appendChild(el);}
@@ -158,10 +172,17 @@ async function boot(){
   airportControl=initAirportControl({getWorld:()=>world,getSelected:()=>selectedId,issueCommand:instruction=>{if(voiceControl.busy)return Promise.reject(Error('另一条通联正在进行，请等待。'));endPlacement();interfaceControl.open('voice');$('#command-text').value=instruction;return voiceControl.issue(instruction,{source:'airport'});},onChange:()=>{routeEditor?.cancel();endPlacement();updateUI();},onFocus:a=>focusLive([{position:[...a.center,a.elevation]}],.25),onSpawnMode:mode=>{spawnMode=mode;try{localStorage.setItem('flight-spawn-mode',mode);}catch{}restart();}});
   atcControl=initAtcControl({getWorld:()=>world,getSelected:()=>selectedId,onChange:()=>{voiceControl?.cancel('机场运行条件已更新，旧指令作废');updateUI();}});
   radarControl=initRadarControl({getWorld:()=>world,getSelected:()=>selectedId,onChange:updateUI,beforeCommand:()=>voiceControl?.cancel('演练场景已变化，尚未执行的旧指令作废')});
+  radarCommand=initRadarCommand({getWorld:()=>world,getSelected:()=>selectedId,getSelectedIds:()=>unitSelection?.ids()??[selectedId],onChange:updateUI});
   weaponControl=initWeaponControl({getWorld:()=>world,getSelected:()=>selectedId,onChange:updateUI,beforeCommand:()=>voiceControl?.cancel('演练场景已变化，尚未执行的旧指令作废')});
   rwrControl=initRwrControl({getWorld:()=>world,getSelected:()=>selectedId,onChange:updateUI,beforeCommand:()=>voiceControl?.cancel('告警策略已由玩家接管')});
   focusSpawn();
   routeEditor=initRouteEditor({canvas,getWorld:()=>world,getSelected:()=>selectedId,onChange:updateUI,onPointPreview:p=>{mapPoint=p.slice();},onCommitted:(id,change)=>{voiceControl?.routeChanged(id,change);const point=change.point??world.units.find(u=>u.id===id)?.waypoints.at(-1);if(point)trainingCoach?.onWaypoint(point);},message:routeMessage,planner,replanner});
+  clickFly=initClickFly({getWorld:()=>world,getSelected:()=>selectedId,getSelectedIds:()=>unitSelection?.ids()??[selectedId],onChange:updateUI,message:routeMessage,isRouteEdit:()=>!!routeEditor?.enabled});
+  radarTutorial=initRadarTutorial({getWorld:()=>world,getSelected:()=>selectedId,onSimulation:running=>{playing=running;acc=0;},message:routeMessage});
+  emergencyTutorial=initEmergencyTutorial({getWorld:()=>world,getSelected:()=>selectedId,onSimulation:running=>{playing=running;acc=0;},message:routeMessage});
+  airspaceControl=initAirspaceControl({getWorld:()=>world,onChange:updateUI});
+  navigationPanel=initNavigationPanel({getWorld:()=>world,getSelected:()=>selectedId});
+  tacticalOverlay=initTacticalOverlay();
   $('#pause').onclick=toggle;
   const setRoster=visible=>{$('#stage').classList.toggle('panels-hidden',!visible);$('#toggle-panels').classList.toggle('active',visible);$('#toggle-panels').setAttribute('aria-pressed',String(visible));};
   setRoster(false);
@@ -263,11 +284,13 @@ async function boot(){
     if(gap>0){frameSamples.push(gap);if(frameSamples.length>180)frameSamples.shift();}
     world.playerCommandPending=voiceControl?.playerCommandPending===true;
     moveLiveCamera(cameraInput(),dt);if(playing){acc+=dt*rate;while(acc>=1/60&&playing){world.step(1/60);acc-=1/60;trainingCoach?.tick();}}
-    trainingCoach?.tick();routeEditor.frame();predict(ts);towerSupervisor.tick();rwrPilot.tick();pilotSupervisor.tick();radarPilot.tick();attackPilot.tick();renderLive(world.snapshot(selectedId,{forecast:false}),dt);mapCompass.update(getLiveMapHeading());
+    trainingCoach?.tick();routeEditor.frame();predict(ts);towerSupervisor.tick();rwrPilot.tick();pilotSupervisor.tick();radarPilot.tick();attackPilot.tick();renderLive(world.snapshot(selectedId,{forecast:false}),dt);try{tacticalOverlay?.update(world,selectedId,unitSelection?.ids()??[selectedId],clickFly?.getPreview?.(),radarCommand?.getRadarFocus?.());}catch(error){console.error('战术叠加层绘制失败',error);tacticalOverlay=null;}mapCompass.update(getLiveMapHeading());
     voiceControl?.pumpAirportRadio();autosave.tick(world);uiClock+=dt;if(uiClock>.15){updateUI();uiClock=0;}
     if(ts>statsAt&&frameSamples.length){statsAt=ts+1000;const sorted=[...frameSamples].sort((a,b)=>a-b),average=frameSamples.reduce((a,b)=>a+b,0)/frameSamples.length;canvas.dataset.fps=(1000/average).toFixed(1);canvas.dataset.frameP95=sorted[Math.floor(sorted.length*.95)].toFixed(1);renderStats.textContent=`渲染 ${canvas.dataset.fps} FPS · P95 ${canvas.dataset.frameP95} ms`;}
     requestAnimationFrame(frame);
   }
+  // 主页面「设置」入口：?panel=settings 打开设置面板
+  if(new URLSearchParams(location.search).get('panel')==='settings')queueMicrotask(()=>document.querySelector('#settings-toggle')?.click());
   requestAnimationFrame(frame);
 }
 boot().catch(e=>{$('#status').textContent='加载失败：'+e.message;console.error(e);});

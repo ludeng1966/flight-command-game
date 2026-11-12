@@ -61,6 +61,10 @@ export function throttleForFraction(p,fraction){
   let i=0;while(i<modes.length-2&&fraction>modes[i+1].fraction)i++;
   const a=modes[i],b=modes[i+1];return a.throttle+(b.throttle-a.throttle)*clamp((fraction-a.fraction)/(b.fraction-a.fraction),0,1);
 }
+export function unitHeadingRad(u) {
+  const f = basis(u).f;
+  return Math.atan2(f[0], f[1]);
+}
 export function basis(u) {
   const grounded=u.surface?.grounded,heading=u.surface?.heading??0;
   const f=grounded?[Math.sin(heading),Math.cos(heading),0]:norm(u.velocity), right=norm(cross(f,[0,0,1]));

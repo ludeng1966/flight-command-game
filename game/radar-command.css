@@ -1,0 +1,59 @@
+#radar-command{
+  position:fixed;left:50%;bottom:74px;transform:translateX(-50%);z-index:900;
+  display:flex;align-items:stretch;gap:8px;padding:8px;border:1px solid #244055;
+  border-radius:10px;background:rgba(8,18,28,.92);backdrop-filter:blur(6px);
+  font:12px/1.4 Consolas,"Microsoft YaHei",monospace;color:#cfe3f5;max-width:min(96vw,960px);
+}
+#radar-command[hidden]{display:none}
+#radar-command button{
+  appearance:none;border:1px solid #2a4054;background:#0b1622;color:#cfe3f5;
+  border-radius:7px;padding:6px 12px;font:inherit;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px;
+}
+#radar-command button:hover{background:#0d1a28;border-color:#3d5b70}
+#radar-command kbd{font:10px Consolas,monospace;color:#8fb8d8;border:1px solid #2a4054;border-radius:3px;padding:0 4px}
+#rc-mode{min-width:190px;flex-direction:column;align-items:flex-start;gap:0;padding:6px 14px}
+#rc-mode .rc-kicker{font-size:10px;letter-spacing:.18em;color:#7f97a8}
+#rc-mode b{font-size:16px;font-weight:500;color:#e8f3ff}
+#rc-mode small{font-size:10px;color:#7f97a8}
+#rc-mode[aria-expanded="true"]{border-color:#71cfa0}
+#radar-command button[data-active="true"]{border-color:#71cfa0;color:#9de8bb;background:#0f2a1d}
+#rc-target{display:flex;align-items:center;padding:0 10px;color:#91a9bd;font-size:11px;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis}
+#rc-target[data-error="true"]{color:#f3a6a6}
+#rc-radial{
+  position:fixed;transform:translate(-50%,-100%);z-index:950;width:310px;height:198px;padding:0;
+  border:0;background:none;box-shadow:none;pointer-events:none;
+}
+#rc-radial[hidden]{display:none}
+#rc-radial::before{content:'';position:absolute;left:50%;top:50%;width:88px;height:88px;transform:translate(-50%,-50%);
+  border:1px solid rgba(113,207,160,.35);border-radius:50%;background:rgba(6,14,22,.92);box-shadow:0 8px 26px rgba(0,0,0,.5);}
+#rc-radial button{
+  position:absolute;pointer-events:auto;appearance:none;display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  width:128px;padding:7px 10px;text-align:left;border:1px solid #2a4054;border-radius:8px;
+  background:#0b1622;color:#cfe3f5;font:12px/1.35 Consolas,"Microsoft YaHei",monospace;cursor:pointer;
+}
+#rc-radial button[data-index="0"]{left:50%;top:0;transform:translateX(-50%)}
+#rc-radial button[data-index="1"]{right:0;top:50%;transform:translateY(-50%)}
+#rc-radial button[data-index="2"]{left:50%;bottom:0;transform:translateX(-50%)}
+#rc-radial button[data-index="3"]{left:0;top:50%;transform:translateY(-50%)}
+#rc-radial button.active{border-color:#71cfa0;background:#0f2a1d;color:#9de8bb}
+#rc-radial[data-center="true"]::before{border-color:#71cfa0;background:rgba(15,42,29,.95);box-shadow:0 0 0 2px rgba(113,207,160,.18)}
+#rc-radial button b{font-weight:500;font-size:12px}
+#rc-radial small{color:#7f97a8;font-size:10px;white-space:nowrap}
+#radar-scope-panel{
+  position:fixed;left:50%;bottom:190px;transform:translateX(-50%);z-index:880;
+  width:min(92vw,560px);border:1px solid #244055;border-radius:10px;background:rgba(6,14,22,.95);
+  padding:8px 12px 6px;font:12px/1.4 Consolas,"Microsoft YaHei",monospace;color:#cfe3f5;
+}
+#radar-scope-panel[hidden]{display:none}
+#radar-scope-panel header{display:flex;align-items:center;gap:10px;padding:2px 2px 6px;flex-wrap:nowrap;min-width:0}
+#radar-scope-panel header b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#rc-scope-mode{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+#radar-scope-panel header b{font-weight:500;color:#b5d9c8}
+#rc-scope-mode{color:#8fb8d8}
+#rc-scope-close{margin-left:auto;border:1px solid #2a4054;background:#0b1622;color:#cfe3f5;border-radius:6px;padding:2px 8px;cursor:pointer}
+#rc-scope-canvas{display:block;width:100%;height:auto;border-radius:6px;background:#061511}
+#rc-scope-controls{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+#rc-scope-controls button{font-size:10px;padding:3px 7px;border:1px solid #2a4054;background:#0b1622;color:#cfe3f5;border-radius:5px;cursor:pointer}
+#rc-scope-controls button[aria-pressed="true"]{border-color:#71cfa0;color:#9de8bb;background:#0f2a1d}
+#rc-scope-hint{margin:4px 2px 0;color:#5f7b8e;font-size:10px}

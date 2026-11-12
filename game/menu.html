@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>空中指挥 · 主页面</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="./menu.css">
+</head>
+<body class="menu-page">
+<main class="menu">
+  <p class="kicker">TACTICAL FLIGHT / 01</p>
+  <h1>空中指挥</h1>
+  <p class="subtitle">用一句话，指挥一支飞行编队。<br>先在训练场学会怎么下命令，再进战场。</p>
+
+  <nav class="menu-actions" aria-label="主菜单">
+    <a class="menu-btn primary" href="./">开始游戏<small>直接进入战场，当前场景</small></a>
+    <a class="menu-btn" href="./training-select.html">新手教程<small>三关：通联 · 起飞 · 导航返场</small></a>
+    <a class="menu-btn" href="./?panel=settings">设置<small>单位制、显示、语音指挥</small></a>
+    <button class="menu-btn" type="button" id="credits-toggle" aria-expanded="false" aria-controls="credits">制作名单</button>
+  </nav>
+
+  <section class="menu-panel" id="credits" hidden>
+    <h2>制作名单</h2>
+    <p>資本の路灯<br>奕奕奕奕然<br>XY0xiaoyu</p>
+    <h2>鸣谢</h2>
+    <p>cyber_walker</p>
+    <p>本地试玩版 · 版本 0.1</p>
+  </section>
+
+  <p class="menu-note">本地试玩 · 未发布 · 训练进度保存在本机浏览器</p>
+</main>
+<script type="module">
+  const toggle=document.getElementById('credits-toggle');
+  const panel=document.getElementById('credits');
+  toggle.addEventListener('click',()=>{
+    const open=panel.hidden;
+    panel.hidden=!open;
+    toggle.setAttribute('aria-expanded',String(open));
+  });
+</script>
+</body>
+</html>

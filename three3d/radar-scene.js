@@ -10,8 +10,13 @@ export function updateRadarScene(scene,camera,canvas,snapshot){
     state={targets:new Map(),line};scenes.set(scene,state);
   }
   const alive=new Set();
+  const known=new Map((snapshot.knowledge??[]).map(k=>[k.id,k]));
   for(const target of snapshot.radarTargets??[]){
-    if(target.alive===false)continue;alive.add(target.id);
+    if(target.alive===false)continue;
+    // 战争迷雾：目视确认或已识别（NCTR）才显示真实模型；雷达接触由 2D 符号层绘制
+    const knowledgeState=known.get(target.id)?.state;
+    if(knowledgeState!=='visual'&&knowledgeState!=='identified')continue;
+    alive.add(target.id);
     let model=state.targets.get(target.id);if(!model){model=buildAircraft('#f5bc7a');model.userData.radarTargetId=target.id;scene.add(model);state.targets.set(target.id,model);}
     const pos=point(target.position),forward=point(target.velocity).normalize(),right=new THREE.Vector3().crossVectors(forward,new THREE.Vector3(0,1,0)).normalize(),up=new THREE.Vector3().crossVectors(right,forward).normalize();
     model.position.copy(pos);model.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(right,up,forward.negate()));model.scale.setScalar(aircraftVisualScale(camera,pos,canvas.clientHeight));model.userData.gear.visible=false;

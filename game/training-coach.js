@@ -139,7 +139,10 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
     menuOpen=false;if(walkthrough?.phase==='success'||status()!=='active'){pause();pendingFocus=true;highlight();}else if(interpretation?.orders?.some(o=>!['pause','report_status','report_event'].includes(o.intent)))onSimulation(true);
     lastKey='';update();stage.dispatchEvent(new Event('training-command-issued'));
   }
-  if(['guided','exam'].includes(new URLSearchParams(location.search).get('training')))visible(true);
+  const trainingParams=new URLSearchParams(location.search);
+  if(['guided','exam'].includes(trainingParams.get('training')))visible(true);
+  // 支持从选关页直接进入某一关：?training=guided&level=communications
+  if(trainingParams.get('training')==='guided'&&trainingLevel(trainingParams.get('level')))setTimeout(()=>start('guided',trainingParams.get('level')),0);
   window.addEventListener('pagehide',()=>sceneLayout.disconnect());
   return {tick,update,reset,onSelect,onWaypoint,onCommandCommitted,openMenu:showMenu,allowsAutomaticHandoff(id){return !walkthrough||status()!=='active'||!!walkthrough.legacyMissionIds||walkthrough.unit.id!==id||walkthrough.step.kind==='handoff'&&walkthrough.phase==='working';},get showingMenu(){return menuOpen||!session;},
     snapshot(){return session?.world===getWorld()?{...captureTraining(session,walkthrough),saved,hintShown,open:!panel.hidden,menuOpen}:null;},

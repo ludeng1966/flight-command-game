@@ -1910,9 +1910,11 @@ export function moveLiveCamera({forward=0,right=0,up=0},dt){
 }
 export function renderLive(snapshot,dt=1/60){
   resize();const cam=state.camera, cv=state.canvas;
+  liveFollower?.update(snapshot.units);
+  // 必须在算模型缩放前应用本帧相机（滚轮/跟随），否则模型会先用旧相机放大一帧再缩回。
+  state.controls.update();
   updateRadarScene(state.scene,cam,cv,snapshot);
   updateMissileScene(state.scene,cam,cv,snapshot);
-  liveFollower?.update(snapshot.units);
   const unitMarkers=snapshot.units.flatMap(u=>{const p=V3(...u.position).project(cam);return p.z<1?[{x:(p.x*.5+.5)*cv.clientWidth-22,y:(-p.y*.5+.5)*cv.clientHeight-22,w:44,h:44}]:[];});
   const airportObstacles=[...unitMarkers],unitLabelRects=[];
   const labelOverlap=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
@@ -1993,7 +1995,6 @@ export function renderLive(snapshot,dt=1/60){
   }
   const previewPhase=livePreviewActive?!livePreviewValid?'invalid':livePreviewPending?'pending':'ready':livePreviewAlpha?'handoff':'idle';
   if(cv.dataset.previewPhase!==previewPhase)cv.dataset.previewPhase=previewPhase;
-  state.controls.update();
   if(liveAirportView){
     const now=performance.now();
     if(now>=liveAirportUiAt){
@@ -2014,14 +2015,38 @@ function liveCameraAnchor(x,y){
   const id=pickUnit(x,y);if(id)return liveUnits.get(id).vis.im.position.clone();
   setLiveRay(x,y);return terrainFocusPoint(liveRay.ray,liveTerrain);
 }
+export function hideLiveUnit(id){
+  const obj=liveUnits.get(id);if(!obj)return false;
+  obj.hidden=true;obj.vis.im.visible=false;obj.line.visible=false;obj.label.style.display='none';
+  return true;
+}
 export function pickUnit(x,y){
   setLiveRay(x,y);
-  const hits=liveRay.intersectObjects([...liveUnits.values()].map(o=>o.vis.im),true);
+  const hits=liveRay.intersectObjects([...liveUnits.values()].filter(o=>!o.hidden).map(o=>o.vis.im),true);
   if(hits.length){let object=hits[0].object;while(object&&!object.userData.unitId)object=object.parent;if(object)return object.userData.unitId;}
   // 三角形侧立时仍可点击它的屏幕中心。
   let best=null,d=22;
-  for(const [id,o] of liveUnits){const p=o.vis.im.position.clone().project(state.camera);if(p.z>1)continue;const r=state.canvas.getBoundingClientRect();const dist=Math.hypot((p.x*.5+.5)*r.width+r.left-x,(-p.y*.5+.5)*r.height+r.top-y);if(dist<d){d=dist;best=id;}}
+  for(const [id,o] of liveUnits){if(o.hidden)continue;const p=o.vis.im.position.clone().project(state.camera);if(p.z>1)continue;const r=state.canvas.getBoundingClientRect();const dist=Math.hypot((p.x*.5+.5)*r.width+r.left-x,(-p.y*.5+.5)*r.height+r.top-y);if(dist<d){d=dist;best=id;}}
   return best;
+}
+export function pointOnTerrain(x,y,{maxDistance=150000,step=120}={}){
+  if(!liveTerrain?.heightAt)return null;
+  setLiveRay(x,y);
+  const ray=liveRay.ray;
+  const at=t=>ray.at(t,new THREE.Vector3());
+  let previous=0;
+  for(let t=step;t<=maxDistance;t+=step){
+    const p=at(t),ground=liveTerrain.heightAt(p.x,-p.z);
+    if(ground==null){previous=t;continue;}
+    if(p.y<=ground){
+      let lo=previous,hi=t;
+      for(let i=0;i<24;i++){const mid=(lo+hi)/2,q=at(mid),h=liveTerrain.heightAt(q.x,-q.z);if(h!=null&&q.y<=h)hi=mid;else lo=mid;}
+      const hit=at((lo+hi)/2);
+      return [hit.x,-hit.z,liveTerrain.heightAt(hit.x,-hit.z)];
+    }
+    previous=t;
+  }
+  return null;
 }
 export function pointOnPlane(x,y,altitude=0){setLiveRay(x,y);const p=new THREE.Vector3();return liveRay.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-altitude),p)?[p.x,-p.z,altitude]:null;}
 export function spaceWaypoint(x,y,distance){setLiveRay(x,y);const p=liveRay.ray.at(distance,new THREE.Vector3());return [p.x,-p.z,p.y];}
@@ -2060,7 +2085,7 @@ export function projectLive(point){const p=V3(...point).project(state.camera),r=
 export function getLiveMapObstacles(){
   if(!state.camera||!state.canvas)return [];const bounds=state.canvas.parentNode.getBoundingClientRect(),obstacles=[];
   const at=point=>{const p=point.clone().project(state.camera),r=state.canvas.getBoundingClientRect();return {x:(p.x*.5+.5)*r.width+r.left-bounds.left,y:(-p.y*.5+.5)*r.height+r.top-bounds.top,visible:p.z>-1&&p.z<1};};
-  for(const obj of liveUnits.values()){const p=at(obj.vis.im.position);if(p.visible)obstacles.push({x:p.x-45,y:p.y-45,w:90,h:90,weight:8});}
+  for(const obj of liveUnits.values()){if(obj.hidden)continue;const p=at(obj.vis.im.position);if(p.visible)obstacles.push({x:p.x-45,y:p.y-45,w:90,h:90,weight:8});}
   for(let i=1;i<liveRoutePoints.length;i++){const a=at(liveRoutePoints[i-1]),b=at(liveRoutePoints[i]);if(!a.visible||!b.visible)continue;const count=Math.min(32,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/35));for(let j=0;j<=count;j++){const t=j/Math.max(1,count);obstacles.push({x:a.x+(b.x-a.x)*t-14,y:a.y+(b.y-a.y)*t-14,w:28,h:28,weight:2});}}
   return obstacles;
 }

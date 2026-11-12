@@ -2,23 +2,30 @@ import {basis,cross,dot,norm} from './flight.js';
 
 // Game parameters, not claimed AN/APG-66 specifications. The gate is a half width.
 export const RADAR_DEFAULTS=Object.freeze({rangeM:60000,minRangeM:150,azimuthHalfDeg:60,elevationHalfDeg:30,
-  beamHalfDeg:3,sweepSec:2,acquireSec:.8,coastSec:1.5,memorySec:4,speedGateHalfWidthMps:80,effectiveEarthRadiusM:8500000});
+  beamHalfDeg:3,sweepSec:2,acquireSec:.8,coastSec:1.5,memorySec:4,speedGateHalfWidthMps:80,effectiveEarthRadiusM:8500000,warmupSec:0,rcsBase:1});
 export const RADAR_MODES=Object.freeze(['off','pd','pulse']);
+export const IFF_MODES=Object.freeze(['auto','manual','off']);
+// 非协作目标识别（NCTR）：按型号开关；识别需要持续跟踪、距离与置信度。
+export const RADAR_FEATURES=Object.freeze({nctr:false,nctrSec:4,nctrRangeM:35000,nctrConfidence:.8,scanType:'mechanical'});
+export const RADAR_SCAN_TYPES=Object.freeze(['mechanical','aesa']);
 export const RADAR_REASONS=Object.freeze({notch:'进入地面杂波速度门',ground_clutter:'脉冲模式受地面杂波遮蔽',terrain:'地形遮挡',
-  horizon:'超出雷达视距',range:'超出探测距离',gimbal:'超出天线角度范围',destroyed:'目标失效',grounded:'地面待机',off:'雷达关闭'});
+  horizon:'超出雷达视距',range:'超出探测距离',gimbal:'超出天线角度范围',destroyed:'目标失效',grounded:'地面待机',off:'雷达关闭',silent:'电磁静默'});
 const rad=d=>d*Math.PI/180,deg=r=>r*180/Math.PI,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const vec=v=>Array.isArray(v)&&v.length===3&&v.every(Number.isFinite);
 export function createRadar(profileId,override){
   const available=override===false?false:profileId==='f16'||!!override;
-  const config={...RADAR_DEFAULTS,...(override&&typeof override==='object'?override:{})};
-  for(const key of Object.keys(RADAR_DEFAULTS))if(!Number.isFinite(config[key])||config[key]<=0)throw Error('雷达参数无效：'+key);
+  const config={...RADAR_DEFAULTS,...RADAR_FEATURES,...(override&&typeof override==='object'?override:{})};
+  for(const key of Object.keys(RADAR_DEFAULTS))if(!Number.isFinite(config[key])||(key==='warmupSec'?config[key]<0:config[key]<=0))throw Error('雷达参数无效：'+key);
+  for(const key of ['nctrSec','nctrRangeM','nctrConfidence'])if(!Number.isFinite(config[key])||config[key]<=0)throw Error('雷达识别参数无效：'+key);
+  if(!RADAR_SCAN_TYPES.includes(config.scanType))throw Error('雷达扫描方式无效');
   if(config.azimuthHalfDeg>85||config.elevationHalfDeg>85||config.minRangeM>=config.rangeM)throw Error('雷达范围配置无效');
   return {available,config,mode:'off',phase:available?'off':'unavailable',targetId:null,contacts:[],events:[],sequence:0,
-    scanPhase:0,accumulator:0,acquiredSec:0,missingSec:0,established:false,canIlluminate:false,lastReason:null};
+    scanPhase:0,accumulator:0,acquiredSec:0,missingSec:0,established:false,canIlluminate:false,lastReason:null,
+    silent:false,warmingSec:0,identifySec:0,iffMode:'auto',iffInterrogatedAt:-1e9,radarOnSec:0,scanCenterDeg:0,scanHalfDeg:config.azimuthHalfDeg,scanElevationCenterDeg:0,scanElevationHalfDeg:config.elevationHalfDeg,twsTrackedIds:[]};
 }
 function event(r,time,text,type){r.events.push({sequence:++r.sequence,time,text,type});if(type==='locked')r.lastLockSequence=r.sequence;if(type==='lost')r.lastLostSequence=r.sequence;if(r.events.length>32)r.events.shift();}
 export const recordRadarEvent=event;
-function clearLock(r){r.targetId=null;r.acquiredSec=0;r.missingSec=0;r.established=false;r.canIlluminate=false;r.phase=r.mode==='off'?'off':'search';}
+function clearLock(r){r.targetId=null;r.acquiredSec=0;r.missingSec=0;r.established=false;r.canIlluminate=false;r.identifySec=0;r.phase=r.mode==='off'?(r.silent?'silent':'off'):'search';}
 function height(terrain,p){return terrain?.heightAt?.(p[0],p[1])??0;}
 export function radarGeometry(own,target,config=RADAR_DEFAULTS,terrain=null){
   const delta=target.position.map((v,i)=>v-own.position[i]),rangeM=Math.hypot(...delta),los=norm(delta);
@@ -39,8 +46,10 @@ export function radarGeometry(own,target,config=RADAR_DEFAULTS,terrain=null){
 }
 export function radarVisibility(own,target,r,terrain=null){
   const g=radarGeometry(own,target,r.config,terrain);let reason=null;
+  // RCS → 探测距离：基准距离 × (RCS/基准 RCS)^0.25；数据未定时 RCS=1，不改变现状。
+  const rcsBase=r.config.rcsBase??1,effectiveRangeM=r.config.rangeM*Math.pow(Math.max(.01,target.rcs??rcsBase)/rcsBase,.25);
   if(target.alive===false)reason='destroyed';
-  else if(g.rangeM<r.config.minRangeM||g.rangeM>r.config.rangeM)reason='range';
+  else if(g.rangeM<r.config.minRangeM||g.rangeM>effectiveRangeM)reason='range';
   else if(Math.abs(g.azimuthDeg)>r.config.azimuthHalfDeg||Math.abs(g.elevationDeg)>r.config.elevationHalfDeg)reason='gimbal';
   else if(!g.withinHorizon)reason='horizon';
   if(!reason&&terrain?.heightAt){
@@ -53,7 +62,7 @@ export function radarVisibility(own,target,r,terrain=null){
     if(r.mode==='pulse')reason='ground_clutter';
     else if(r.mode==='pd'&&Math.abs(g.clutterSeparationMps)<r.config.speedGateHalfWidthMps)reason='notch';
   }
-  return {...g,visible:reason===null,reason};
+  return {...g,effectiveRangeM,visible:reason===null,reason};
 }
 export function radarCandidates(world){return [...world.units,...(world.radarTargets??[])];}
 export function validateRadarOrder(world,unit,order){
@@ -81,26 +90,47 @@ export function applyRadarOrder(world,unit,order,{autonomous=false}={}){
   validateRadarOrder(world,unit,order);const r=unit.radar;
   if(!autonomous&&unit.radarTask)unit.radarTask.active=false;
   if(!autonomous&&unit.attackTask?.active){unit.attackTask.active=false;unit.attackTask.status='cancelled';unit.attackTask.pending=false;}
-  r.controlSequence=(r.controlSequence??0)+1;
-  if(order.operation==='mode'){
-    r.mode=order.mode;clearLock(r);r.contacts=[];r.scanPhase=0;r.lastReason=null;
+  r.controlSequence=(r.controlSequence??0)+1;  if(order.operation==='mode'){
+    const wasOn=r.mode!=='off';r.mode=order.mode;r.silent=false;r.contacts=[];r.scanPhase=0;r.lastReason=null;
     unit.pilotContacts=(unit.pilotContacts??[]).filter(c=>c.source!=='radar');
-    event(r,world.time,r.mode==='off'?'雷达关闭，解除锁定':`雷达${r.mode==='pd'?'PD 脉冲多普勒':'SRC 脉冲'}搜索`,r.mode==='off'?'off':'search');
+    if(order.mode==='off'){clearLock(r);r.warmingSec=0;event(r,world.time,'雷达关闭，解除锁定','off');}
+    else if(!wasOn&&r.config.warmupSec>0){clearLock(r);r.warmingSec=r.config.warmupSec;r.phase='warming';event(r,world.time,`雷达${order.mode==='pd'?'PD 脉冲多普勒':'SRC 脉冲'}开机预热 ${r.config.warmupSec} 秒`,'warming');}
+    else{clearLock(r);event(r,world.time,`雷达${order.mode==='pd'?'PD 脉冲多普勒':'SRC 脉冲'}搜索`,'search');}
   }else if(order.operation==='unlock'){clearLock(r);r.lastReason=null;event(r,world.time,'解除锁定，恢复搜索','search');}
   else{clearLock(r);r.targetId=order.targetId;r.phase='acquiring';r.lastReason=null;event(r,world.time,'开始截获目标 '+order.targetId,'acquiring');}
 }
+function iffFriend(r,time){
+  if(r.iffMode==='off')return false;
+  if(r.iffMode==='auto')return true;
+  return time-(r.iffInterrogatedAt??-1e9)<=5;
+}
 function recordContact(r,own,target,g,time){
   const old=r.contacts.find(c=>c.id===target.id),team=own.team??own.faction??'blue',otherTeam=target.team??target.faction??'blue';
-  const contact={id:target.id,callsign:target.callsign??target.id,classification:otherTeam===team?'friendly':'unknown',
+  const contact={id:target.id,callsign:target.callsign??target.id,classification:otherTeam===team&&iffFriend(r,time)?'friendly':'unknown',
     practice:target.radarPractice===true,source:'radar',observedAt:time,position:[...target.position],velocity:[...target.velocity],
+    rcs:target.rcs??null,
     rangeM:g.rangeM,azimuthDeg:g.azimuthDeg,elevationDeg:g.elevationDeg,closureMps:g.closureMps,clutterSeparationMps:g.clutterSeparationMps};
-  if(old)Object.assign(old,contact);else if(r.contacts.length<32)r.contacts.push(contact);
+  if(old){Object.assign(old,contact);if(old.identification)contact.identification=old.identification;}else if(r.contacts.length<32)r.contacts.push(contact);
+  if(old&&old.identification)old.identification=old.identification;
+}
+function tryIdentify(r,target,rangeM){
+  if(!r.config.nctr||!r.established)return;
+  if(rangeM>r.config.nctrRangeM)return;
+  const contact=r.contacts.find(c=>c.id===target.id);
+  if(!contact||contact.identification)return;
+  if(r.identifySec+1e-8<r.config.nctrSec)return;
+  contact.identification={category:target.aircraftCategory??'战斗机',type:target.aircraftType??null,confidence:r.config.nctrConfidence,at:null};
 }
 function updateRadar(world,own,dt,time){
   const r=own.radar;if(!r?.available)return;
   if(r.mode==='off'||own.alive===false||own.surface?.grounded){
     if(r.targetId)event(r,time,'停止跟踪：'+(own.alive===false?'本机失效':own.surface?.grounded?'地面待机':'雷达关闭'),'lost');
-    clearLock(r);r.contacts=[];own.pilotContacts=(own.pilotContacts??[]).filter(c=>c.source!=='radar');r.phase=r.mode==='off'?'off':own.alive===false?'unavailable':'standby';r.lastReason=own.surface?.grounded?'grounded':r.mode==='off'?'off':null;return;
+    clearLock(r);r.contacts=[];own.pilotContacts=(own.pilotContacts??[]).filter(c=>c.source!=='radar');r.phase=r.mode==='off'?(r.silent?'silent':'off'):own.alive===false?'unavailable':'standby';r.lastReason=own.surface?.grounded?'grounded':r.mode==='off'?(r.silent?'silent':'off'):null;return;
+  }
+  if(r.warmingSec>0){
+    r.warmingSec=Math.max(0,r.warmingSec-dt);r.phase='warming';r.contacts=[];
+    if(r.warmingSec===0){r.phase='search';event(r,time,'雷达预热完成，开始搜索','search');}
+    return;
   }
   const candidates=radarCandidates(world).filter(t=>t.id!==own.id);
   if(r.targetId){
@@ -108,35 +138,102 @@ function updateRadar(world,own,dt,time){
     if(g.visible){
       recordContact(r,own,target,g,time);r.missingSec=0;r.lastReason=null;
       if(!r.established){r.acquiredSec+=dt;r.phase='acquiring';if(r.acquiredSec+1e-8>=r.config.acquireSec){r.established=true;event(r,time,'目标 '+r.targetId+'，雷达锁定','locked');}}
-      if(r.established)r.phase='locked';r.canIlluminate=r.established;
+      if(r.established){r.phase='locked';r.identifySec+=dt;tryIdentify(r,target,g.rangeM);}r.canIlluminate=r.established;
     }else{
-      r.missingSec+=dt;r.acquiredSec=0;r.canIlluminate=false;r.lastReason=g.reason;r.phase=r.established?'coasting':'acquiring';
+      r.missingSec+=dt;r.acquiredSec=0;r.identifySec=0;r.canIlluminate=false;r.lastReason=g.reason;r.phase=r.established?'coasting':'acquiring';
       if(r.missingSec+1e-8>=r.config.coastSec){const id=r.targetId;clearLock(r);event(r,time,'目标 '+id+' 掉锁：'+(RADAR_REASONS[g.reason]??g.reason),'lost');}
     }
   }else{
     r.phase='search';r.canIlluminate=false;
-    const from=r.scanPhase,increment=dt/r.config.sweepSec,to=from+increment,width=r.config.beamHalfDeg/(2*r.config.azimuthHalfDeg);
+    const sweepSec=r.config.scanType==='aesa'?r.config.sweepSec*.5:r.config.sweepSec;
+    const center=r.scanCenterDeg??0,half=r.scanHalfDeg??r.config.azimuthHalfDeg;
+    const from=r.scanPhase,increment=dt/sweepSec,to=from+increment,width=r.config.beamHalfDeg/(2*half);
     for(const target of candidates){
       if(target.alive===false)continue;
-      const direction=radarGeometry(own,target,r.config,world.terrain),phase=(direction.azimuthDeg+r.config.azimuthHalfDeg)/(2*r.config.azimuthHalfDeg);
-      const passed=increment>=1||[phase-1,phase,phase+1].some(p=>p>=from-width&&p<=to+width);
+      const direction=radarGeometry(own,target,r.config,world.terrain),phase=(direction.azimuthDeg-(center-half))/(2*half);
+      const elevationOk=Math.abs(direction.elevationDeg-(r.scanElevationCenterDeg??0))<=(r.scanElevationHalfDeg??r.config.elevationHalfDeg)+r.config.beamHalfDeg;
+      const passed=elevationOk&&(increment>=1||[phase-1,phase,phase+1].some(p=>p>=from-width&&p<=to+width));
       if(passed){const g=radarVisibility(own,target,r,world.terrain);if(g.visible)recordContact(r,own,target,g,time);}
     }
     r.scanPhase=to%1;
   }
   r.contacts=r.contacts.filter(c=>time-c.observedAt<=r.config.memorySec);
+  r.twsTrackedIds=(r.twsTrackedIds??[]).filter(id=>r.contacts.some(c=>c.id===id));
+  r.radarOnSec=(r.radarOnSec??0)+dt;
   own.pilotContacts=[...(own.pilotContacts??[]).filter(c=>c.source!=='radar'),...r.contacts.map(c=>({...c,position:[...c.position],velocity:[...c.velocity],threat:false,missileWarning:false}))];
 }
 export function stepRadars(world,dt){
   for(const own of world.units){const r=own.radar;if(!r)continue;r.accumulator+=dt;
     while(r.accumulator+1e-9>=.05){r.accumulator-=.05;updateRadar(world,own,.05,world.time-r.accumulator);}}
 }
+// 手动雷达扫描：中心方位与半宽，必须在天线最大方位范围内。
+export function setRadarScan(world,unit,{centerDeg,halfWidthDeg,elevationCenterDeg,elevationHalfWidthDeg}={}){
+  const r=unit?.radar;if(!unit||unit.alive===false||!r?.available)throw Error('该机没有可用的搜索雷达');
+  const max=r.config.azimuthHalfDeg,half=Number(halfWidthDeg??r.scanHalfDeg??max),center=Number(centerDeg??r.scanCenterDeg??0);
+  if(!Number.isFinite(half)||!Number.isFinite(center)||half<r.config.beamHalfDeg||half>max)throw Error('扫描扇区宽度无效');
+  const maxEl=r.config.elevationHalfDeg,elHalf=Number(elevationHalfWidthDeg??r.scanElevationHalfDeg??maxEl),elCenter=Number(elevationCenterDeg??r.scanElevationCenterDeg??0);
+  if(!Number.isFinite(elHalf)||!Number.isFinite(elCenter)||elHalf<r.config.beamHalfDeg||elHalf>maxEl)throw Error('俯仰扫描范围无效');
+  const clamped=Math.max(-max+half,Math.min(max-half,center));
+  const elClamped=Math.max(-maxEl+elHalf,Math.min(maxEl-elHalf,elCenter));
+  r.scanHalfDeg=half;r.scanCenterDeg=clamped;r.scanElevationHalfDeg=elHalf;r.scanElevationCenterDeg=elClamped;r.scanPhase=0;
+  event(r,world.time,`手动扫描扇区：中心 ${clamped.toFixed(0)}°，宽度 ±${half.toFixed(0)}°；俯仰 ${elClamped.toFixed(0)}° ±${elHalf.toFixed(0)}°`,'scan');
+  unit.radar.controlSequence=(unit.radar.controlSequence??0)+1;
+  world.revision=(world.revision??0)+1;return {centerDeg:clamped,halfWidthDeg:half,elevationCenterDeg:elClamped,elevationHalfWidthDeg:elHalf};
+}
+// TWS 多目标跟踪：只管理多目标航迹列表，不改变单一火控锁定 targetId。
+export function setRadarTws(world,unit,targetIds){
+  const r=unit?.radar;if(!unit||unit.alive===false||!r?.available)throw Error('该机没有可用的搜索雷达');
+  if(!Array.isArray(targetIds)||targetIds.length>8)throw Error('TWS 跟踪目标数量无效');
+  const ids=[...new Set(targetIds)];
+  if(ids.some(id=>typeof id!=='string'||!id))throw Error('TWS 跟踪目标无效');
+  const fresh=new Set(r.contacts.filter(c=>world.time-c.observedAt<=r.config.sweepSec+.25).map(c=>c.id));
+  if(ids.some(id=>!fresh.has(id)))throw Error('TWS 只能跟踪当前新鲜雷达航迹');
+  r.twsTrackedIds=ids;
+  event(r,world.time,ids.length?`TWS 多目标跟踪 ${ids.length} 个`:'TWS 多目标跟踪已清空','tws');
+  unit.radar.controlSequence=(unit.radar.controlSequence??0)+1;
+  world.revision=(world.revision??0)+1;return [...ids];
+}
+// 电磁静默：关雷达 + 主动通信/数据链只收不发（信息孤岛）；RWR 仍接收。
+export function setRadarSilence(world,unit,silent){
+  const r=unit?.radar;if(!unit||unit.alive===false||!r?.available)throw Error('该机没有可用的搜索雷达');
+  if(silent){
+    if(r.mode!=='off')applyRadarOrder(world,unit,{operation:'mode',mode:'off',targetId:null});
+    r.silent=true;r.phase='silent';r.lastReason='silent';r.contacts=[];
+    event(r,world.time,'进入电磁静默：雷达关闭，主动通信与数据链停止，RWR 仍在接收','silent');
+  }else{
+    r.silent=false;if(r.phase==='silent'){r.phase='off';}r.lastReason=null;
+    event(r,world.time,'解除电磁静默','silent');
+  }
+  world.revision=(world.revision??0)+1;
+  return r.silent;
+}
+// 敌我识别：自动 / 手动问询 / 关闭。关闭时同阵营目标也显示为未知。
+export function setIffMode(world,unit,mode){
+  const r=unit?.radar;if(!unit||!r?.available)throw Error('该机没有可用的搜索雷达');
+  if(!IFF_MODES.includes(mode))throw Error('敌我识别模式无效');
+  r.iffMode=mode;r.iffInterrogatedAt=-1e9;for(const c of r.contacts)c.classification='unknown';
+  event(r,world.time,mode==='auto'?'敌我识别：自动问询':mode==='manual'?'敌我识别：手动问询（按 I 询问）':'敌我识别：关闭','iff');
+  world.revision=(world.revision??0)+1;return mode;
+}
+export function interrogateIff(world,unit){
+  const r=unit?.radar;if(!unit||!r?.available)throw Error('该机没有可用的搜索雷达');
+  if(r.iffMode!=='manual')throw Error('当前不是手动问询模式');
+  r.iffInterrogatedAt=world.time;
+  const friendlies=r.contacts.filter(c=>c.classification==='unknown').length;
+  event(r,world.time,`IFF 问询完成：${friendlies} 个目标重新比对`,'iff');
+  for(const c of r.contacts){const target=radarCandidates(world).find(t=>t.id===c.id);const team=unit.team??unit.faction??'blue',otherTeam=target?.team??target?.faction??'blue';if(otherTeam===team)c.classification='friendly';}
+  world.revision=(world.revision??0)+1;return r.iffInterrogatedAt;
+}
 export function radarView(unit,time){
   const r=unit.radar;if(!r)return null;
   return {available:r.available,mode:r.mode,phase:r.phase,targetId:r.targetId,canIlluminate:r.canIlluminate,lastReason:r.lastReason,
     speedGateHalfWidthMps:r.config.speedGateHalfWidthMps,rangeM:r.config.rangeM,azimuthHalfDeg:r.config.azimuthHalfDeg,
-    scanAzimuthDeg:-r.config.azimuthHalfDeg+2*r.config.azimuthHalfDeg*r.scanPhase,
+    silent:r.silent===true,warmupRemainingSec:Math.max(0,r.warmingSec??0),iffMode:r.iffMode??'auto',radarOnSec:r.radarOnSec??0,scanType:r.config.scanType??'mechanical',
+    scanCenterDeg:r.scanCenterDeg??0,scanHalfDeg:r.scanHalfDeg??r.config.azimuthHalfDeg,
+    scanElevationCenterDeg:r.scanElevationCenterDeg??0,scanElevationHalfDeg:r.scanElevationHalfDeg??r.config.elevationHalfDeg,
+    scanAzimuthDeg:(r.scanCenterDeg??0)-(r.scanHalfDeg??r.config.azimuthHalfDeg)+2*(r.scanHalfDeg??r.config.azimuthHalfDeg)*r.scanPhase,
     acquireProgress:clamp(r.acquiredSec/r.config.acquireSec,0,1),coastRemainingSec:Math.max(0,r.config.coastSec-r.missingSec),
+    twsTrackedIds:[...(r.twsTrackedIds??[])],
     contacts:r.contacts.map(c=>({...c,position:[...c.position],velocity:[...c.velocity],ageSec:Math.max(0,time-c.observedAt),
       predictedPosition:c.position.map((v,i)=>v+c.velocity[i]*Math.max(0,time-c.observedAt))})),events:r.events.map(e=>({...e}))};
 }

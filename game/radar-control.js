@@ -2,7 +2,7 @@ import {radarView,RADAR_REASONS} from '../sim/radar.js';
 import {basis,dot,cross,norm} from '../sim/flight.js';
 import {formatDistance} from '../sim/units.js';
 
-const phases={off:'关闭',unavailable:'无搜索雷达',standby:'地面待机',search:'扇区搜索',acquiring:'截获中',locked:'已锁定',coasting:'回波丢失 · 航迹外推'};
+const phases={off:'关闭',silent:'电磁静默',warming:'预热中',unavailable:'无搜索雷达',standby:'地面待机',search:'扇区搜索',acquiring:'截获中',locked:'已锁定',coasting:'回波丢失 · 航迹外推'};
 export function initRadarControl({getWorld,getSelected,onChange,beforeCommand=()=>{}}){
   const css=document.createElement('link');css.rel='stylesheet';css.href='./radar.css';document.head.append(css);
   const panel=document.createElement('details');panel.id='radar-control';panel.open=true;

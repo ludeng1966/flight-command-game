@@ -37,6 +37,17 @@ test('稳定跟踪升级并报告，等满8秒才装订自主规避，未知信�
   const c=rwrContext(u,w.time);assert.doesNotMatch(JSON.stringify(c),/SECRET|red-1|range|position|velocity|targetId/);assert.ok(c.contacts[0].bearingDeg%15===0);
 });
 
+test('地面停机位可用告警演练源检查 RWR，但真实战场辐射仍不接收',()=>{
+  const w=new World(structuredClone(scenario),profiles),u=own(w);
+  u.surface={phase:'apron',grounded:true,route:[]};u.position=[0,0,300];u.velocity=[0,0,0];u.speed=0;
+  w.addRwrPracticeEmitter(u.id,'track');
+  for(let i=0;i<12;i++){w.time+=.05;stepRwr(w,.05);stepRwrDefense(w);}
+  assert.equal(u.rwr.contacts.length,1);assert.equal(u.rwr.contacts[0].level,'track');assert.equal(u.rwrDefense.active,null);
+  // 真实敌方雷达即使搜索，也不在地面接收
+  const w2=new World(structuredClone(scenario),profiles),u2=own(w2);
+  u2.surface={phase:'apron',grounded:true,route:[]};u2.position=[0,0,300];u2.velocity=[0,0,0];u2.speed=0;
+  search(w2);for(let i=0;i<20;i++){w2.time+=.05;stepRwr(w2,.05);}assert.equal(u2.rwr.contacts.length,0);
+});
 test('接收受频率、距离、仰角和地形限制；F86没有凭空新增RWR',()=>{
   for(const change of [w=>source(w).position=[0,100000,5000],w=>source(w).radar.config.frequencyGHz=30,w=>{source(w).position=[0,100,20000];},w=>{w.terrain={heightAt:()=>6000};}]){
     const w=create();change(w);search(w);sense(w,3);assert.equal(own(w).rwr.contacts.length,0);
