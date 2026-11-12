@@ -1,8 +1,10 @@
 // This cheap gate runs without inference or GPU memory. It does not replace flight protection.
 import {AIRPORT_INTENTS} from './airport.js';
 import {executionEvent,executionObservation} from './pilot-execution.js';
+import {ATC_INTENTS} from './atc-command.js';
+import {playerOrderVersion} from './command-scope.js';
 export const TACTICAL_INTENTS=Object.freeze(['intercept','attack','banzai','crank','f_pole','defend','notch','drag','disengage','reengage','bracket','extend','cover','cooperate','escort','follow_unit','join_formation','formation_change','formation_split','assign_role']);
-export const ROUTINE_INTENTS=Object.freeze(['cruise','fly_heading','set_flight','fly_to','orbit','clear_waypoints','report_status','pause','resume','join_formation','follow_unit','formation_change','cover','escort','assign_role','return_to_base','defend','notch','drag',...AIRPORT_INTENTS]);
+export const ROUTINE_INTENTS=Object.freeze(['cruise','fly_heading','set_flight','fly_to','orbit','clear_waypoints','report_status','pause','resume','join_formation','follow_unit','formation_change','cover','escort','assign_role','return_to_base','defend','notch','drag',...AIRPORT_INTENTS,...ATC_INTENTS]);
 
 export function pilotEvent(unit,time,blockedSince=null){
   if(unit.alive===false)return null;
@@ -20,7 +22,8 @@ export function pilotEvent(unit,time,blockedSince=null){
 }
 
 export function pilotObservation(world,unit,blockedSince=null){
-  const mission=unit.pilotMission?.revision===world.revision?unit.pilotMission:null;
+  const saved=unit.pilotMission;
+  const mission=saved&&(saved.orderVersion!==undefined?saved.orderVersion===playerOrderVersion(world,unit.id):saved.revision===world.revision)?saved:null;
   const event=pilotEvent({...unit,pilotMission:mission},world.time,blockedSince);if(!event)return null;
   return {unitId:unit.id,event,blockedSince,blockedReason:unit.navigationBlocked||null,
     mission:mission?structuredClone(mission):null,execution:executionObservation(unit),

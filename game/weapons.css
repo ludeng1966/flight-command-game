@@ -12,3 +12,5 @@
 @media(max-width:750px){#weapon-control .weapon-head{flex-wrap:wrap}#weapon-control .weapon-actions button{flex:1}}
 
 #weapon-inventory{display:grid;gap:5px;font-size:11px;line-height:1.7;margin:10px 0;color:var(--weapon-muted)}#weapon-inventory [data-selected="true"]{color:#b9efd0}#attack-target,#attack-radar,#attack-decision{font-size:11px;line-height:1.8;color:var(--weapon-text);overflow-wrap:anywhere}#attack-process{font-size:10px;line-height:1.8;padding-left:16px;color:var(--weapon-muted)}#attack-process li{margin:6px 0}
+#attack-outcome,#attack-waiting,#attack-opportunity{font-size:11px;line-height:1.8;color:var(--weapon-muted);overflow-wrap:anywhere}
+#attack-situation{margin:6px 0 10px;padding-left:8px;border-left:2px solid var(--weapon-line);white-space:pre-line;font-size:10px;line-height:1.7;color:var(--weapon-muted);overflow-wrap:anywhere}

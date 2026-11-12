@@ -11,7 +11,7 @@ export function runwayProcedure(a,r){
 }
 export function arrivalProcedure(a,r,type='ils',unit){
   const p=runwayProcedure(a,r),threshold=p.threshold[0],base=threshold-a.center[0],prefix=`${a.id}${r.designator}`;
-  const speed=unit?Math.max(90,energyEnvelope(unit.profile,a.elevation+500,Math.max(100,unit.speed)).safeSpeed(1)*1.13):100;
+  const speed=unit?Math.max(90,energyEnvelope(unit.profile,a.elevation+500,Math.max(100,unit.speed),unit).safeSpeed(1)*1.13):100;
   let points;
   if(type==='overhead')points=[fix(a,r,base/r.direction-5500,0,600,prefix+' INITIAL'),fix(a,r,base/r.direction+1200,0,600,prefix+' BREAK'),
     fix(a,r,base/r.direction+1200,-4500,700,prefix+' DOWNWIND'),fix(a,r,base/r.direction-10000,-4500,650,prefix+' ABEAM'),

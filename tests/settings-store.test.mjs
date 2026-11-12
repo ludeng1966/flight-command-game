@@ -16,7 +16,7 @@ test('旧进度选项迁移，独立设置优先，并在改变时立即保存',
   assert.equal(readSettings(s)['radio-audio-enabled'],false);assert.equal(readSettings(s)['command-text'],undefined);assert.equal(memory.handles('command-text'),false);memory.destroy();
 });
 test('语音静音跨通联实例保留，服务就绪更新不会把声音重新打开',async()=>{
-  const s=storage(),button=()=>({setAttribute(){}}),firstButton=button(),make=b=>createRadioConsole({storage:s,getWorld:()=>({units:[],time:0}),document:{querySelector:id=>id==='#radio-audio'?b:null},speech:{cancel(){},async speak(){throw Error('静音状态不得请求语音合成');}}});
+  const s=storage(),world={units:[],time:0},button=()=>({setAttribute(){}}),firstButton=button(),make=b=>createRadioConsole({storage:s,getWorld:()=>world,document:{querySelector:id=>id==='#radio-audio'?b:null},speech:{cancel(){},async speak(){throw Error('静音状态不得请求语音合成');}}});
   const first=make(firstButton);assert.equal(first.enabled,true);firstButton.onclick();assert.equal(first.enabled,false);
   const second=make(button());second.configure({provider:'inworld',ready:true});assert.equal(second.enabled,false);
   assert.equal((await second.transmit({speaker:'commander',text:'测试设置',language:'zh-CN'})).delivery,'muted');

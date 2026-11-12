@@ -24,7 +24,6 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
   const status=()=>walkthrough?.status??session?.status??'idle';
   const result=()=>walkthrough?walkthrough.result():session?.result();
   function highlight(selector){document.querySelectorAll('[data-training-focus]').forEach(el=>el.removeAttribute('data-training-focus'));if(selector)$(selector)?.setAttribute('data-training-focus','true');}
-  function pause(){onSimulation(false);}
   function visible(open){panel.hidden=!open;button.setAttribute('aria-expanded',String(open));if(open){if(matchMedia('(max-width:750px)').matches){stage.classList.remove('voice-open');$('#voice-toggle').setAttribute('aria-expanded','false');}update();}}
   button.onclick=()=>visible(panel.hidden||stage.classList.contains('voice-open'));
   function save(){if(saved||!session||status()==='active')return;saved=true;if(!recordResult(result()))commandError='浏览器没有允许保存结果；本次练习仍有效。';}
@@ -39,11 +38,11 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
       const level=mode==='guided'?trainingLevel(levelId):null;if(mode==='guided'&&!level)throw Error('没有这个教学关卡');
       restartGround(level?.entry??'stands');const world=getWorld(),unit=world.units[0];
       if(level){walkthrough=new TrainingWalkthrough(world,unit.id,{levelId:level.id});session=walkthrough.flight;}else session=new FlightTrainingSession(world,unit.id,{mode:'exam'});
-      saved=false;lastKey='';commandError='';hintShown=false;stage.classList.add('training-active');onRate(1);pause();
+      saved=false;lastKey='';commandError='';hintShown=false;stage.classList.add('training-active');onRate(1);
       if(walkthrough)enterStep();else{onSimulation(true);highlight();}update();
     }catch(error){commandError=error.message;menuOpen=!session;lastKey='';update();}
   }
-  function enterStep(){hintShown=false;commandError='';lastKey='';pause();highlight(walkthrough.step?.target);onStep(walkthrough.step,walkthrough.unit);pendingFocus=true;}
+  function enterStep(){hintShown=false;commandError='';lastKey='';highlight(walkthrough.step?.target);onStep(walkthrough.step,walkthrough.unit);pendingFocus=true;}
   function next(){if(walkthrough?.next()){if(walkthrough.status==='passed'){save();highlight();stage.classList.remove('training-active');}else enterStep();}update();}
   async function demonstrate(instruction){
     if(demoPending)return;const current=session,token=++submission;commandError='';demoPending=true;lastKey='';update();
@@ -65,6 +64,7 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
     return `<div class="coach-label">零基础训练 / 3个关卡</div><h2>从叫对飞机，到把它带回来</h2><p>按第1、2、3关学习，每次只做一个小练习。每关都能单独进入、反复练习。</p>${session&&status()==='active'?'<button class="coach-primary" type="button" id="coach-resume">继续当前练习</button>':''}<div class="coach-levels">${TRAINING_LEVELS.map(l=>`<article class="coach-level-card" data-training-level="${l.id}"><div class="coach-level-number">第 ${l.number} 关 <span>${progress[l.id]?.passed?'✓ 已通过':'可开始'}</span></div><h3>${esc(l.title)}</h3><p class="coach-level-subtitle">${esc(l.subtitle)}</p><p>${esc(l.summary)}</p><p class="coach-small">${l.missions.length} 个短步骤 · ${l.entry==='airborne'?'空中场景开始':'从机位开始'}</p><button type="button" data-start="guided" data-level="${l.id}">${walkthrough?.levelId===l.id&&status()==='active'?'继续第'+l.number+'关':progress[l.id]?.passed?'重新练习第'+l.number+'关':'进入第'+l.number+'关'}</button></article>`).join('')}</div><details class="coach-exam-entry"><summary>三关学会后：综合独立考核</summary><p>从机位出发，由你独立决定顺序，完成起飞、巡航、到达航点与着陆回机位。</p><button type="button" data-start="exam">开始综合考核</button></details>${commandError?`<p class="coach-error">${esc(commandError)}</p>`:''}`;
   }
   function contentHTML(){
+    if(getWorld().battleMode==='opponent_training')return '<div class="coach-label">指挥教学</div><h2>在自由演练中学习指挥</h2><p>当前为空中对抗场景。切换到机场与自由演练后，可以从机位交流、起飞到返场逐步练习。</p><a class="coach-primary" href="./?scenario=demo&training=guided">前往机场与自由演练</a>';
     const state=status(),step=walkthrough?.step,level=walkthrough?.level,missions=walkthrough?.missions;
     if(!session||menuOpen)return menuHTML();
     if(['failed','invalid'].includes(state))return `<div class="coach-label">${level?'第'+level.number+'关 / ':''}本轮已结束</div><h2>${state==='failed'?'本轮任务失败':'从这里重新出发'}</h2><p>${esc(result()?.reason??'本轮未完成')}</p>${walkthrough?`<p>已完成 ${walkthrough.completed.length} / ${missions.length} 个步骤 · ${walkthrough.score} 分</p>`:''}<button type="button" class="coach-primary" data-start="guided" data-level="${level?.id??'communications'}">${level?'重试第'+level.number+'关':'从第1关开始学习'}</button><button type="button" id="coach-back-menu">回到关卡目录</button>`;
@@ -79,7 +79,7 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
     }
     return `<div class="coach-label">综合独立考核 / 不展示逐句口令</div><h2>独立指挥 Alpha</h2><p>从机位出发，建立稳定巡航，通过一个明确航点，再返场回机位。你来决定下令顺序。</p><ol class="coach-exam-list">${TRAINING_STAGES.map(s=>`<li data-stage="${s}">${session.completed[s]?'✓':'○'} ${EXAM_LABELS[s]}</li>`).join('')}</ol>${commandForm()}<div id="coach-live" class="coach-live"></div><div class="coach-observation"><button type="button" data-observe="1">1×</button><button type="button" data-observe="4">4×</button><button type="button" data-observe="8">8× 快进</button></div>`;
   }
-  function showMenu(){menuOpen=true;pause();highlight();lastKey='';update();}
+  function showMenu(){menuOpen=true;highlight();lastKey='';update();}
   function resume(){menuOpen=false;lastKey='';if(walkthrough?.phase==='working'||!walkthrough)onSimulation(true);update();}
   function render(){
     const state=status(),step=walkthrough?.step;
@@ -88,16 +88,16 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
     $p('#coach-close').onclick=()=>{visible(false);button.focus();};$p('#coach-brief').onclick=()=>stage.dispatchEvent(new Event('mission-open-brief'));
     if($p('#coach-menu'))$p('#coach-menu').onclick=showMenu;if($p('#coach-back-menu'))$p('#coach-back-menu').onclick=showMenu;if($p('#coach-resume'))$p('#coach-resume').onclick=resume;
     panel.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{if(b.dataset.level===walkthrough?.levelId&&status()==='active'&&menuOpen)resume();else start(b.dataset.start,b.dataset.level);});
-    if($p('#coach-end'))$p('#coach-end').onclick=()=>{reset('玩家结束本轮训练');pause();update();};
+    if($p('#coach-end'))$p('#coach-end').onclick=()=>{reset('玩家结束本轮训练');update();};
     if($p('#coach-next')){const busy=getCommandBusy()||demoPending;$p('#coach-next').disabled=busy;if(busy)$p('#coach-next').textContent='正在通联，请等待复述…';$p('#coach-next').onclick=next;}
     if($p('#coach-demo'))$p('#coach-demo').onclick=()=>void demonstrate(step.sample);
     if($p('#coach-observe'))$p('#coach-observe').onclick=()=>{if(walkthrough.observe()){onSimulation(true);lastKey='';update();}};
     const openRadio=()=>stage.dispatchEvent(new Event('mission-open-command'));
     if($p('#coach-open-radio'))$p('#coach-open-radio').onclick=openRadio;
-    panel.querySelectorAll('[data-control-mode]').forEach(b=>b.onclick=()=>{if(walkthrough.chooseControlMode(b.dataset.controlMode)){onExecutionMode(b.dataset.controlMode);pause();lastKey='';update();}});
-    if($p('#coach-handoff'))$p('#coach-handoff').onclick=()=>{if(walkthrough.handoff()){if(getWorld().executionMode==='strict')onHandoff(walkthrough.unit.id,step.targetOwner);onSimulation(true);lastKey='';update();}};
+    panel.querySelectorAll('[data-control-mode]').forEach(b=>b.onclick=()=>{if(walkthrough.chooseControlMode(b.dataset.controlMode)){onExecutionMode(b.dataset.controlMode);lastKey='';update();}});
+    if($p('#coach-handoff'))$p('#coach-handoff').onclick=()=>{if(walkthrough.handoff()){if(getWorld().executionMode==='strict')onHandoff(walkthrough.unit.id,step.targetOwner);lastKey='';update();}};
     if($p('#coach-open-route'))$p('#coach-open-route').onclick=()=>$('#route-edit').click();
-    panel.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{walkthrough.answer(b.dataset.answer);if(walkthrough.phase==='success'){pause();highlight();lastKey='';pendingFocus=true;update();}else $p('#coach-feedback').textContent=walkthrough.feedback;});
+    panel.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{walkthrough.answer(b.dataset.answer);if(walkthrough.phase==='success'){highlight();lastKey='';pendingFocus=true;update();}else $p('#coach-feedback').textContent=walkthrough.feedback;});
     if($p('#coach-hint'))$p('#coach-hint').onclick=()=>{hintShown=true;$p('#coach-example').hidden=false;};
     if($p('#coach-fill'))$p('#coach-fill').onclick=()=>{$('#command-text').value=step.sample;$('#command-text').dispatchEvent(new Event('input'));openRadio();};
     panel.querySelectorAll('[data-observe]').forEach(b=>b.onclick=()=>{onRate(Number(b.dataset.observe));onSimulation(true);update();});
@@ -126,17 +126,17 @@ export function initTrainingCoach({getWorld,restartGround,issueCommand,cancelCom
   function tick(){
     if(!session||status()!=='active')return;const before=walkthrough?.phase;
     if(walkthrough)walkthrough.tick(getWorld());else session.tick(getWorld());
-    if(walkthrough?.phase==='working'&&before!=='working'&&!menuOpen)onSimulation(true);
-    if(walkthrough?.phase==='brief'&&before==='working'){pause();lastKey='';}
-    if(walkthrough?.phase==='success'&&before!=='success'){pause();highlight();lastKey='';pendingFocus=true;}
-    if(['passed','failed','invalid'].includes(status())){pause();save();highlight();lastKey='';}
+    if(walkthrough?.phase==='brief'&&before==='working'){lastKey='';}
+    if(walkthrough?.phase==='success'&&before!=='success'){highlight();lastKey='';pendingFocus=true;}
+    if(['passed','failed','invalid'].includes(status())){save();highlight();lastKey='';}
   }
-  function onSelect(id){if(!walkthrough||status()!=='active'||menuOpen)return;const before=walkthrough.phase;walkthrough.select(id);if(walkthrough.phase==='success'&&before!=='success'){pause();highlight();lastKey='';pendingFocus=true;update();}}
-  function onWaypoint(point){if(!menuOpen&&walkthrough?.waypoint(point)){commandError='';onSimulation(true);lastKey='';update();}}
+  function onSelect(id){if(!walkthrough||status()!=='active'||menuOpen)return;const before=walkthrough.phase;walkthrough.select(id);if(walkthrough.phase==='success'&&before!=='success'){highlight();lastKey='';pendingFocus=true;update();}}
+  function onWaypoint(point){if(!menuOpen&&walkthrough?.waypoint(point)){commandError='';lastKey='';update();}}
   function onCommandCommitted(interpretation,{demo=false}={}){
     if(!session||status()!=='active')return;
     if(walkthrough)walkthrough.observeExecuted(interpretation,{demo});else if(interpretation?.orders?.some(o=>o.speechAct==='directive'&&!['pause','resume','report_status'].includes(o.intent)&&(o.unitIds.length!==1||o.unitIds[0]!==session.unitId)))session.fail('已向其他飞机下达操作，本轮应独立指挥 Alpha。');
-    menuOpen=false;if(walkthrough?.phase==='success'||status()!=='active'){pause();pendingFocus=true;highlight();}else if(interpretation?.orders?.some(o=>!['pause','report_status','report_event'].includes(o.intent)))onSimulation(true);
+    // Training observes the command; only explicit player controls change the simulation clock.
+    menuOpen=false;if(walkthrough?.phase==='success'||status()!=='active'){pendingFocus=true;highlight();}
     lastKey='';update();stage.dispatchEvent(new Event('training-command-issued'));
   }
   if(['guided','exam'].includes(new URLSearchParams(location.search).get('training')))visible(true);

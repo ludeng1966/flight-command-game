@@ -109,8 +109,9 @@ export function validateExecutionObservation(e,time){
 
 // Validate against CURRENT flight state, not the model's old snapshot. Route
 // validation includes the same power ceiling and physics used by live flight.
-export function applyPilotAdjustment(world,u,a,executionId){
+export function applyPilotAdjustment(world,u,a,executionId,{prepared=null}={}){
   validatePilotAdjustment(a);
+  if(prepared&&(prepared.executionId!==executionId||prepared.adjustment!==JSON.stringify(a)||prepared.seed?.profileId!==u.profileId||world.time-prepared.sampledAt<0||world.time-prepared.sampledAt>8))throw Error('后台修订方案已过期或不匹配');
   const e=u.pilotExecution;
   if(!u.alive||!e||e.id!==executionId||u.surface?.grounded||['final','approach'].includes(u.surface?.phase))throw Error('任务或飞行阶段已变化，旧规划作废');
   if(a.throttle>(e.constraints.throttleCap??1)+1e-6||a.afterburner>(e.constraints.afterburnerCap??1)+1e-6)throw Error('规划超过原指令的推力限制');
@@ -123,7 +124,8 @@ export function applyPilotAdjustment(world,u,a,executionId){
     for(const v of [u.speed,a.speedMps])if(thrustAt(u.profile,u.position[2],v,a.afterburner)*dryFraction(u.profile,a.throttle)>thrustAt(u.profile,u.position[2],v,1)*(e.constraints.maximumThrustFraction??1)+1)throw Error('改出推力超过原指令的推力限制');
     const power={active:true,recoveryOnly:true,throttle:a.throttle,afterburner:a.afterburner,recovery:a.recovery??null,executionId:e.id,
       resumeTargetSpeedMps:u.pilotPowerPlan?.recoveryOnly?u.pilotPowerPlan.resumeTargetSpeedMps:u.targetSpeed};
-    const outcome=traceRecovery({...u,targetSpeed:a.speedMps},power);if(!outcome.valid)throw Error(outcome.reason);
+    if(prepared&&(Math.hypot(...u.position.map((v,i)=>v-prepared.seed.position[i]))>Math.max(150,u.speed*.8)||Math.abs(u.speed-prepared.seed.speed)>Math.max(5,u.speed*.05)))throw Error('改出期间飞行状态已变化，等待重新评估');
+    const outcome=prepared?{valid:true,seconds:prepared.result.predictedRecoverySeconds}:traceRecovery({...u,targetSpeed:a.speedMps},power);if(!outcome.valid||!Number.isFinite(outcome.seconds))throw Error(outcome.reason??'后台改出验证无效');
     u.pilotPowerPlan=power;u.targetSpeed=a.speedMps;e.lastAppliedAt=world.time;e.lastAdjustment=structuredClone(a);e.lastError=null;e.issue=null;e.issueSince=null;e.attempt=Math.max(0,e.attempt);
     return {throttle:a.throttle,afterburner:a.afterburner,speedMps:a.speedMps,viaCount:0,recovery:power.recovery,predictedRecoverySeconds:outcome.seconds};
   }
@@ -138,7 +140,8 @@ export function applyPilotAdjustment(world,u,a,executionId){
     if(!points.length)throw Error('缺少可重新接入的原任务航路');
     const check=world.checkRoute(u.id,points);if(!check.valid)throw Error(check.reason);
     const candidate={...u,targetSpeed:a.speedMps,pilotPowerPlan:power};
-    navigation=planSafeRoute(candidate,points,world.terrain);
+    if(prepared&&!prepared.navigation)throw Error('后台没有提供有效的修订航路');
+    navigation=prepared?world.resolvePlan(candidate,points,prepared.navigation):planSafeRoute(candidate,points,world.terrain);
     if(!navigation.valid)throw Error(navigation.reason||'新航路无法按所规划推力飞行');
   }
   // All fallible work precedes the commit. Preserve every remaining original goal.

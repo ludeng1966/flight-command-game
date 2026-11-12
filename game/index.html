@@ -2,7 +2,7 @@
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WT · 空中指挥</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./style.css"><script type="importmap">{"imports":{"three":"../vendor/three/three.module.js"}}</script></head>
 <body><link rel="stylesheet" href="./compact.css"><main id="stage" class="clean-ui panels-hidden"><canvas id="scene" aria-label="三维战术地图"></canvas>
 <header><div><span class="eyebrow">TACTICAL FLIGHT / 01</span><h1>空中指挥 <small>SKYSCRAPER CITY</small></h1></div><span id="status">正在载入战场…</span></header>
-<nav id="panel-controls" aria-label="界面面板"><button id="toggle-panels" type="button" aria-pressed="false">编队</button><button id="voice-toggle" type="button" aria-expanded="false">指挥</button><button id="settings-toggle" type="button" aria-expanded="false" aria-controls="settings-panel">设置</button><details id="controls-help"><summary>操作</summary><div><b>观察</b><p>拖动旋转，滚轮缩放。WASD 移动，Shift 上升，Ctrl 下降。</p><b>下令</b><p>先打开“航线设置”。普通右键替换整条航路；按住CapsLock＋右键连续追加。左键单击不放点，滚轮调整光标航点的空间深度。</p><b>编辑航路</b><p>从飞机按住左键拖动手绘；按住已有蓝色航线可续绘，保留之前航段、替换后续。自动提取转折航点、识别直线；在已有航点按住左键拖动调整位置，Alt＋拖动只改高度。吸附首个航点可闭环循环飞行。</p><p>Esc 取消 · Ctrl+Z 撤销 · Ctrl+Y 重做 · 空格 暂停</p><p>蓝线：目标连线<br>绿线：安全预计路径</p></div></details></nav>
+<nav id="panel-controls" aria-label="界面面板"><button id="toggle-panels" type="button" aria-pressed="false">编队</button><button id="voice-toggle" type="button" aria-expanded="false">指挥</button><button id="settings-toggle" type="button" aria-expanded="false" aria-controls="settings-panel">设置</button><details id="controls-help"><summary>操作</summary><div><b>观察</b><p>拖动旋转，滚轮缩放。WASD 移动，PageUp 上升，PageDown 下降。</p><b>战术快捷指挥</b><p>1/2 选机 · 3 选择编组 · 右键空域转进 · Q 点目标授权攻击一枚 · X 告警规避 · E 点空域脱离 · H 停火 · B 返场 · Shift 追加任务 · Ctrl+数字编组 · V 按住说话。</p><b>精细航线</b><p>先打开“航线设置”。普通右键替换整条航路；按住CapsLock＋右键连续追加。左键单击不放点，滚轮调整光标航点的空间深度。</p><b>编辑航路</b><p>从飞机按住左键拖动手绘；按住已有蓝色航线可续绘，保留之前航段、替换后续。自动提取转折航点、识别直线；在已有航点按住左键拖动调整位置，Alt＋拖动只改高度。吸附首个航点可闭环循环飞行。</p><p>Esc 取消 · Ctrl+Z 撤销 · Ctrl+Y 重做 · 空格 暂停</p><p>蓝线：目标连线<br>绿线：安全预计路径</p></div></details></nav>
 <div id="route-controls"><button id="route-edit" type="button" aria-pressed="false">航线设置</button><button id="route-undo" type="button" title="Ctrl+Z" disabled>撤销</button><button id="route-redo" type="button" title="Ctrl+Y" disabled>重做</button><button id="camera-follow" type="button" aria-pressed="false" title="跟随选中飞机（F）；拖动环绕，滚轮调整距离，WASD退出跟随">跟随选中机</button></div>
 <div id="hud-readout" aria-live="off"></div>
 <div id="hud-message" role="status" hidden></div>
@@ -25,7 +25,27 @@
 <label for="display-waypoints">航点文字<select id="display-waypoints"><option value="selected">当前与选中点</option><option value="all">全部</option></select></label>
 <p class="setting-hint">简洁模式突出跑道与当前机位，靠近后显示更多编号。</p></div>
 <div class="settings-section"><h3>通联</h3><div id="settings-radio"></div></div>
+
 <div class="settings-section"><h3>语言</h3><label for="text-language">文字语言<select id="text-language"><option value="zh">中文</option><option value="en">English</option></select></label><label for="voice-language">语音语言<select id="voice-language"><option value="zh">中文</option><option value="en">English</option></select></label><label for="speech-rate">语音速度<select id="speech-rate"><option value="0.8">0.8×</option><option value="1">1×</option><option value="1.2">1.2×</option></select></label><p class="setting-hint">界面和通联文字、语音播报可分别选择，设置自动保存。</p></div>
+<div class="settings-section"><h3>API 接入</h3>
+<form id="api-credentials" autocomplete="off">
+<p id="api-credentials-summary" class="setting-hint">正在读取连接配置…</p>
+<label for="api-qwen-key">Qwen API Key<input id="api-qwen-key" type="password" autocomplete="new-password" spellcheck="false" maxlength="4096" placeholder="填写自己的百炼 API Key"></label>
+<p class="setting-hint api-key-help"><a href="https://bailian.console.aliyun.com/cn-beijing/model/settings/api-key" target="_blank" rel="noopener noreferrer">申请 Qwen API Key ↗</a> · 创建密钥的地域须与下方选择一致。</p>
+<label for="api-qwen-region">Qwen 地域<select id="api-qwen-region"><option value="beijing">中国内地 · 北京</option><option value="singapore">国际 · 新加坡</option></select></label>
+<label for="api-inworld-key">Inworld API Key<input id="api-inworld-key" type="password" autocomplete="new-password" spellcheck="false" maxlength="4096" placeholder="粘贴 Portal 的 Base64 凭据"></label>
+<p class="setting-hint api-key-help"><a href="https://platform.inworld.ai/" target="_blank" rel="noopener noreferrer">申请 Inworld API Key ↗</a> · 登录后进入自己的工作区 → Settings → API Keys，复制完整 Base64 凭据。</p>
+<details id="api-advanced"><summary>模型与音色（可选）</summary>
+<label for="api-qwen-model">Qwen 模型<input id="api-qwen-model" type="text" maxlength="100" value="qwen3.7-flash" spellcheck="false"></label>
+<label for="api-voice-commander">指挥员 voice ID<input id="api-voice-commander" type="text" maxlength="256" placeholder="Dennis（公共音色）" spellcheck="false"></label>
+<label for="api-voice-alpha">Alpha voice ID<input id="api-voice-alpha" type="text" maxlength="256" placeholder="Alex（公共音色）" spellcheck="false"></label>
+<label for="api-voice-bravo">Bravo voice ID<input id="api-voice-bravo" type="text" maxlength="256" placeholder="Oliver（公共音色）" spellcheck="false"></label>
+<label class="api-localized"><input id="api-pilot-localized" type="checkbox"> 两个男声均已完成英语本地化</label>
+<p class="setting-hint">自定义音色须属于该密钥可访问的工作区。中文跑道仍按“洞九左”播报。</p></details>
+<div class="api-actions"><button type="submit">应用密钥</button><button type="button" id="api-test-qwen">保存并测试 Qwen</button><button type="button" id="api-test-inworld">保存并试听语音</button><button type="button" id="api-clear">恢复本机配置</button></div>
+<p id="api-credentials-status" class="setting-hint" role="status" aria-live="polite"></p>
+<p class="setting-hint">密钥仅保存在当前服务的会话内存中，8 小时后或服务重启后需重新填写；不会写入存档或 .env。留空可保留本会话已填的密钥。测试会产生少量模型调用费用。</p>
+</form></div>
 <div class="settings-section"><h3>飞行员 AI</h3><div id="settings-pilot"></div></div>
 <div class="settings-section"><h3>场景</h3><div id="settings-scenario"></div></div>
 <div class="settings-section"><h3>工具与帮助</h3><div id="settings-tools"></div></div>
@@ -70,5 +90,5 @@
 <link rel="stylesheet" href="./floating-windows.css">
 <link rel="stylesheet" href="./route-editor.css">
 <footer><button id="pause" class="primary">暂停 <kbd>SPACE</kbd></button><details id="speed-menu" class="dock-menu"><summary id="current-rate" aria-label="模拟速度">1×</summary><div id="speed-menu-content" class="dock-popover"></div></details><div id="rates"><button data-rate="1" class="active">1×</button><button data-rate="2">2×</button><button data-rate="4">4×</button><button data-rate="8">8×</button></div><span id="clock">T+00:00</span><div class="footer-right"><details id="route-menu" class="dock-menu"><summary>航路</summary><div id="route-menu-content" class="dock-popover"></div></details><details id="view-menu" class="dock-menu"><summary>视图</summary><div id="view-menu-content" class="dock-popover"></div></details><button id="radio-toggle" type="button" aria-expanded="false" aria-controls="radio-console">通联<span id="radio-unread" hidden></span></button><button id="focus">聚焦编队</button><button id="reset">重新开始</button></div></footer>
-<div class="legend"><i></i>友机 <i class="cyan"></i>航点 / 指挥路径 <span>W/S 沿视线移动 · A/D 横移 · Shift 上升 · Ctrl 下降</span></div>
-</main><script type="module" src="./main.js"></script></body></html>
+<div class="legend"><i></i>友机 <i class="cyan"></i>航点 / 指挥路径 <span>W/S 沿视线移动 · A/D 横移 · PageUp 上升 · PageDown 下降</span></div>
+</main><script type="module" src="./main.js"></script><script type="module" src="./api-settings.js"></script></body></html>

@@ -13,15 +13,15 @@
     "clRate": 0.65,
     "thrust": {
       "altitudes": [
-        0.0,
-        3000.0,
-        6000.0,
-        9000.0,
-        12000.0,
-        18000.0
+        0,
+        3000,
+        6000,
+        9000,
+        12000,
+        18000
       ],
       "speeds": [
-        0.0,
+        0,
         55.55555555555556,
         111.11111111111111,
         166.66666666666666,
@@ -94,28 +94,44 @@
   },
   "f16": {
     "name": "F-16A Block 10",
+    "visualModel": "f16",
+    "category": "fighter",
     "mass": 10000,
+    "emptyMassKg": 7600,
+    "payloadMassKg": 0,
+    "referenceFuelKg": 2400,
+    "fuelCapacityKg": 3305,
+    "engineCount": 1,
     "area": 27.900000000000002,
+    "spanM": 9.44,
+    "lengthM": 15.1,
     "cl0": 0.06,
     "clAlpha": 4.125296124941927,
     "clMax": 1.7,
-    "cd0": 0.02,
+    "criticalAlpha": 0.5061454830783556,
+    "cd0": 0.016399999999999998,
     "k": 0.15571497056369202,
     "maxG": 9,
     "bankRate": 2.0943951023931953,
     "clRate": 1.2,
+    "dimensions": {
+      "lengthM": 15.1,
+      "wingspanM": 9.44,
+      "bodyHeightM": 3
+    },
+    "groundClearanceM": 1.6,
     "thrust": {
       "altitudes": [
-        0.0,
-        3000.0,
-        6000.0,
-        9000.0,
-        12000.0,
-        15000.0,
-        20000.0
+        0,
+        3000,
+        6000,
+        9000,
+        12000,
+        15000,
+        20000
       ],
       "speeds": [
-        0.0,
+        0,
         55.55555555555556,
         111.11111111111111,
         166.66666666666666,
@@ -124,7 +140,7 @@
         333.3333333333333,
         388.88888888888886,
         444.44444444444446,
-        500.0,
+        500,
         555.5555555555555,
         666.6666666666666
       ],
@@ -229,118 +245,14 @@
         ]
       ]
     },
-    "provenance": {
-      "source": "Local War Thunder FM / f_16a_block_10.blkx",
-      "scope": "Effective point-mass FM with smoothly blended Mach polar and afterburner tables; not the original War Thunder solver",
-      "assumptions": "10000 kg fixed mass; cd0=.020; 9 G limit; 120 deg/s roll and 1.2/s CL response. Mach factors 1/2/3/5 interpreted as drag/slope/critical-lift/critical-AoA; cubic blending and post-peak continuation are prototype approximations. Thrust base interpreted as kgf; dry/wet mode multipliers applied to existing tables. No fuel burn or original multi-surface six-DOF solver."
-    },
     "engine": {
+      "afterburnerAvailable": true,
       "dryBoost": 1.01,
       "wetBoost": 1.3860000000000001,
       "responseSeconds": 1.1,
-      "afterburnerCoefficients": [
-        [
-          1.0,
-          1.1,
-          1.19,
-          1.27,
-          1.37,
-          1.55,
-          1.56,
-          1.5,
-          1.3,
-          1.3,
-          1.3,
-          1.2
-        ],
-        [
-          1.0,
-          1.1,
-          1.2,
-          1.3,
-          1.4,
-          1.5,
-          1.55,
-          1.7,
-          1.76,
-          1.76,
-          1.7,
-          1.6
-        ],
-        [
-          1.0,
-          1.1,
-          1.25,
-          1.4,
-          1.55,
-          1.7,
-          1.86,
-          2.1,
-          2.3,
-          2.5,
-          2.5,
-          2.3
-        ],
-        [
-          1.0,
-          1.1,
-          1.3,
-          1.5,
-          1.65,
-          1.75,
-          1.95,
-          2.15,
-          2.45,
-          2.6,
-          2.8,
-          2.6
-        ],
-        [
-          1.0,
-          1.1,
-          1.25,
-          1.45,
-          1.65,
-          1.95,
-          2.4,
-          3.1,
-          3.5,
-          3.85,
-          4.05,
-          3.7
-        ],
-        [
-          1.0,
-          1.1,
-          1.2,
-          1.4,
-          1.8,
-          2.2,
-          2.5,
-          2.95,
-          3.5,
-          3.85,
-          3.8,
-          3.5
-        ],
-        [
-          1.0,
-          1.1,
-          1.2,
-          1.4,
-          1.6,
-          2.2,
-          2.5,
-          3.2,
-          3.4,
-          3.5,
-          3.2,
-          3.0
-        ]
-      ],
       "dryModes": [
         {
-          "throttle": 0.0,
+          "throttle": 0,
           "fraction": 0.05
         },
         {
@@ -356,10 +268,126 @@
           "fraction": 0.852
         },
         {
-          "throttle": 1.0,
-          "fraction": 1.0
+          "throttle": 1,
+          "fraction": 1
         }
+      ],
+      "afterburnerCoefficients": [
+        [
+          1,
+          1.1,
+          1.19,
+          1.27,
+          1.37,
+          1.55,
+          1.56,
+          1.5,
+          1.3,
+          1.3,
+          1.3,
+          1.2
+        ],
+        [
+          1,
+          1.1,
+          1.2,
+          1.3,
+          1.4,
+          1.5,
+          1.55,
+          1.7,
+          1.76,
+          1.76,
+          1.7,
+          1.6
+        ],
+        [
+          1,
+          1.1,
+          1.25,
+          1.4,
+          1.55,
+          1.7,
+          1.86,
+          2.1,
+          2.3,
+          2.5,
+          2.5,
+          2.3
+        ],
+        [
+          1,
+          1.1,
+          1.3,
+          1.5,
+          1.65,
+          1.75,
+          1.95,
+          2.15,
+          2.45,
+          2.6,
+          2.8,
+          2.6
+        ],
+        [
+          1,
+          1.1,
+          1.25,
+          1.45,
+          1.65,
+          1.95,
+          2.4,
+          3.1,
+          3.5,
+          3.85,
+          4.05,
+          3.7
+        ],
+        [
+          1,
+          1.1,
+          1.2,
+          1.4,
+          1.8,
+          2.2,
+          2.5,
+          2.95,
+          3.5,
+          3.85,
+          3.8,
+          3.5
+        ],
+        [
+          1,
+          1.1,
+          1.2,
+          1.4,
+          1.6,
+          2.2,
+          2.5,
+          3.2,
+          3.4,
+          3.5,
+          3.2,
+          3
+        ]
       ]
+    },
+    "fuelFlow": {
+      "model": "thrust-specific",
+      "tsfcKgPerNs": 0.00002096083326676853,
+      "afterburnerMultiplier": 2.75,
+      "idleKgS": 0.19469999999999998
+    },
+    "configurations": {
+      "takeoff": {
+        "clMax": 1.95,
+        "cl0": 0.3
+      },
+      "landing": {
+        "clMax": 1.95,
+        "cl0": 0.3
+      }
     },
     "machPolar": {
       "1": {
@@ -388,7 +416,7 @@
         "peakMach": 0.96,
         "peak": 1.12,
         "slope": 0.12,
-        "limit": 10.0
+        "limit": 10
       }
     },
     "waveDrag": [
@@ -411,11 +439,836 @@
           "slope": -0.2,
           "limit": 0.1
         }
+      },
+      {
+        "cd": 0.0011465949820788528,
+        "factor": {
+          "critical": 0.88,
+          "peakMach": 1.2,
+          "peak": 2.1,
+          "slope": -0.4,
+          "limit": 1
+        }
+      },
+      {
+        "cd": 0.0016508960573476702,
+        "factor": {
+          "critical": 0.88,
+          "peakMach": 1.2,
+          "peak": 1.5,
+          "slope": -0.4,
+          "limit": 1
+        }
       }
     ],
     "limits": {
       "mach": 2.2,
       "ias": 431.94444444444446
+    },
+    "provenance": {
+      "source": "Local War Thunder FM / f_16a_block_10.blkx",
+      "sourceFile": "gamedata/flightmodels/fm/f_16a_block_10.blkx",
+      "sha256": "d56f981cdcf6fdcd5f2ab13a685c467aa800d0a5d10509cff0d4e930acb2fffd",
+      "dataVersion": 2,
+      "scope": "War Thunder configuration mapped to the current point-mass force integrator; not the original solver",
+      "direct": [
+        "Wing areas, span, clean/flapped lift polars, Mach factors, strength speed limits, per-engine thrust grids, number of engines, engine modes and spool time, empty mass and internal tank capacities"
+      ],
+      "approximations": [
+        "9 G pilot limit and bank/CL response are gameplay control limits",
+        "Clean CD0 is the area-weighted sum of source surface minimum drag coefficients",
+        "Induced factor is derived from source wing area/span/Oswald factor; body lift and trim drag are not resolved separately",
+        "Mach transitions use smooth blends",
+        "Engine thrust base is interpreted as kgf; fuel consumption as kg/(kgf hour) with mode multipliers",
+        "Reference load is empty plus oil and stated fuel; carried stores and burned fuel change mass"
+      ],
+      "referenceFuelKg": 2400
+    }
+  },
+  "j11": {
+    "name": "J-11",
+    "visualModel": "j11",
+    "category": "fighter",
+    "mass": 21600,
+    "emptyMassKg": 16900,
+    "payloadMassKg": 0,
+    "referenceFuelKg": 4700,
+    "fuelCapacityKg": 9400,
+    "engineCount": 2,
+    "area": 61.980000000000004,
+    "spanM": 14.7,
+    "lengthM": 21.93,
+    "cl0": 0.03,
+    "clAlpha": 3.724225668350351,
+    "clMax": 1.55,
+    "criticalAlpha": 0.4886921905584123,
+    "cd0": 0.019335882542755728,
+    "k": 0.17226266436566307,
+    "maxG": 9,
+    "bankRate": 1.7453292519943295,
+    "clRate": 1.2,
+    "dimensions": {
+      "lengthM": 21.93,
+      "wingspanM": 14.7,
+      "bodyHeightM": 4
+    },
+    "groundClearanceM": 2.2,
+    "thrust": {
+      "altitudes": [
+        0,
+        2000,
+        5000,
+        8000,
+        11000,
+        15000,
+        25000
+      ],
+      "speeds": [
+        0,
+        55.55555555555556,
+        111.11111111111111,
+        166.66666666666666,
+        222.22222222222223,
+        277.77777777777777,
+        333.3333333333333,
+        388.88888888888886,
+        444.44444444444446,
+        500,
+        555.5555555555555,
+        666.6666666666666
+      ],
+      "values": [
+        [
+          141592.33536,
+          138579.73248,
+          132554.52672,
+          129541.92384,
+          129541.92384,
+          130295.07456,
+          131048.22528,
+          131801.376,
+          132554.52672,
+          132554.52672,
+          132554.52672,
+          150479.513856
+        ],
+        [
+          108453.70367999999,
+          106947.40224,
+          106947.40224,
+          108453.70367999999,
+          111466.30656,
+          114478.90944,
+          117491.51232000001,
+          120504.1152,
+          123516.71807999999,
+          123516.71807999999,
+          123516.71807999999,
+          123516.71807999999
+        ],
+        [
+          79833.97632,
+          76821.37344,
+          76821.37344,
+          81340.27776000001,
+          90378.0864,
+          93390.68928,
+          96403.29216,
+          97909.59360000001,
+          99415.89504,
+          100922.19648000001,
+          100922.19648000001,
+          100922.19648000001
+        ],
+        [
+          43682.74176,
+          42929.59104,
+          46695.34464,
+          58745.756160000004,
+          64770.96192,
+          71549.3184,
+          79833.97632,
+          84352.88064,
+          87365.48352,
+          88871.78495999999,
+          90378.0864,
+          90378.0864
+        ],
+        [
+          28619.72736,
+          28619.72736,
+          31632.33024,
+          36151.23456,
+          42176.44032,
+          49707.94752,
+          61758.359039999996,
+          67783.56480000001,
+          72302.46912,
+          76068.22272,
+          78327.67488,
+          79833.97632
+        ],
+        [
+          16569.31584,
+          16569.31584,
+          18075.61728,
+          21088.22016,
+          25607.124480000002,
+          30126.0288,
+          34644.93312,
+          37657.536,
+          40670.138880000006,
+          40670.138880000006,
+          39163.83744,
+          39163.83744
+        ],
+        [
+          5723.945471999999,
+          4518.90432,
+          3765.7536,
+          3313.863168,
+          3765.7536,
+          4518.90432,
+          6025.20576,
+          6025.20576,
+          6025.20576,
+          6025.20576,
+          6025.20576,
+          6025.20576
+        ]
+      ]
+    },
+    "engine": {
+      "afterburnerAvailable": true,
+      "dryBoost": 1.01,
+      "wetBoost": 1.5525,
+      "responseSeconds": 1.2,
+      "dryModes": [
+        {
+          "throttle": 0,
+          "fraction": 0.05
+        },
+        {
+          "throttle": 0.3,
+          "fraction": 0.2
+        },
+        {
+          "throttle": 0.6,
+          "fraction": 0.5
+        },
+        {
+          "throttle": 0.9,
+          "fraction": 0.852
+        },
+        {
+          "throttle": 1,
+          "fraction": 1
+        }
+      ],
+      "afterburnerCoefficients": [
+        [
+          1.04,
+          1.06,
+          1.1,
+          1.15,
+          1.2,
+          1.27,
+          1.35,
+          1.43,
+          1.52,
+          1.62,
+          1.65,
+          1.4
+        ],
+        [
+          1.1,
+          1.1,
+          1.14,
+          1.18,
+          1.22,
+          1.28,
+          1.34,
+          1.42,
+          1.51,
+          1.65,
+          1.7,
+          1.75
+        ],
+        [
+          1.05,
+          1.1,
+          1.14,
+          1.18,
+          1.18,
+          1.26,
+          1.36,
+          1.48,
+          1.6,
+          1.72,
+          1.83,
+          1.89
+        ],
+        [
+          1.1,
+          1.2,
+          1.24,
+          1.18,
+          1.25,
+          1.3,
+          1.34,
+          1.4,
+          1.5,
+          1.63,
+          1.77,
+          2.15
+        ],
+        [
+          1.1,
+          1.2,
+          1.24,
+          1.24,
+          1.26,
+          1.28,
+          1.24,
+          1.35,
+          1.4,
+          1.48,
+          1.6,
+          1.9
+        ],
+        [
+          1.1,
+          1.2,
+          1.21,
+          1.2,
+          1.2,
+          1.22,
+          1.25,
+          1.32,
+          1.38,
+          1.55,
+          1.8,
+          2.2
+        ],
+        [
+          1.1,
+          1.2,
+          1.22,
+          1.25,
+          1.27,
+          1.3,
+          1.4,
+          1.6,
+          1.8,
+          2,
+          2.2,
+          2.3
+        ]
+      ]
+    },
+    "fuelFlow": {
+      "model": "thrust-specific",
+      "tsfcKgPerNs": 0.000023226869295608367,
+      "afterburnerMultiplier": 2.37,
+      "idleKgS": 0.4608
+    },
+    "configurations": {
+      "takeoff": {
+        "clMax": 1.6,
+        "cl0": 0.28
+      },
+      "landing": {
+        "clMax": 1.6,
+        "cl0": 0.28
+      }
+    },
+    "machPolar": {
+      "1": {
+        "critical": 0.9,
+        "peakMach": 1.1,
+        "peak": 2.75,
+        "slope": -0.2,
+        "limit": 0.01
+      },
+      "2": {
+        "critical": 0.4,
+        "peakMach": 1.1,
+        "peak": 1.4,
+        "slope": -0.4,
+        "limit": 0.2
+      },
+      "3": {
+        "critical": 0.4,
+        "peakMach": 1.4,
+        "peak": 0.75,
+        "slope": -0.3,
+        "limit": 0.4
+      },
+      "5": {
+        "critical": 0.4,
+        "peakMach": 0.85,
+        "peak": 0.67,
+        "slope": 0.1,
+        "limit": 20
+      }
+    },
+    "waveDrag": [
+      {
+        "cd": 0.0071,
+        "factor": {
+          "critical": 0.9,
+          "peakMach": 1.1,
+          "peak": 2.75,
+          "slope": -0.2,
+          "limit": 0.01
+        }
+      },
+      {
+        "cd": 0.007702484672474991,
+        "factor": {
+          "critical": 0.9,
+          "peakMach": 1.15,
+          "peak": 2.05,
+          "slope": 0.2,
+          "limit": 10.1
+        }
+      },
+      {
+        "cd": 0.001774443368828654,
+        "factor": {
+          "critical": 0.88,
+          "peakMach": 1.2,
+          "peak": 2.1,
+          "slope": -0.4,
+          "limit": 1
+        }
+      },
+      {
+        "cd": 0.002758954501452081,
+        "factor": {
+          "critical": 0.88,
+          "peakMach": 1.2,
+          "peak": 1.5,
+          "slope": -0.4,
+          "limit": 1
+        }
+      }
+    ],
+    "limits": {
+      "mach": 2.35,
+      "ias": 427.77777777777777
+    },
+    "provenance": {
+      "source": "Local War Thunder FM / j_11.blkx",
+      "sourceFile": "gamedata/flightmodels/fm/j_11.blkx",
+      "sha256": "e40fbefaf7149124d9435ea41425c640e57ca05ff820feec063b58383f4ba23e",
+      "dataVersion": 2,
+      "scope": "War Thunder configuration mapped to the current point-mass force integrator; not the original solver",
+      "direct": [
+        "Wing areas, span, clean/flapped lift polars, Mach factors, strength speed limits, per-engine thrust grids, number of engines, engine modes and spool time, empty mass and internal tank capacities"
+      ],
+      "approximations": [
+        "9 G pilot limit and bank/CL response are gameplay control limits",
+        "Clean CD0 is the area-weighted sum of source surface minimum drag coefficients",
+        "Induced factor is derived from source wing area/span/Oswald factor; body lift and trim drag are not resolved separately",
+        "Mach transitions use smooth blends",
+        "Engine thrust base is interpreted as kgf; fuel consumption as kg/(kgf hour) with mode multipliers",
+        "Reference load is empty plus oil and stated fuel; carried stores and burned fuel change mass"
+      ],
+      "referenceFuelKg": 4700
+    }
+  },
+  "su27": {
+    "name": "Su-27",
+    "visualModel": "su27",
+    "category": "fighter",
+    "mass": 21030,
+    "emptyMassKg": 16330,
+    "payloadMassKg": 0,
+    "referenceFuelKg": 4700,
+    "fuelCapacityKg": 9400,
+    "engineCount": 2,
+    "area": 61.980000000000004,
+    "spanM": 14.7,
+    "lengthM": 21.93,
+    "cl0": 0.03,
+    "clAlpha": 3.724225668350351,
+    "clMax": 1.55,
+    "criticalAlpha": 0.4886921905584123,
+    "cd0": 0.019335882542755728,
+    "k": 0.17226266436566307,
+    "maxG": 9,
+    "bankRate": 1.7453292519943295,
+    "clRate": 1.2,
+    "dimensions": {
+      "lengthM": 21.93,
+      "wingspanM": 14.7,
+      "bodyHeightM": 4
+    },
+    "groundClearanceM": 2.2,
+    "thrust": {
+      "altitudes": [
+        0,
+        2000,
+        5000,
+        8000,
+        11000,
+        15000,
+        25000
+      ],
+      "speeds": [
+        0,
+        55.55555555555556,
+        111.11111111111111,
+        166.66666666666666,
+        222.22222222222223,
+        277.77777777777777,
+        333.3333333333333,
+        388.88888888888886,
+        444.44444444444446,
+        500,
+        555.5555555555555,
+        666.6666666666666
+      ],
+      "values": [
+        [
+          141592.33536,
+          138579.73248,
+          132554.52672,
+          129541.92384,
+          129541.92384,
+          130295.07456,
+          131048.22528,
+          131801.376,
+          132554.52672,
+          132554.52672,
+          132554.52672,
+          150479.513856
+        ],
+        [
+          108453.70367999999,
+          106947.40224,
+          106947.40224,
+          108453.70367999999,
+          111466.30656,
+          114478.90944,
+          117491.51232000001,
+          120504.1152,
+          123516.71807999999,
+          123516.71807999999,
+          123516.71807999999,
+          123516.71807999999
+        ],
+        [
+          79833.97632,
+          76821.37344,
+          76821.37344,
+          81340.27776000001,
+          90378.0864,
+          93390.68928,
+          96403.29216,
+          97909.59360000001,
+          99415.89504,
+          100922.19648000001,
+          100922.19648000001,
+          100922.19648000001
+        ],
+        [
+          43682.74176,
+          42929.59104,
+          46695.34464,
+          58745.756160000004,
+          64770.96192,
+          71549.3184,
+          79833.97632,
+          84352.88064,
+          87365.48352,
+          88871.78495999999,
+          90378.0864,
+          90378.0864
+        ],
+        [
+          28619.72736,
+          28619.72736,
+          31632.33024,
+          36151.23456,
+          42176.44032,
+          49707.94752,
+          61758.359039999996,
+          67783.56480000001,
+          72302.46912,
+          76068.22272,
+          78327.67488,
+          79833.97632
+        ],
+        [
+          16569.31584,
+          16569.31584,
+          18075.61728,
+          21088.22016,
+          25607.124480000002,
+          30126.0288,
+          34644.93312,
+          37657.536,
+          40670.138880000006,
+          40670.138880000006,
+          39163.83744,
+          39163.83744
+        ],
+        [
+          5723.945471999999,
+          4518.90432,
+          3765.7536,
+          3313.863168,
+          3765.7536,
+          4518.90432,
+          6025.20576,
+          6025.20576,
+          6025.20576,
+          6025.20576,
+          6025.20576,
+          6025.20576
+        ]
+      ]
+    },
+    "engine": {
+      "afterburnerAvailable": true,
+      "dryBoost": 1.01,
+      "wetBoost": 1.5525,
+      "responseSeconds": 1.2,
+      "dryModes": [
+        {
+          "throttle": 0,
+          "fraction": 0.05
+        },
+        {
+          "throttle": 0.3,
+          "fraction": 0.2
+        },
+        {
+          "throttle": 0.6,
+          "fraction": 0.5
+        },
+        {
+          "throttle": 0.9,
+          "fraction": 0.852
+        },
+        {
+          "throttle": 1,
+          "fraction": 1
+        }
+      ],
+      "afterburnerCoefficients": [
+        [
+          1.04,
+          1.06,
+          1.1,
+          1.15,
+          1.2,
+          1.27,
+          1.35,
+          1.43,
+          1.52,
+          1.62,
+          1.65,
+          1.4
+        ],
+        [
+          1.1,
+          1.1,
+          1.14,
+          1.18,
+          1.22,
+          1.28,
+          1.34,
+          1.42,
+          1.51,
+          1.65,
+          1.7,
+          1.75
+        ],
+        [
+          1.05,
+          1.1,
+          1.14,
+          1.18,
+          1.18,
+          1.26,
+          1.36,
+          1.48,
+          1.6,
+          1.72,
+          1.83,
+          1.89
+        ],
+        [
+          1.1,
+          1.2,
+          1.24,
+          1.18,
+          1.25,
+          1.3,
+          1.34,
+          1.4,
+          1.5,
+          1.63,
+          1.77,
+          2.15
+        ],
+        [
+          1.1,
+          1.2,
+          1.24,
+          1.24,
+          1.26,
+          1.28,
+          1.24,
+          1.35,
+          1.4,
+          1.48,
+          1.6,
+          1.9
+        ],
+        [
+          1.1,
+          1.2,
+          1.21,
+          1.2,
+          1.2,
+          1.22,
+          1.25,
+          1.32,
+          1.38,
+          1.55,
+          1.8,
+          2.2
+        ],
+        [
+          1.1,
+          1.2,
+          1.22,
+          1.25,
+          1.27,
+          1.3,
+          1.4,
+          1.6,
+          1.8,
+          2,
+          2.2,
+          2.3
+        ]
+      ]
+    },
+    "fuelFlow": {
+      "model": "thrust-specific",
+      "tsfcKgPerNs": 0.000023226869295608367,
+      "afterburnerMultiplier": 2.37,
+      "idleKgS": 0.4608
+    },
+    "configurations": {
+      "takeoff": {
+        "clMax": 1.6,
+        "cl0": 0.28
+      },
+      "landing": {
+        "clMax": 1.6,
+        "cl0": 0.28
+      }
+    },
+    "machPolar": {
+      "1": {
+        "critical": 0.9,
+        "peakMach": 1.1,
+        "peak": 2.75,
+        "slope": -0.2,
+        "limit": 0.01
+      },
+      "2": {
+        "critical": 0.4,
+        "peakMach": 1.1,
+        "peak": 1.4,
+        "slope": -0.4,
+        "limit": 0.2
+      },
+      "3": {
+        "critical": 0.4,
+        "peakMach": 1.4,
+        "peak": 0.75,
+        "slope": -0.3,
+        "limit": 0.4
+      },
+      "5": {
+        "critical": 0.4,
+        "peakMach": 0.85,
+        "peak": 0.67,
+        "slope": 0.1,
+        "limit": 20
+      }
+    },
+    "waveDrag": [
+      {
+        "cd": 0.0071,
+        "factor": {
+          "critical": 0.9,
+          "peakMach": 1.1,
+          "peak": 2.75,
+          "slope": -0.2,
+          "limit": 0.01
+        }
+      },
+      {
+        "cd": 0.007702484672474991,
+        "factor": {
+          "critical": 0.9,
+          "peakMach": 1.15,
+          "peak": 2.05,
+          "slope": 0.2,
+          "limit": 10.1
+        }
+      },
+      {
+        "cd": 0.001774443368828654,
+        "factor": {
+          "critical": 0.88,
+          "peakMach": 1.2,
+          "peak": 2.1,
+          "slope": -0.4,
+          "limit": 1
+        }
+      },
+      {
+        "cd": 0.002758954501452081,
+        "factor": {
+          "critical": 0.88,
+          "peakMach": 1.2,
+          "peak": 1.5,
+          "slope": -0.4,
+          "limit": 1
+        }
+      }
+    ],
+    "limits": {
+      "mach": 2.35,
+      "ias": 427.77777777777777
+    },
+    "provenance": {
+      "source": "Local War Thunder FM / su_27.blkx",
+      "sourceFile": "gamedata/flightmodels/fm/su_27.blkx",
+      "sha256": "574af74d4c84ef41c69e0ff2429d4f19d44a6b0e1a5394a4ad3dd5a7020b8d94",
+      "dataVersion": 2,
+      "scope": "War Thunder configuration mapped to the current point-mass force integrator; not the original solver",
+      "direct": [
+        "Wing areas, span, clean/flapped lift polars, Mach factors, strength speed limits, per-engine thrust grids, number of engines, engine modes and spool time, empty mass and internal tank capacities"
+      ],
+      "approximations": [
+        "9 G pilot limit and bank/CL response are gameplay control limits",
+        "Clean CD0 is the area-weighted sum of source surface minimum drag coefficients",
+        "Induced factor is derived from source wing area/span/Oswald factor; body lift and trim drag are not resolved separately",
+        "Mach transitions use smooth blends",
+        "Engine thrust base is interpreted as kgf; fuel consumption as kg/(kgf hour) with mode multipliers",
+        "Reference load is empty plus oil and stated fuel; carried stores and burned fuel change mass"
+      ],
+      "referenceFuelKg": 4700
     }
   }
 }

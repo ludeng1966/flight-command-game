@@ -1,0 +1,80 @@
+{
+  "map": "air_skyscraper_city",
+  "defaultSpawnMode": "airborne",
+  "bullseye": {
+    "name": "BAY-REF",
+    "position": [
+      -18000,
+      0,
+      100
+    ]
+  },
+  "airport": {
+    "id": "BAY",
+    "center": [
+      -18000,
+      0
+    ],
+    "elevation": 100
+  },
+  "units": [
+    {
+      "id": "blue-1",
+      "callsign": "ALPHA 01",
+      "team": "blue",
+      "profile": "f16",
+      "color": "#6fffad",
+      "position": [
+        -10000,
+        -7000,
+        6500
+      ],
+      "heading": 0,
+      "speed": 250
+    },
+    {
+      "id": "blue-2",
+      "callsign": "BRAVO 02",
+      "team": "blue",
+      "profile": "f16",
+      "color": "#6fe3ff",
+      "position": [
+        -6000,
+        -7000,
+        6500
+      ],
+      "heading": 0,
+      "speed": 250
+    },
+    {
+      "id": "red-1",
+      "callsign": "RED 01",
+      "team": "red",
+      "profile": "f16",
+      "color": "#ff706e",
+      "position": [
+        -10000,
+        27000,
+        6500
+      ],
+      "heading": 180,
+      "speed": 250
+    },
+    {
+      "id": "red-2",
+      "callsign": "RED 02",
+      "team": "red",
+      "profile": "f16",
+      "color": "#ffa05e",
+      "position": [
+        -6000,
+        27000,
+        6500
+      ],
+      "heading": 180,
+      "speed": 250
+    }
+  ],
+  "battleMode": "ai_commander_duel",
+  "playerTeam": "blue"
+}

@@ -1,8 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {World} from '../sim/world.js';import {applyPlan,commandContext} from '../sim/orders.js';
-import {installAttackTask,applyAttackDecision,attackTaskEvent,attackObservation,monitorAttackTasks,attackTaskContext} from '../sim/attack-task.js';
+import {installAttackTask,applyAttackDecision,attackTaskEvent,attackObservation,monitorAttackTasks,attackTaskContext,validateAttackDecision,recordAttackRejection} from '../sim/attack-task.js';
 import {stepRadars} from '../sim/radar.js';import {stepWeapons,applyWeaponOrder} from '../sim/weapons.js';
-import {createAttackPilot} from '../server/attack-pilot.mjs';import {AttackPilot} from '../game/attack-pilot.js';
+import {createAttackPilot,normalizeAttackProposal} from '../server/attack-pilot.mjs';import {AttackPilot} from '../game/attack-pilot.js';
 import {compileMilitaryInterpretation,EMPTY_PARAMETERS} from '../server/military-planner.mjs';
 import {captureCommandResult,inspectCommandResult} from '../sim/pilot-result.js';
 import {captureWorld,restoreWorld,encodeState,decodeState} from '../sim/save-state.js';import {PilotAssistant} from '../server/pilot-assistant.mjs';
@@ -15,6 +15,35 @@ const act=(w,d,count=own(w).attackTask.decisionCount)=>applyAttackDecision(w,own
 const sense=(w,s)=>{for(let i=0;i<Math.round(s*20);i++){w.time+=.05;stepRadars(w,.05);stepWeapons(w,.05);monitorAttackTasks(w);}};
 function prepared(){const w=create(),u=own(w);w.addRadarPracticeTarget(u.id);installAttackTask(w,u,order());act(w,decision('radar_mode',{mode:'pd'}));sense(w,1.1);act(w,decision('radar_lock',{targetId:'tgt-1'}));sense(w,1);act(w,decision('select',{targetId:'tgt-1',modelId}));sense(w,.4);return w;}
 const body=w=>({requestId:'attack-test',unitId:'blue-1',taskId:own(w).attackTask?.id??'none',context:commandContext(w,'blue-1'),observation:attackObservation(w,own(w))});
+
+test('真实云模型提前声称锁定、选弹、发射的回归：拒绝措辞且截获请求不等于稳定锁定',()=>{
+ const w=prepared(),u=own(w);
+ for(const d of [decision('radar_lock',{targetId:'tgt-1',message:'雷达已锁定目标，准备选择导弹'}),decision('select',{modelId,targetId:'tgt-1',message:'已选择AIM-120B并锁定目标'}),decision('launch',{modelId,targetId:'tgt-1',quantity:1,message:'已发射一枚'})])assert.throws(()=>validateAttackDecision(d,u,w.time),/尚未执行/);
+ u.radar.phase='search';act(w,decision('radar_lock',{targetId:'tgt-1',message:'请求截获目标'}));assert.match(u.attackTask.events.at(-1).text,/已请求截获.*实测/);assert.notEqual(u.radar.phase,'locked');
+});
+test('发射建议被实时状态拒绝时，事实时间线明确未执行且不产生虚假发射',()=>{
+ const w=prepared(),u=own(w),before=u.weapons.inventory[modelId];u.radar.canIlluminate=false;
+ try{act(w,decision('launch',{modelId,targetId:'tgt-1',quantity:1}));}catch(error){recordAttackRejection(w,u,error,'launch');}
+ assert.equal(w.missiles.length,0);assert.equal(u.weapons.inventory[modelId],before);assert.equal(u.attackTask.events.at(-1).type,'rejected');assert.match(u.attackTask.events.at(-1).text,/发射决定未执行，未扣弹/);assert.equal(u.attackTask.retryCount,1);
+});
+test('同任务编号但本机位置改变不能复用上一轮战术缓存',async()=>{
+ const w=create();installAttackTask(w,own(w),order());let calls=0;
+ const service=createAttackPilot({async completePilot(){calls++;return {value:decision('radar_mode',{mode:'pd',message:'拟开启PD搜索'})};}});
+ const input=body(w);await service(input);await service(input);assert.equal(calls,1);
+ const moved=structuredClone(input);moved.context.units[0].position[0]+=1000;await service(moved);assert.equal(calls,2);
+});
+test('规范化不补目标、武器或发射数量，原始判断保留在响应中',async()=>{
+ const raw=decision('select',{modelId,targetId:'tgt-1',quantity:1,message:'已选定AIM-120'}),before=structuredClone(raw),n=normalizeAttackProposal(raw);
+ assert.deepEqual(raw,before);assert.equal(n.decision.quantity,null);assert.equal(n.decision.targetId,'tgt-1');assert.equal(n.decision.modelId,modelId);assert.match(n.decision.message,/拟选择/);
+ const w=prepared(),missing=normalizeAttackProposal(decision('launch',{targetId:'tgt-1',modelId,quantity:null}));assert.throws(()=>validateAttackDecision(missing.decision,own(w),w.time),/额度/);
+ const hidden=normalizeAttackProposal(decision('launch',{targetId:'hidden',modelId,quantity:1}));assert.throws(()=>validateAttackDecision(hidden.decision,own(w),w.time),/本机刚刚/);
+ const next=create();installAttackTask(next,own(next),order());const proposal=decision('radar_mode',{mode:'pd',quantity:2,message:'已开启雷达，目标就在前方'}),service=createAttackPilot({async completePilot(){return {value:proposal};}}),reply=await service(body(next));
+ assert.deepEqual(reply.originalModelDecision,proposal);assert.equal(reply.decision.quantity,null);assert.equal(reply.decision.message,'拟设置雷达搜索模式');assert.equal(reply.modelInvoked,true);
+});
+test('执行事实不复用模型自由措辞，判断理由单独保留',()=>{
+ const w=create(),u=own(w);installAttackTask(w,u,order());const message='拟开启PD，推测前方目标已经转向';act(w,decision('radar_mode',{mode:'pd',message}));
+ assert.equal(u.attackTask.lastDecision.message,message);assert.match(u.attackTask.events.at(-1).text,/雷达模式已设为PD/);assert.doesNotMatch(u.attackTask.events.at(-1).text,/推测|已经转向/);
+});
 
 test('只接收攻击任务不立即开火；模型逐步搜索、锁定、选弹后才发射真实实体',()=>{
  const w=prepared(),u=own(w);assert.equal(u.attackTask.selectedModelId,modelId);assert.equal(w.missiles.length,0);assert.equal(u.weapons.ready,true);const before=u.weapons.inventory[modelId];

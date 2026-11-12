@@ -1,5 +1,6 @@
 import {radioAltitude,radioSpeed,radioDistance} from './units.js';
-import {G,thrustAt,dryFraction,dragAt,density} from './flight.js';
+import {G,thrustAt,dryFraction,dragAt,density,hasAfterburner} from './flight.js';
+import {rotationSpeed} from './airport-performance.js';
 import {energyEnvelope} from './energy.js';
 import {distanceValue,speedValue,altitudeValue,unitLabels} from './units.js';
 export const needsDeparturePlan=order=>order?.intent==='takeoff'&&['reduced_thrust','derated','flex','dry','military_power','full_thrust','afterburner'].includes(order.mode);
@@ -8,9 +9,10 @@ export function evaluateDeparturePlan(world,unit,order,request){
   const a=world.airportOps.airport,r=world.airportOps.runway(order.runway),p=unit.profile;
   const {throttle,afterburner,distanceM}=request,altitudeM=request.altitudeM??order.altitudeM??a.elevation+1200;
   if(![throttle,afterburner,distanceM,altitudeM].every(Number.isFinite)||throttle<0||throttle>1||afterburner<0||afterburner>1||distanceM<3000||distanceM>60000||altitudeM<a.elevation+300||altitudeM>15000||order.altitudeM!==null&&order.altitudeM!==undefined&&Math.abs(altitudeM-order.altitudeM)>1)return null;
-  if(order.mode==='military_power'&&(throttle!==1||afterburner!==0)||order.mode==='dry'&&afterburner!==0||['full_thrust','afterburner'].includes(order.mode)&&(throttle!==1||afterburner!==1))return null;
+  if(order.mode==='afterburner'&&!hasAfterburner(p))return null;
+  if(order.mode==='military_power'&&(throttle!==1||afterburner!==0)||order.mode==='dry'&&afterburner!==0||['full_thrust','afterburner'].includes(order.mode)&&(throttle!==1||afterburner!==(hasAfterburner(p)?1:0)))return null;
   let speed=0,distance=0,time=0,rotation=0;
-  while(time<120){rotation=Math.max(p.airportRotationSpeed??105,energyEnvelope(p,a.elevation,Math.max(60,speed)).safeSpeed(1)*1.45);if(speed>=rotation)break;
+  while(time<120){rotation=rotationSpeed(unit,a.elevation,speed);if(speed>=rotation)break;
     const acceleration=(thrustAt(p,a.elevation,Math.max(1,speed),afterburner)*dryFraction(p,throttle)-dragAt(p,a.elevation,speed,.2)-p.mass*.02*G)/p.mass;
     speed=Math.max(0,speed+acceleration*.1);distance+=speed*.1;time+=.1;if(distance>r.length-350)break;}
   if(speed<rotation||distance>r.length-350)return null;
@@ -26,7 +28,7 @@ export function evaluateDeparturePlan(world,unit,order,request){
 export function departureOptions(world,unit,order){
   if(!needsDeparturePlan(order)||!world.airportOps)return [];
   const reduced=['reduced_thrust','derated','flex','dry','military_power'].includes(order.mode),options=[];
-  const powers=order.mode==='military_power'?[[1,0]]:reduced?[[.8,0],[.9,0],[1,0]]:[[1,1]];
+  const powers=order.mode==='military_power'?[[1,0]]:reduced?[[.8,0],[.9,0],[1,0]]:[[1,hasAfterburner(unit.profile)?1:0]];
   for(const [throttle,afterburner]of powers)for(const distanceM of [6000,10000,14000]){
     const option=evaluateDeparturePlan(world,unit,order,{throttle,afterburner,distanceM});if(option)options.push(option);
   }

@@ -1,12 +1,22 @@
+import {upgradeWorldSensors} from '../sim/radar-v2.js';
+import {commandUnits} from '../sim/battle-observation.js';
+import {notePlayerOrder} from '../sim/command-scope.js';
+import {initDuel} from './duel.js';
 import {initControlAuthority} from './control-authority.js';
 import {controlAuthority,requestHandoff} from '../sim/control-authority.js';
 import {initLive,renderLive,pickUnit,focusLive,moveLiveCamera,setFollowLive,getFollowLiveId} from '../three3d/scene.js';
 import {World} from '../sim/world.js';
+import {FrameStepper} from './frame-stepper.js';
+import {initDatalinkControl} from './datalink-control.js';
 import {TerrainHeight} from '../sim/terrain.js';
 import {basis} from '../sim/flight.js';
 import {initVoiceCommands} from './voice-command.js';
+import {createCommanderApi,registerCommanderTools} from './commander-api.js';
 import {initRouteEditor} from './route-editor.js';
 import {PlannerClient} from './planner-client.js';
+import {CommandPlanner} from './command-planner.js';
+import {TacticalCommands} from './tactical-session.js';
+import {initTacticalControls} from './tactical-controls.js';
 import {RouteReplanner} from './route-replanner.js';
 import {showSoft,hideSoft} from './ui-motion.js';
 import {PilotSupervisor} from './pilot-supervisor.js';
@@ -35,22 +45,25 @@ import {getLiveView,restoreLiveView} from '../three3d/scene.js';
 import {initLanguages} from './language.js';
 const $=s=>document.querySelector(s);
 try{setUnitSystem(localStorage.getItem('flight-unit-system'));}catch{setUnitSystem('metric');}
-const canvas=$('#scene');let world,selectedId,playing=true,rate=1,acc=0,last=0,uiClock=0;
+const stepper=new FrameStepper();
+const canvas=$('#scene');let world,selectedId,playing=true,rate=1,last=0,uiClock=0;
 const routeRadio=$('#radio-console');
 if(routeRadio)new ResizeObserver(entries=>canvas.parentNode.style.setProperty('--route-radio-height',Math.ceil(entries[0].borderBoxSize?.[0]?.blockSize??entries[0].contentRect.height)+'px')).observe(routeRadio);
 let mapPoint=null,voiceControl=null,routeEditor=null,messageTimer=null,planner=null,replanner=null,predictionAt=0,predictionBusy=false,pilotSupervisor=null;
-let radarPilot=null,attackPilot=null,rwrPilot=null,rwrControl=null;
+let radarPilot=null,attackPilot=null,rwrPilot=null,rwrControl=null,duel=null,tacticalCommands=null,tacticalControls=null;
+const blueTransport=(...args)=>(duel?duel.traceFetch('blue'):fetch)(...args);
 const cameraKeys=new Set();
-let airportControl=null,atcControl=null,radarControl=null,weaponControl=null,trainingCoach=null,missionReport=null,aircraftHud=null,authorityHud=null;
-const cameraCodes=new Set(['KeyW','KeyA','KeyS','KeyD','ShiftLeft','ShiftRight','ControlLeft','ControlRight']);
-const editing=el=>el?.matches('input,textarea,select,[contenteditable="true"]');
+let datalinkControl=null,airportControl=null,atcControl=null,radarControl=null,weaponControl=null,trainingCoach=null,missionReport=null,aircraftHud=null,authorityHud=null,appearanceSettings=null;
+const cameraCodes=new Set(['KeyW','KeyA','KeyS','KeyD','PageUp','PageDown']);
+const editing=el=>!!el?.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])');
 function cameraInput(){
+  if(canvas.parentNode.classList.contains('tactical-wheel-open'))return {forward:0,right:0,up:0};
   const has=code=>cameraKeys.has(code)?1:0;
   return {forward:has('KeyW')-has('KeyS'),right:has('KeyD')-has('KeyA'),
-    up:Math.max(has('ShiftLeft'),has('ShiftRight'))-Math.max(has('ControlLeft'),has('ControlRight'))};
+    up:has('PageUp')-has('PageDown')};
 }
 document.addEventListener('keydown',e=>{
-  if(!cameraCodes.has(e.code)||editing(e.target))return;
+  if(e.defaultPrevented||e.isComposing||e.ctrlKey||e.metaKey||e.altKey||!cameraCodes.has(e.code)||editing(e.target))return;
   cameraKeys.add(e.code);e.preventDefault();
 });
 document.addEventListener('keyup',e=>cameraKeys.delete(e.code));
@@ -64,18 +77,19 @@ function endPlacement(){routeEditor?.cancel();}
 function syncUnitControls(){
   const system=getUnitSystem();world.unitSystem=system;$('#unit-system').value=system;
 }
-function select(id){routeEditor?.cancel();endPlacement();if(selectedId!==id){world.prediction={points:[],warnings:[]};predictionAt=0;}selectedId=id;const u=selected();if(getFollowLiveId()!==null&&getFollowLiveId()!==id)setFollowLive(u.alive===false?null:u);syncUnitControls();trainingCoach?.onSelect(id);updateUI();}
+function select(id){if(!commandUnits(world).some(u=>u.id===id))return;routeEditor?.cancel();endPlacement();if(selectedId!==id){world.prediction={points:[],warnings:[]};predictionAt=0;}selectedId=id;const u=selected();if(getFollowLiveId()!==null&&getFollowLiveId()!==id)setFollowLive(u.alive===false?null:u);syncUnitControls();trainingCoach?.onSelect(id);updateUI();}
 function updateUI(){
   $('#stage').dataset.grounded=String(selected().surface?.grounded===true);
   airportControl?.update();
   atcControl?.update();
-  radarControl?.update();rwrControl?.update();
+  radarControl?.update();rwrControl?.update();datalinkControl?.update();
   weaponControl?.update();
   trainingCoach?.update();
   missionReport?.update();
-  aircraftHud?.update();authorityHud?.update();
+  aircraftHud?.update();authorityHud?.update();appearanceSettings?.update();
+  tacticalControls?.update();
   for(const id of ['hold','clear','route-edit'])document.getElementById(id).disabled=selected().surface?.grounded===true||controlAuthority(world,selected()).owner!=='commander';
-  for(const u of world.units){
+  for(const u of commandUnits(world)){
     const el=document.getElementById(u.id),metrics=el.querySelector('.metrics');el.classList.toggle('selected',u.id===selectedId);
     const role=u.flightRole?.role,roleText=role==='lead'?'长机':role==='wingman'?'僚机':'未分工';
     el.querySelector('.unit-title span').textContent=`${roleText} · ${u.profile.name}`;
@@ -105,39 +119,50 @@ function updateUI(){
   $('#pause').innerHTML=playing?'暂停 <kbd>SPACE</kbd>':'继续 <kbd>SPACE</kbd>';
   $('#status').textContent=`${playing?'运行':'已暂停'} · ${rate}×`;
 }
-function toggle(){world.revision++;playing=!playing;acc=0;updateUI();}
+function setRunning(value){playing=value===true&&duel?.canResume()!==false;stepper.reset();updateUI();}
+function toggle(){setRunning(!playing);}
 async function boot(){
   await initLanguages();
-  const [scenario,profiles,terrain,landmask,heightfield]=await Promise.all([read('../data/scenarios/demo.json'),read('../data/aircraft.json'),read('../terrain/air_skyscraper_city_contours.json'),read('../terrain/air_skyscraper_city_landmask.json'),TerrainHeight.load('../terrain/air_skyscraper_city')]);
-  let spawnMode=scenario.defaultSpawnMode??'stands';try{const saved=localStorage.getItem('flight-spawn-mode');if(['stands','airborne'].includes(saved))spawnMode=saved;}catch{}
+  const requestedScenario=new URLSearchParams(location.search).get('scenario'),scenarioName=['skirmish','duel'].includes(requestedScenario)?requestedScenario:'demo';
+  const scenario=await read('../data/scenarios/'+scenarioName+'.json'),mapBase='../terrain/'+scenario.map;
+  const [profiles,terrain,landmask,heightfield,aircraftRuntime]=await Promise.all([read('../data/aircraft.json'),read(mapBase+'_contours.json'),read(mapBase+'_landmask.json'),TerrainHeight.load(mapBase),read('../data/aircraft-runtime.json')]);
+  let spawnMode=scenario.defaultSpawnMode??'stands';try{const saved=localStorage.getItem('flight-spawn-mode');if(scenarioName==='demo'&&['stands','airborne'].includes(saved))spawnMode=saved;}catch{}
   let mode='strict';try{const saved=localStorage.getItem('flight-execution-mode');if(['strict','relaxed'].includes(saved))mode=saved;}catch{}
-  world=new World(scenario,profiles,heightfield,{spawnMode,mode});selectedId=world.units[0].id;
+  world=new World(scenario,profiles,heightfield,{spawnMode,mode,sensorModelVersion:2});selectedId=world.units[0].id;
   let restoredState=null;
   const formFields=['command-style','command-auto','command-text','append-waypoint','airport-runway','airport-gate','airport-taxiways'];
-  const autosave=new AutoSave({storage:{getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value)},fingerprint:saveFingerprint(scenario,profiles),
+  const autosave=new AutoSave({storage:{getItem:key=>localStorage.getItem(scenarioName==='demo'?key:scenarioName+':'+key),setItem:(key,value)=>localStorage.setItem(scenarioName==='demo'?key:scenarioName+':'+key,value)},fingerprint:saveFingerprint(scenario,profiles),compatibleFingerprints:scenarioName==='demo'?aircraftRuntime.compatibleSaveFingerprints:[],
     capture:()=>({world:captureWorld(world),training:trainingCoach?.snapshot()??null,
-      ui:{selectedId,rate,mapPoint,view:getLiveView(),form:Object.fromEntries(formFields.map(id=>{const el=$('#'+id);return [id,el?.type==='checkbox'?el.checked:el?.value??''];}))}}),
+      ui:{selectedId,playing,rate,mapPoint,view:getLiveView(),form:Object.fromEntries(formFields.map(id=>{const el=$('#'+id);return [id,el?.type==='checkbox'?el.checked:el?.value??''];}))}}),
     restore:state=>{
-      const next=restoreWorld(state.world,scenario,profiles,heightfield);restoreTraining(next,state.training);
-      if(!state.ui||!next.units.some(u=>u.id===state.ui.selectedId)||![1,2,4,8].includes(state.ui.rate))throw Error('界面进度无效');
+      const next=restoreWorld(state.world,scenario,profiles,heightfield);upgradeWorldSensors(next);restoreTraining(next,state.training);
+      if(!state.ui||!commandUnits(next).some(u=>u.id===state.ui.selectedId)||![1,2,4,8].includes(state.ui.rate))throw Error('界面进度无效');
+      if(['skirmish'].includes(scenarioName)&&next.spawnMode!=='airborne')throw Error('对抗演练存档需要空中出生');
       world=next;selectedId=state.ui.selectedId;spawnMode=world.spawnMode;mode=world.executionMode;rate=state.ui.rate;
       try{const saved=localStorage.getItem('flight-execution-mode');if(['strict','relaxed'].includes(saved))world.executionMode=mode=saved;}catch{}
-      playing=false;mapPoint=Array.isArray(state.ui.mapPoint)&&state.ui.mapPoint.length===3&&state.ui.mapPoint.every(Number.isFinite)?state.ui.mapPoint:null;
+      playing=state.ui.playing!==false;mapPoint=Array.isArray(state.ui.mapPoint)&&state.ui.mapPoint.length===3&&state.ui.mapPoint.every(Number.isFinite)?state.ui.mapPoint:null;
       let preferredUnits;try{preferredUnits=localStorage.getItem('flight-unit-system');}catch{}
       setUnitSystem(['metric','imperial'].includes(preferredUnits)?preferredUnits:world.unitSystem??getUnitSystem());restoredState=state;
     },onStatus:state=>{
       const el=$('#autosave-status');el.dataset.error=String(state.type==='error');
       el.textContent=state.type==='error'?state.message:`${state.type==='restored'?'已恢复上次进度':'已自动保存'} · ${new Date(state.savedAt).toLocaleTimeString('zh-CN',{hour12:false})} · 本机存档`;
     }});
-  const loaded=autosave.load();if(loaded.blocked)playing=false;
+  const loaded=scenarioName==='duel'?{}:autosave.load();if(loaded.blocked||scenarioName==='duel')playing=false;
   planner=new PlannerClient(heightfield);
+  const commandPlanner=new CommandPlanner(heightfield);
+  window.addEventListener('pagehide',()=>commandPlanner.cancel());
   replanner=new RouteReplanner({getWorld:()=>world,planner});
   const configureWorld=()=>{
-    world.deferNavigation=u=>{
-      const active=world,key=world.routeKey(u);u.navigationPending=true;
-      planner.request('nav:'+u.id,u,u.waypoints).then(prepared=>{
-        u.navigationPending=false;if(world!==active||world.routeKey(u)!==key||!u.waypoints.length)return;
+    world.deferNavigation=(u,{checkOnly=false}={})=>{
+      const active=world,key=world.routeKey(u),profile=u.profile;u.navigationPending=true;
+      planner.request('nav:'+u.id,u,u.waypoints,checkOnly?'check':'plan').then(prepared=>{
+        if(u.profile!==profile)return;u.navigationPending=false;if(world!==active||world.routeKey(u)!==key||!u.waypoints.length)return;
         if(u.rwrDefense?.active){u.navigationKey=null;return;}
+        if(checkOnly){
+          if(prepared?.valid)u.navigationCheckAt=world.time+2;
+          else world.deferNavigation(u);
+          return;
+        }
         try{
           if(!prepared){u.navigationKey=null;return;}
           const plan=world.resolvePlan(u,u.waypoints,prepared);
@@ -147,15 +172,15 @@ async function boot(){
       });
     };
   };configureWorld();
-  const focusSpawn=()=>spawnMode==='stands'?focusLive([{position:[...world.airportOps.airport.center,world.airportOps.airport.elevation]}],.25):focusLive(world.units);
-  const restart=()=>{trainingCoach?.reset();setFollowLive(null);voiceControl?.reset();pilotSupervisor?.reset();radarPilot?.reset();attackPilot?.reset();endPlacement();mapPoint=null;world=new World(scenario,profiles,heightfield,{spawnMode,mode});configureWorld();playing=true;acc=0;select(world.units[0].id);focusSpawn();autosave.newGame();};
+  const focusSpawn=()=>spawnMode==='stands'?focusLive([{position:[...world.airportOps.airport.center,world.airportOps.airport.elevation]}],.25):focusLive(commandUnits(world));
+  const restart=()=>{tacticalCommands?.reset();tacticalControls?.reset();trainingCoach?.reset();setFollowLive(null);voiceControl?.reset();commandPlanner.cancel();pilotSupervisor?.reset();radarPilot?.reset();attackPilot?.reset();endPlacement();mapPoint=null;world=new World(scenario,profiles,heightfield,{spawnMode,mode,sensorModelVersion:2});configureWorld();playing=true;stepper.reset();select(world.units[0].id);focusSpawn();autosave.newGame();};
   const runways=(terrain.airfields||[]).filter(r=>['t1_airfield','t2_airfield'].includes(r.name)).map(r=>({x1:r.ends[0][0],y1:r.ends[0][1],x2:r.ends[1][0],y2:r.ends[1][1],altM:r.altM,z1:r.altM,z2:r.altM}));
   initLive(canvas,{terrain,landmask,runways,units:world.units,heightfield,airport:world.airportOps?.airport});
-  for(const u of world.units){const el=document.createElement('div');el.id=u.id;el.className='unit';el.tabIndex=0;el.setAttribute('role','button');el.innerHTML=`<div class="unit-title">${u.callsign}<span>${u.profile.name}</span></div><div class="metrics"></div>`;el.onclick=()=>select(u.id);el.onkeydown=e=>{if(e.key==='Enter')select(u.id);};$('#roster').appendChild(el);}
+  for(const u of commandUnits(world)){const el=document.createElement('div');el.id=u.id;el.className='unit';el.tabIndex=0;el.setAttribute('role','button');el.innerHTML=`<div class="unit-title">${u.callsign}<span>${u.profile.name}</span></div><div class="metrics"></div>`;el.onclick=()=>select(u.id);el.onkeydown=e=>{if(e.key==='Enter')select(u.id);};$('#roster').appendChild(el);}
   select(selectedId);
-  $('#execution-mode').value=mode;$('#execution-mode').onchange=()=>{mode=$('#execution-mode').value;world.executionMode=mode;world.revision++;voiceControl?.cancel('执行模式已切换，尚未装订的旧指令作废');try{localStorage.setItem('flight-execution-mode',mode);}catch{}};
+  $('#execution-mode').value=mode;$('#execution-mode').onchange=()=>{mode=$('#execution-mode').value;world.executionMode=mode;world.revision++;notePlayerOrder(world);voiceControl?.cancel('执行模式已切换，尚未装订的旧指令作废',{all:true});try{localStorage.setItem('flight-execution-mode',mode);}catch{}};
   $('#unit-system').onchange=()=>{setUnitSystem($('#unit-system').value);try{localStorage.setItem('flight-unit-system',getUnitSystem());}catch{}voiceControl?.unitsChanged();pilotSupervisor?.reset();radarPilot?.reset();attackPilot?.reset();syncUnitControls();updateUI();};
-  airportControl=initAirportControl({getWorld:()=>world,getSelected:()=>selectedId,issueCommand:instruction=>{if(voiceControl.busy)return Promise.reject(Error('另一条通联正在进行，请等待。'));endPlacement();interfaceControl.open('voice');$('#command-text').value=instruction;return voiceControl.issue(instruction,{source:'airport'});},onChange:()=>{routeEditor?.cancel();endPlacement();updateUI();},onFocus:a=>focusLive([{position:[...a.center,a.elevation]}],.25),onSpawnMode:mode=>{spawnMode=mode;try{localStorage.setItem('flight-spawn-mode',mode);}catch{}restart();}});
+  airportControl=initAirportControl({getWorld:()=>world,getSelected:()=>selectedId,issueCommand:instruction=>{if(voiceControl.busy)return Promise.reject(Error('另一条通联正在进行，请等待。'));endPlacement();interfaceControl.open('voice');$('#command-text').value=instruction;return voiceControl.issue(instruction,{source:'airport'});},onChange:()=>{routeEditor?.cancel();endPlacement();updateUI();},onFocus:a=>focusLive([{position:[...a.center,a.elevation]}],.25),onSpawnMode:mode=>{if(['skirmish'].includes(scenarioName)){$('#airport-spawn-mode').value='airborne';return;}spawnMode=mode;try{localStorage.setItem('flight-spawn-mode',mode);}catch{}restart();}});
   atcControl=initAtcControl({getWorld:()=>world,getSelected:()=>selectedId,onChange:()=>{voiceControl?.cancel('机场运行条件已更新，旧指令作废');updateUI();}});
   radarControl=initRadarControl({getWorld:()=>world,getSelected:()=>selectedId,onChange:updateUI,beforeCommand:()=>voiceControl?.cancel('演练场景已变化，尚未执行的旧指令作废')});
   weaponControl=initWeaponControl({getWorld:()=>world,getSelected:()=>selectedId,onChange:updateUI,beforeCommand:()=>voiceControl?.cancel('演练场景已变化，尚未执行的旧指令作废')});
@@ -184,7 +209,7 @@ async function boot(){
   $('#waypoint-list').addEventListener('input',e=>editHeight(e,300));
   $('#waypoint-list').addEventListener('change',e=>editHeight(e,0));
   const hold=()=>{routeEditor.cancel();endPlacement();const u=selected();world.replaceRoute(u.id,[]);u.orbit=[u.position[0],u.position[1]];voiceControl?.routeChanged(u.id,{kind:'clear'});updateUI();};$('#hold').onclick=hold;$('#clear').onclick=hold;
-  $('#focus').onclick=()=>{focusLive(world.units);updateUI();};
+  $('#focus').onclick=()=>{focusLive(commandUnits(world));updateUI();};
   const toggleFollow=()=>{setFollowLive(getFollowLiveId()!==null?null:selected());updateUI();};
   $('#camera-follow').onclick=toggleFollow;
   document.addEventListener('keydown',e=>{if(e.code==='KeyF'&&!e.repeat&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!editing(e.target)){e.preventDefault();toggleFollow();}});
@@ -193,30 +218,57 @@ async function boot(){
   canvas.addEventListener('pointerdown',e=>{start=[e.clientX,e.clientY];});
   canvas.addEventListener('pointerup',e=>{if(routeEditor.enabled||e.button!==0||!start||Math.hypot(e.clientX-start[0],e.clientY-start[1])>5)return;const id=pickUnit(e.clientX,e.clientY);if(id)select(id);});
   canvas.addEventListener('contextmenu',e=>e.preventDefault());
-  document.addEventListener('keydown',e=>{if(editing(e.target))return;if(e.key==='Escape'){endPlacement();$('#controls-help').open=false;$('#stage').classList.remove('voice-open');$('#voice-toggle').setAttribute('aria-expanded','false');return;}if(e.code==='Space'){e.preventDefault();toggle();}if(e.key==='1')select(world.units[0].id);if(e.key==='2')select(world.units[1].id);});
-  // 便于外部工具读取当前局；状态和命令均使用同一飞行内核。
-  window.ACEGame={get world(){return world;},select,command:(id,p,append)=>world.command(id,p,append),pause:()=>{world.revision++;playing=false;updateUI();},play:()=>{world.revision++;playing=true;updateUI();},get playing(){return playing;},get rate(){return rate;}};
+  document.addEventListener('keydown',e=>{if(e.defaultPrevented||e.isComposing||e.repeat||editing(e.target))return;if(e.key==='Escape'){endPlacement();$('#controls-help').open=false;$('#stage').classList.remove('voice-open');$('#voice-toggle').setAttribute('aria-expanded','false');return;}if(e.code==='Space'&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();toggle();}});
+  // Legacy debug access; agents use commander below to retain radio validation.
+  window.ACEGame={get world(){return world;},select,command:(id,p,append)=>world.command(id,p,append),pause:()=>setRunning(false),play:()=>setRunning(true),get playing(){return playing;},get rate(){return rate;}};
   const settingsMemory=initSettingsMemory({legacyForm:restoredState?.ui.form});
-  voiceControl=initVoiceCommands({allowAutomaticHandoff:u=>trainingCoach?.allowsAutomaticHandoff(u.id)??true,getState:()=>({world,selectedId,playing,mapPoint:routeEditor?.previewPoint??mapPoint}),
+  let commanderApi;
+  voiceControl=initVoiceCommands({allowAutomaticHandoff:u=>trainingCoach?.allowsAutomaticHandoff(u.id)??true,getState:()=>({world,selectedId,playing,rate,mapPoint:routeEditor?.previewPoint??mapPoint}),
+    fetchImpl:blueTransport,prepareCommand:(w,p,r,o,s)=>commandPlanner.prepare(w,p,r,o,s),forecastCommand:(w,t,s,o)=>commandPlanner.forecast(w,t,s,o),
+    onCommandEvent:event=>duel?.recordCommand({side:'blue',...event}),
     onCommandCommitted:({reply,source})=>{
+      duel?.recordBlue(reply);
       trainingCoach?.onCommandCommitted(reply.interpretation,{demo:source==='training-demo'});
       const tasks=reply.plan.tasks.filter(t=>['sensor_task','attack_task'].includes(t.action));
-      if(tasks.length){select(tasks.find(t=>t.unitId===selectedId)?.unitId??tasks[0].unitId);$(tasks.some(t=>t.action==='attack_task')?'#weapon-toggle':'#radar-toggle').click();}
+      if(tasks.length&&source!=='api'){select(tasks.find(t=>t.unitId===selectedId)?.unitId??tasks[0].unitId);$(tasks.some(t=>t.action==='attack_task')?'#weapon-toggle':'#radar-toggle').click();}
     },
     onPilotModelChanged:()=>{pilotSupervisor?.reset();radarPilot?.reset();attackPilot?.reset();const element=$('#pilot-assistant-status');if(element)element.hidden=true;},
     onPilotPreview:preview=>{if(preview.count===1)select(preview.unitId);},
-    onApplied:()=>select(selectedId),onSimulation:running=>{playing=running;acc=0;updateUI();}});
-  pilotSupervisor=new PilotSupervisor({getWorld:()=>world,enabled:()=>voiceControl.pilotAssistantEnabled,isPlaying:()=>playing,getPilotModel:()=>voiceControl.pilotModel,onReport:report=>voiceControl.reportPilotExecution(report),
+    onApplied:()=>select(selectedId),onSimulation:setRunning});
+  tacticalCommands=new TacticalCommands({getWorld:()=>world,prepareRoute:commandPlanner.route.bind(commandPlanner),
+    getPilotModel:()=>voiceControl.pilotModel,fetchImpl:blueTransport,
+    preparePlan:(w,p,r,o,s)=>commandPlanner.prepare(w,p,r,o,s),
+    beforeCommand:ids=>{for(const id of ids)voiceControl.cancelFor(id,'快捷指挥已接管，该机旧请求已作废');},
+    onChange:()=>{updateUI();autosave.save();},
+    onReceipt:receipt=>{voiceControl.reportTacticalCommand?.(receipt);autosave.save();}});
+  tacticalControls=initTacticalControls({canvas,getWorld:()=>world,getSelected:()=>selectedId,select,commands:tacticalCommands,getRouteEditor:()=>routeEditor});
+  window.ACEGame.tactical={issue:order=>tacticalCommands.issue(order),status:ids=>tacticalCommands.snapshot(ids),get selectedIds(){return tacticalControls.selectedIds;}};
+  window.addEventListener('pagehide',()=>{tacticalCommands.reset();tacticalControls.dispose?.();});
+  commanderApi=createCommanderApi({getState:()=>({world,selectedId,playing,rate,radioStyle:$('#command-style')?.value||'pla'}),
+    issue:(instruction,options)=>voiceControl.issue(instruction,options),cancel:id=>voiceControl.cancelFor(id),isBusy:id=>voiceControl.busyFor(id),select,
+    setRunning,focusObserved:()=>{
+      const units=world.snapshot(selectedId,{forecast:false}).units;
+      if(!units.length)return;
+      const span=Math.max(...[0,1].map(axis=>Math.max(...units.map(u=>u.position[axis]))-Math.min(...units.map(u=>u.position[axis]))));
+      setFollowLive(null);focusLive(units,Math.max(1,span/16000));
+    },
+    onInstruction:instruction=>{$('#command-text').value=instruction;$('#command-text').dispatchEvent(new Event('input'));}});
+  window.ACEGame.commander=commanderApi.api;
+  const commanderToolsLifetime=new AbortController();
+  window.addEventListener('pagehide',()=>{commanderToolsLifetime.abort();commanderApi.dispose();});
+  void registerCommanderTools(commanderApi.api,{signal:commanderToolsLifetime.signal}).then(result=>{window.ACEGame.commanderTools=result;}).catch(error=>{window.ACEGame.commanderTools={available:false,error:error.message};});
+  pilotSupervisor=new PilotSupervisor({getWorld:()=>world,enabled:()=>scenarioName!=='duel'&&voiceControl.tacticalPlanningEnabled,isPlaying:()=>playing,getPilotModel:()=>voiceControl.pilotModel,prepareAdjustment:commandPlanner.adjustment.bind(commandPlanner),onReport:report=>voiceControl.reportPilotExecution(report),
     onStatus:state=>{const element=$('#pilot-assistant-status');if(element){element.hidden=false;element.textContent=(world.units.find(u=>u.id===state.unitId)?.callsign||'飞行员')+' · '+state.text;}}});
-  radarPilot=new RadarPilot({getWorld:()=>world,enabled:()=>voiceControl.pilotAssistantEnabled&&!pilotSupervisor.active&&!attackPilot?.active,isPlaying:()=>playing,getPilotModel:()=>voiceControl.pilotModel});
-  attackPilot=new AttackPilot({getWorld:()=>world,enabled:()=>voiceControl.pilotAssistantEnabled&&!pilotSupervisor.active&&!radarPilot.active,isPlaying:()=>playing,getPilotModel:()=>voiceControl.pilotModel});
-  rwrPilot=new RwrPilot({getWorld:()=>world,enabled:()=>voiceControl.pilotAssistantEnabled,isPlaying:()=>playing,getPilotModel:()=>voiceControl.pilotModel});
+  radarPilot=new RadarPilot({getWorld:()=>world,enabled:()=>voiceControl.tacticalPlanningEnabled,isPlaying:()=>playing,getPilotModel:()=>voiceControl.pilotModel,fetchImpl:blueTransport,preparePlan:commandPlanner.prepare.bind(commandPlanner)});
+  attackPilot=new AttackPilot({getWorld:()=>world,enabled:()=>voiceControl.tacticalPlanningEnabled,isPlaying:()=>playing,getPilotModel:()=>voiceControl.pilotModel,fetchImpl:blueTransport,preparePlan:commandPlanner.prepare.bind(commandPlanner)});
+  rwrPilot=new RwrPilot({getWorld:()=>world,enabled:()=>voiceControl.pilotAssistantEnabled,isPlaying:()=>playing,getPilotModel:()=>voiceControl.pilotModel,fetchImpl:blueTransport});
   const towerSupervisor=new TowerSupervisor({getWorld:()=>world,enabled:()=>playing&&!!voiceControl?.pilotAssistantEnabled});
-  window.addEventListener('pagehide',()=>{towerSupervisor.reset();rwrPilot.stop();pilotSupervisor.stop();radarPilot.stop();attackPilot.stop();});
+  window.addEventListener('pagehide',()=>{duel?.dispose();towerSupervisor.reset();rwrPilot.stop();pilotSupervisor.stop();radarPilot.stop();attackPilot.stop();});
   aircraftHud=initAircraftHud({getWorld:()=>world,getSelected:()=>selectedId,onSelect:select});
+  datalinkControl=initDatalinkControl({getWorld:()=>world,getSelected:()=>selectedId,onChange:()=>{updateUI();autosave.requestSave();}});
   trainingCoach=initTrainingCoach({getWorld:()=>world,getPlaying:()=>playing,
     onHandoff:(unitId,target)=>{const u=world.units.find(u=>u.id===unitId);if(requestHandoff(world,u,target))voiceControl.requestHandoff(unitId);},onExecutionMode:value=>{const el=$('#execution-mode');el.value=value;el.dispatchEvent(new Event('change'));},issueCommand:(instruction,options)=>voiceControl.issue(instruction,options),cancelCommand:()=>voiceControl.cancel(),getCommandBusy:()=>voiceControl.busy,
-    onSimulation:running=>{playing=running;acc=0;},
+    onSimulation:setRunning,
     onRate:value=>{rate=value;document.querySelectorAll('[data-rate]').forEach(el=>el.classList.toggle('active',Number(el.dataset.rate)===rate));},
     onStep:(step,u)=>{
       $('#stage').classList.remove('voice-open');$('#voice-toggle').setAttribute('aria-expanded','false');
@@ -225,6 +277,7 @@ async function boot(){
       if(step?.id==='map'){setFollowLive(null);$('#append-waypoint').checked=false;focusLive([u]);}
       else if(step?.kind==='command'&&step.intent!=='report_status')setFollowLive(u);
     },restartGround:(entry='stands')=>{
+    if(['skirmish'].includes(scenarioName))throw Error('请先在设置中切换到“机场与自由演练”，再开始指挥教学。');
     spawnMode=entry;try{localStorage.setItem('flight-spawn-mode',spawnMode);}catch{}
     restart();$('#airport-spawn-mode').value=spawnMode;
     $('#command-text').value='';$('#command-text').dispatchEvent(new Event('input'));
@@ -235,18 +288,20 @@ async function boot(){
   authorityHud=initControlAuthority({getWorld:()=>world,getSelected:()=>selectedId,onRequest:id=>voiceControl.requestHandoff(id)});
   if(restoredState){
     for(const id of formFields){if(settingsMemory.handles(id))continue;const el=$('#'+id),value=restoredState.ui.form?.[id];if(el&&value!==undefined){if(el.type==='checkbox')el.checked=!!value;else el.value=String(value);}}
-    trainingCoach.restore(restoredState.training);restoreLiveView(restoredState.ui.view,world.units);
+    trainingCoach.restore(restoredState.training);restoreLiveView(restoredState.ui.view,commandUnits(world));
     document.querySelectorAll('[data-rate]').forEach(el=>el.classList.toggle('active',Number(el.dataset.rate)===rate));
     routeMessage('已恢复上次进度，点击“继续”接着飞行');
   }else if(loaded.blocked)routeMessage('上次存档暂时无法恢复，原存档已保留；可在设置中重新开始',true);
   let interfaceControl;
   missionReport=initMissionReport({getWorld:()=>world,getSelected:()=>selectedId,getTraining:()=>trainingCoach,openPanel:name=>interfaceControl.open(name)});
   interfaceControl=initInterface({onDisplayChange:setLiveDisplayOptions,getMapObstacles:getLiveMapObstacles});
+  const scenarioLinks=document.createElement('p');scenarioLinks.className='settings-note';scenarioLinks.innerHTML='<a href="./?scenario=demo">机场与自由演练</a> · <a href="./?scenario=skirmish">空中对抗演练</a>';$('#settings-scenario').append(scenarioLinks);
+  if(['skirmish'].includes(scenarioName)){$('#airport-spawn-mode').disabled=true;scenarioLinks.title='对手仅依据本机观测搜索与攻击；玩家只指挥蓝方。';}
   missionReport.update();
   updateUI();autosave.bind(window,document);
   // Flush after controls finish their event handlers, including training and selection.
-  document.addEventListener('change',()=>queueMicrotask(()=>autosave.save()));
-  document.addEventListener('click',()=>queueMicrotask(()=>autosave.save()));
+  document.addEventListener('change',()=>queueMicrotask(()=>autosave.requestSave()));
+  document.addEventListener('click',()=>queueMicrotask(()=>autosave.requestSave()));
   if(!loaded.restored&&!loaded.blocked)autosave.save();
   const mapCompass=initMapCompass($('#stage'));
   function predict(ts){
@@ -255,6 +310,7 @@ async function boot(){
     predictionBusy=true;predictionAt=ts+1000;const activeWorld=world,id=selectedId,key=world.routeKey(u);
     planner.request('live',u,u.waypoints,'trace').then(result=>{predictionBusy=false;if(result&&world===activeWorld&&selectedId===id&&world.routeKey(selected())===key)world.prediction=result;});
   }
+  duel=scenarioName==='duel'?initDuel({getWorld:()=>world,isPlaying:()=>playing,setPlaying:value=>{playing=value;stepper.reset();updateUI();},getCommandOptions:()=>({preparePlan:(w,p,r,o,s)=>commandPlanner.prepare(w,p,r,o,s)})}):null;
   const frameSamples=[];let statsAt=0;
   const renderStats=document.createElement('output');renderStats.id='render-stats';$('#controls-help>div').appendChild(renderStats);
   const flightDataLink=document.createElement('a');flightDataLink.href='./flight-data.html';flightDataLink.target='_blank';flightDataLink.rel='noopener';flightDataLink.textContent='飞行与导弹数据';const flightDataEntry=document.createElement('p');flightDataEntry.appendChild(flightDataLink);$('#controls-help>div').appendChild(flightDataEntry);
@@ -262,9 +318,10 @@ async function boot(){
     const gap=last?ts-last:0,dt=Math.min(gap/1000,.15);last=ts;
     if(gap>0){frameSamples.push(gap);if(frameSamples.length>180)frameSamples.shift();}
     world.playerCommandPending=voiceControl?.playerCommandPending===true;
-    moveLiveCamera(cameraInput(),dt);if(playing){acc+=dt*rate;while(acc>=1/60&&playing){world.step(1/60);acc-=1/60;trainingCoach?.tick();}}
-    trainingCoach?.tick();routeEditor.frame();predict(ts);towerSupervisor.tick();rwrPilot.tick();pilotSupervisor.tick();radarPilot.tick();attackPilot.tick();renderLive(world.snapshot(selectedId,{forecast:false}),dt);mapCompass.update(getLiveMapHeading());
-    voiceControl?.pumpAirportRadio();autosave.tick(world);uiClock+=dt;if(uiClock>.15){updateUI();uiClock=0;}
+    moveLiveCamera(cameraInput(),dt);
+    stepper.advance(dt,rate,h=>{world.step(h);trainingCoach?.tick();},()=>playing);
+    tacticalCommands.tick();trainingCoach?.tick();routeEditor.frame();predict(ts);towerSupervisor.tick();rwrPilot.tick();pilotSupervisor.tick();radarPilot.tick();attackPilot.tick();renderLive(world.snapshot(selectedId,{forecast:false}),dt);mapCompass.update(getLiveMapHeading());
+    duel?.tick();voiceControl?.pumpAirportRadio();autosave.tick(world);uiClock+=dt;if(uiClock>.15){updateUI();uiClock=0;}
     if(ts>statsAt&&frameSamples.length){statsAt=ts+1000;const sorted=[...frameSamples].sort((a,b)=>a-b),average=frameSamples.reduce((a,b)=>a+b,0)/frameSamples.length;canvas.dataset.fps=(1000/average).toFixed(1);canvas.dataset.frameP95=sorted[Math.floor(sorted.length*.95)].toFixed(1);renderStats.textContent=`渲染 ${canvas.dataset.fps} FPS · P95 ${canvas.dataset.frameP95} ms`;}
     requestAnimationFrame(frame);
   }

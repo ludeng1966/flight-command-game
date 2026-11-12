@@ -38,9 +38,31 @@ test('模型拉近时恢复1:1，远景辨识尺寸取决于投影与窗口高�
   const normal=aircraftVisualScale(camera,new Vector3(0,0,-24000),900),taller=aircraftVisualScale(camera,new Vector3(0,0,-24000),1800);assert.ok(Math.abs(normal-2*taller)<1e-8);
   camera.zoom=2;assert.ok(Math.abs(aircraftVisualScale(camera,new Vector3(0,0,-24000),900)-normal/2)<1e-8);
 });
-test('1:1阈值连续过渡，不把模型缩小到真实比例以下',()=>{
+test('F-16的1:1阈值连续过渡，不把基准模型缩小到真实比例以下',()=>{
   const camera=new PerspectiveCamera(52,1,20,500000);camera.lookAt(0,0,-1);camera.updateMatrixWorld();
   const threshold=15*900/(2*42*Math.tan(52*Math.PI/360));
   const before=aircraftVisualScale(camera,new Vector3(0,0,-threshold-.001),900),after=aircraftVisualScale(camera,new Vector3(0,0,-threshold+.001),900);
   assert.ok(Math.abs(before-after)<.00001);assert.equal(after,1);
+});
+
+test('缩略地图上客机只比F-16略大，控制在15%以内且不随远景缩放膨胀',()=>{
+  const camera=new PerspectiveCamera(52,1,20,500000);camera.lookAt(0,0,-1);camera.updateMatrixWorld();
+  const sizes=[[15,9.45],[21.935,14.7],[37.57,34.1],[76.3,68.4]];
+  for(const distance of [1000,10000,24000,80000]){
+    const point=new Vector3(0,0,-distance),mpp=2*distance*Math.tan(52*Math.PI/360)/900;
+    for(const [lengthM,wingspanM]of sizes){
+      const scale=aircraftVisualScale(camera,point,900,{lengthM,wingspanM}),pixels=Math.max(lengthM,wingspanM)*scale/mpp;
+      assert(pixels>=42-1e-8);assert(pixels<=42*1.15+1e-8);
+    }
+  }
+});
+
+test('拉近大型机时连续恢复真实比例，放大过程中显示尺寸不倒退',()=>{
+  const camera=new PerspectiveCamera(52,1,1,500000);camera.lookAt(0,0,-1);camera.updateMatrixWorld();
+  const size={lengthM:76.3,wingspanM:68.4};let previous=0;
+  for(let distance=2000;distance>=50;distance-=2){
+    const scale=aircraftVisualScale(camera,new Vector3(0,0,-distance),900,size),mpp=2*distance*Math.tan(52*Math.PI/360)/900,pixels=size.lengthM*scale/mpp;
+    assert(pixels>=previous-1e-8);previous=pixels;
+  }
+  assert.equal(aircraftVisualScale(camera,new Vector3(0,0,-100),900,size),1);
 });

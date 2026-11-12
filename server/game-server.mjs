@@ -3,6 +3,7 @@ import {createFlightDataApi} from './flight-data.mjs';
 import {createRadarPilot} from './radar-pilot.mjs';
 import {createRwrPilot} from './rwr-pilot.mjs';
 import {createAttackPilot} from './attack-pilot.mjs';
+import {createTacticalManeuver} from './tactical-maneuver.mjs';
 import {createTowerAssistant} from './tower-assistant.mjs';
 import {readFile,stat,realpath} from 'node:fs/promises';
 import {existsSync,readFileSync} from 'node:fs';
@@ -10,6 +11,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createQwenClient,ApiError} from './qwen.mjs';
 import {readTtsConfig,createInworldTts} from './inworld-tts.mjs';
+import {createDuelCommander} from './duel-commander.mjs';
 import {LocalAiRuntime} from './local-ai-runtime.mjs';
 import {createLocalAiClient} from './local-ai-client.mjs';
 import {HANDBOOK,readPilotFile} from './pilot-handbook.mjs';
@@ -17,6 +19,8 @@ import {aviationTermStats,searchAviationTerms} from './aviation-terms.mjs';
 import {PilotAssistant} from './pilot-assistant.mjs';
 import {createCloudPilotRuntime} from './cloud-pilot-runtime.mjs';
 import {createTextTranslator} from './text-translator.mjs';
+import {createPlayerCredentials} from './player-credentials.mjs';
+import {TacticalScheduler,TacticalQueueError,tacticalPriority} from './tactical-scheduler.mjs';
 import {DEFAULT_PILOT_MODEL,PILOT_MODELS,pilotModelInfo} from '../sim/pilot-models.js';
 import {COMMAND_CATALOG,CAPABILITIES,MILITARY_PROTOCOL_VERSION} from '../sim/military-commands.js';
 
@@ -36,13 +40,15 @@ export function readConfig(env=process.env){
   const baseUrl=env.QWEN_BASE_URL||'https://dashscope.aliyuncs.com/compatible-mode/v1';
   const config={aiProvider:env.AI_PROVIDER||'cloud',localGpuLayers:Number(env.LOCAL_AI_GPU_LAYERS||99),apiKey:env.DASHSCOPE_API_KEY||'',asrKey:env.QWEN_ASR_API_KEY||'',baseUrl,
     asrBaseUrl:env.QWEN_ASR_BASE_URL||baseUrl,commandModel:env.QWEN_COMMAND_MODEL||'qwen3.7-flash',pilotModel:env.QWEN_PILOT_MODEL||'qwen3.7-flash',
-    asrModel:env.QWEN_ASR_MODEL||'qwen3-asr-flash',timeoutMs:Number(env.QWEN_TIMEOUT_MS||30000),port:Number(env.GAME_PORT||8000),tts:readTtsConfig(env)};
+    asrModel:env.QWEN_ASR_MODEL||'qwen3-asr-flash',timeoutMs:Number(env.QWEN_TIMEOUT_MS||30000),port:Number(env.GAME_PORT||8000),tts:readTtsConfig(env),
+    tacticalConcurrency:Number(env.TACTICAL_AI_CONCURRENCY??0),tacticalMaxQueued:Number(env.TACTICAL_AI_MAX_QUEUED??128),tacticalQueueTimeoutMs:Number(env.TACTICAL_AI_QUEUE_TIMEOUT_MS??10000)};
   for(const address of [config.baseUrl,config.asrBaseUrl]){
     const u=new URL(address);
     if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw new Error('QWEN 接口地址必须是无密钥、无查询参数的 HTTPS 地址');
   }
   if(!Number.isInteger(config.port)||config.port<1||config.port>65535||!Number.isFinite(config.timeoutMs)||config.timeoutMs<1000||config.timeoutMs>120000)throw new Error('端口或 API 超时配置无效');
   if(!['cloud','local','hybrid'].includes(config.aiProvider)||!Number.isInteger(config.localGpuLayers)||config.localGpuLayers<1||config.localGpuLayers>99)throw new Error('本地模型配置无效');
+  if(!Number.isSafeInteger(config.tacticalConcurrency)||config.tacticalConcurrency<0||!Number.isSafeInteger(config.tacticalMaxQueued)||config.tacticalMaxQueued<1||!Number.isFinite(config.tacticalQueueTimeoutMs)||config.tacticalQueueTimeoutMs<1||config.tacticalQueueTimeoutMs>120000)throw Error('AI并发预算或等待时间配置无效');
   return config;
 }
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.csv':'text/csv; charset=utf-8',
@@ -55,15 +61,21 @@ async function body(req,max){
   for await(const chunk of req){size+=chunk.length;if(size>max)throw new ApiError(413,'请求内容过大');parts.push(chunk);}
   return Buffer.concat(parts);
 }
-export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=null,pilotAssistant=null}={}){
+export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=null,pilotAssistant=null,playerCredentials=true,tacticalScheduler=new TacticalScheduler({concurrency:config.tacticalConcurrency?config.tacticalConcurrency:Infinity,maxQueued:config.tacticalMaxQueued??128,reservedUrgent:Math.min(4,config.tacticalMaxQueued??128),maxWaitMs:config.tacticalQueueTimeoutMs??10000})}={}){
   const flightDataApi=createFlightDataApi(root);
   const cloudClient=createQwenClient(config,fetchImpl),client=config.aiProvider==='local'?createLocalAiClient(localRuntime,cloudClient):cloudClient,tts=createInworldTts(config.tts,fetchImpl);let active=0,activeTts=0;
   const translator=createTextTranslator(cloudClient);let activeTranslations=0;
   const radarPilot=createRadarPilot(cloudClient);
   const rwrPilot=createRwrPilot(cloudClient);
   const attackPilot=createAttackPilot(cloudClient);
+  const tacticalManeuver=createTacticalManeuver(cloudClient);
+  const duelCommander=createDuelCommander(cloudClient);
   const towerAssistant=createTowerAssistant(cloudClient);
   pilotAssistant??=new PilotAssistant(root,{model:config.pilotModel||'qwen3.7-flash',provider:'cloud',runtimeFactory:()=>createCloudPilotRuntime(cloudClient)});
+  const players=playerCredentials?createPlayerCredentials(config,playerConfig=>{
+    const child=createGameServer(playerConfig,{fetchImpl,root,playerCredentials:false});
+    return {dispatch:child.listeners('request')[0],dispose:()=>child.emit('close')};
+  }):null;
   const pilotModels=PILOT_MODELS.map(item=>item.id==='flash'?{...item,model:config.pilotModel||item.model}:item);
   const validatePilotModel=input=>{
     const id=input?.pilotModel??DEFAULT_PILOT_MODEL,model=pilotModelInfo(id);
@@ -75,10 +87,28 @@ export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=
       const host=req.headers.host||'';
       if(!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(host))throw new ApiError(403,'仅允许本机访问');
       const url=new URL(req.url,`http://${host}`);
+      if(url.pathname.startsWith('/api/')&&(req.headers['sec-fetch-site']==='cross-site'||req.headers.origin&&req.headers.origin!==`http://${host}`))throw new ApiError(403,'请从游戏页面配置密钥或下达指令');
+      if(players&&['/api/player/credentials','/api/player/credentials/test'].includes(url.pathname)){
+        if(url.pathname==='/api/player/credentials'&&req.method==='GET')return json(res,200,players.status(req));
+        if(url.pathname==='/api/player/credentials'&&req.method==='DELETE')return json(res,200,players.clear(req,res));
+        if(req.method!=='POST')throw new ApiError(405,'不支持该请求方法');
+        if((req.headers['content-type']||'').split(';')[0]!=='application/json')throw new ApiError(415,'请使用 JSON 配置');
+        const raw=await body(req,16*1024);let input;try{input=JSON.parse(raw.toString('utf8'));}catch{throw new ApiError(400,'配置 JSON 无效');}
+        if(url.pathname==='/api/player/credentials')return json(res,200,players.update(req,res,input));
+        // Connection tests make one small, billable request using saved player keys.
+        if(active>=2)throw new ApiError(429,'正在测试连接，请稍后重试');active++;
+        const controller=new AbortController();res.once('close',()=>{if(!res.writableEnded)controller.abort();});
+        try{
+          const result=await players.test(req,input?.provider,fetchImpl,controller.signal);
+          if(result.audio){res.writeHead(200,{'Content-Type':result.contentType,'Content-Length':result.audio.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(result.audio);return;}
+          return json(res,200,result);
+        }finally{active--;}
+      }
+      if(players&&url.pathname.startsWith('/api/')){const runtime=players.runtime(req);if(runtime)return await runtime.dispatch(req,res);}
       if(url.pathname==='/api/health'&&req.method==='GET'){
         const local=config.aiProvider==='local',ai=local?localRuntime?.health():null;
         return json(res,200,{service:'tactical-voice',version:1,provider:config.aiProvider||'cloud',commandReady:local?ai?.status==='ready':!!config.apiKey,voiceReady:!!(config.asrKey||config.apiKey),
-          commandModel:local?'Qwen3.5-2B-Q4_K_M':config.commandModel,asrModel:config.asrModel,tts:tts.health(),ai,pilotAssistant:pilotAssistant.health(),pilotReady:!!config.apiKey,defaultPilotModel:DEFAULT_PILOT_MODEL,pilotModels});
+          commandModel:local?'Qwen3.5-2B-Q4_K_M':config.commandModel,asrModel:config.asrModel,tts:tts.health(),ai,pilotAssistant:pilotAssistant.health(),pilotReady:!!config.apiKey,defaultPilotModel:DEFAULT_PILOT_MODEL,pilotModels,tacticalQueue:tacticalScheduler.health()});
       }
       if(url.pathname==='/api/tactical/pilot/models'&&req.method==='GET')return json(res,200,{defaultModel:DEFAULT_PILOT_MODEL,models:pilotModels});
       if(url.pathname==='/api/tactical/catalog'&&req.method==='GET')return json(res,200,{version:MILITARY_PROTOCOL_VERSION,commands:COMMAND_CATALOG,capabilities:CAPABILITIES});
@@ -99,19 +129,25 @@ export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=
         if(req.headers.origin&&req.headers.origin!==`http://${host}`)throw new ApiError(403,'请从游戏页面下达指令');
         const isTts=url.pathname==='/api/voice/synthesize';
         const isTranslation=url.pathname==='/api/language/translate';
-        if((isTts?activeTts:isTranslation?activeTranslations:active)>=2){req.resume();throw new ApiError(429,'正在处理指令或通联，请稍后重试');}
-        if(!['/api/atc/assess','/api/tactical/interpret','/api/tactical/pilot','/api/tactical/pilot/plan','/api/tactical/pilot/radar','/api/tactical/pilot/rwr','/api/tactical/pilot/attack','/api/tactical/pilot/assess','/api/tactical/pilot/result','/api/tactical/pilot/plan-departure','/api/voice/transcribe','/api/voice/synthesize','/api/language/translate'].includes(url.pathname))throw new ApiError(404,'接口不存在');
-        if(isTts)activeTts++;else if(isTranslation)activeTranslations++;else active++;
+        if((isTts&&activeTts>=2)||(isTranslation&&activeTranslations>=2)){req.resume();throw new ApiError(429,'正在处理通联，请稍后重试');}
+        if(!['/api/tactical/duel/commander','/api/atc/assess','/api/tactical/interpret','/api/tactical/pilot','/api/tactical/pilot/plan','/api/tactical/pilot/radar','/api/tactical/pilot/rwr','/api/tactical/pilot/attack','/api/tactical/pilot/maneuver','/api/tactical/pilot/assess','/api/tactical/pilot/result','/api/tactical/pilot/plan-departure','/api/voice/transcribe','/api/voice/synthesize','/api/language/translate'].includes(url.pathname))throw new ApiError(404,'接口不存在');
+        const controller=new AbortController(),cancel=()=>controller.abort(),onClose=()=>{if(!res.writableEnded)cancel();};
+        req.once('aborted',cancel);res.once('close',onClose);
+        if(isTts)activeTts++;else if(isTranslation)activeTranslations++;
+        let release;
         try{
+          if(!isTts&&!isTranslation)release=await tacticalScheduler.acquire({priority:tacticalPriority(url.pathname),signal:controller.signal});
+          controller.signal.throwIfAborted();
           if(url.pathname==='/api/voice/transcribe'){
             if((req.headers['content-type']||'').split(';')[0]!=='audio/wav')throw new ApiError(415,'请上传 WAV 录音');
-            return json(res,200,await client.transcribe(await body(req,4*1024*1024)));
+            return json(res,200,await client.transcribe(await body(req,4*1024*1024),{signal:controller.signal}));
           }
           if((req.headers['content-type']||'').split(';')[0]!=='application/json')throw new ApiError(415,'请使用 JSON 指令');
           const raw=await body(req,64*1024);let input;
           try{input=JSON.parse(raw.toString('utf8'));}catch{throw new ApiError(400,'指令 JSON 无效');}
-          const controller=new AbortController();res.once('close',()=>{if(!res.writableEnded)controller.abort();});
+          controller.signal.throwIfAborted();
           if(isTranslation)return json(res,200,await translator.translate(input,{signal:controller.signal}));
+          if(url.pathname==='/api/tactical/duel/commander')return json(res,200,await duelCommander(input,{signal:controller.signal}));
           if(isTts){
             const {audio,contentType}=await tts.synthesizeAudio(input,{signal:controller.signal});
             res.writeHead(200,{'Content-Type':contentType,'Content-Length':audio.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(audio);return;
@@ -122,6 +158,7 @@ export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=
           if(url.pathname==='/api/tactical/pilot/rwr')return json(res,200,await rwrPilot(input,{signal:controller.signal}));
           if(url.pathname==='/api/tactical/pilot/radar')return json(res,200,await radarPilot(input,{signal:controller.signal}));
           if(url.pathname==='/api/tactical/pilot/attack')return json(res,200,await attackPilot(input,{signal:controller.signal}));
+          if(url.pathname==='/api/tactical/pilot/maneuver')return json(res,200,await tacticalManeuver(input,{signal:controller.signal}));
           if(url.pathname==='/api/tactical/pilot/plan-departure')return json(res,200,await pilotAssistant.planDeparture(input,{signal:controller.signal}));
           if(url.pathname==='/api/tactical/pilot/result'){
             return json(res,200,await pilotAssistant.checkResult(input,{signal:controller.signal}));
@@ -135,7 +172,7 @@ export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=
             return json(res,200,await client.reviewPilot(input,{signal:controller.signal}));
           }
           return json(res,200,await client.interpret(input,{signal:controller.signal}));
-        }finally{if(isTts)activeTts--;else if(isTranslation)activeTranslations--;else active--;}
+        }finally{release?.();req.removeListener('aborted',cancel);res.removeListener('close',onClose);if(isTts)activeTts--;else if(isTranslation)activeTranslations--;}
       }
       if(req.method!=='GET'&&req.method!=='HEAD')throw new ApiError(405,'不支持该请求方法');
       const pathname=decodeURIComponent(url.pathname);
@@ -151,11 +188,13 @@ export function createGameServer(config,{fetchImpl=fetch,root=ROOT,localRuntime=
         'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin'});
       res.end(req.method==='HEAD'?undefined:data);
     }catch(e){
-      if(!res.headersSent)json(res,e.status||(e.code==='ENOENT'||e.code==='ENOTDIR'?404:500),{error:e instanceof ApiError?e.message:'请求未能完成'});
+      if(!req.readableEnded)req.resume();
+      if(res.destroyed||res.writableEnded)return;
+      if(!res.headersSent)json(res,e.status||(e.code==='ENOENT'||e.code==='ENOTDIR'?404:500),{error:e instanceof ApiError||e instanceof TacticalQueueError?e.message:'请求未能完成'});
       else res.end();
     }
   });
-  server.once('close',()=>void pilotAssistant.stop?.());
+  server.once('close',()=>{tacticalScheduler.close();players?.close();void pilotAssistant.stop?.();});
   return server;
 }
 

@@ -53,7 +53,7 @@ test('长僚机能交换分工，原僚机成为独立长机；相互冲突的�
 });
 test('无效或自我保护、未知运输机、敌机和地面对象不会启动；附带未实现战术不部分执行',()=>{
  const w=world();for(const p of [{targetId:'blue-2'},{targetId:null,targetRef:'运输机'},{targetId:'blue-1',rangeM:100}])assert.equal(parse(w,protect('escort',p)).execution.status,'needs_clarification');
- w.units[0].team='red';assert.equal(parse(w,protect('cover')).execution.status,'needs_clarification');delete w.units[0].team;
+ w.units[0].team='red';assert.ok(!commandContext(w,'blue-2').units.some(u=>u.id==='blue-1'));assert.throws(()=>parse(w,protect('cover')),/引用无效/);delete w.units[0].team;
  w.units[0].surface={grounded:true};assert.equal(parse(w,protect('cover')).execution.status,'needs_clarification');delete w.units[0].surface;
  const before=JSON.stringify(w),mixed=parse(w,protect('cover'),order('banzai',['blue-1'],{targetRef:'敌机'}));assert.equal(mixed.execution.status,'capability_unavailable');applyPlan(w,mixed.plan,w.revision);assert.equal(JSON.stringify(w),before);
 });

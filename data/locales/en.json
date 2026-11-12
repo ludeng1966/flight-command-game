@@ -1853,5 +1853,10 @@
   "F-16固定挂载4枚AIM-120B和2枚AIM-9M。补弹不替飞行员选弹；有本机导弹在空时不能补弹。": "F-16 loadout: 4 AIM-120B and 2 AIM-9M. Rearming does not select a weapon for the pilot; wait until all own missiles have finished their flights.",
   "补充所选导弹": "Replenish selected missile",
   "F-16固定挂载4枚AIM-120B和2枚AIM-9M，不能装入其他弹型": "F-16 loadout is fixed at 4 AIM-120B and 2 AIM-9M; other missile types cannot be loaded",
-  "挂载已统一，请确认目标": "Loadout standardized; confirm target"
+  "挂载已统一，请确认目标": "Loadout standardized; confirm target",
+  "拖动旋转，滚轮缩放。WASD 移动，PageUp 上升，PageDown 下降。": "Drag to rotate, scroll to zoom. WASD to move, PageUp to ascend, PageDown to descend.",
+  "W/S 沿视线移动 · A/D 横移 · PageUp 上升 · PageDown 下降": "W/S Move along line of sight · A/D Lateral move · PageUp Ascend · PageDown Descend",
+  "战术快捷指挥": "Tactical commands",
+  "精细航线": "Route editing",
+  "1/2 选机 · 3 选择编组 · 右键空域转进 · Q 点目标授权攻击一枚 · X 告警规避 · E 点空域脱离 · H 停火 · B 返场 · Shift 追加任务 · Ctrl+数字编组 · V 按住说话。": "1/2 Select aircraft · 3 Select group · Right-click area to proceed · Q + target Authorize one missile · X Defend · E + area Disengage · H Cease fire · B Recover · Shift Queue task · Ctrl+number Assign group · Hold V to speak."
 }

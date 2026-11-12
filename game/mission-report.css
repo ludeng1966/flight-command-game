@@ -14,3 +14,4 @@
  #stage.clean-ui #mission-brief{left:12px;right:12px;width:auto}
  #stage.clean-ui.report-open.voice-open #training-coach.walkthrough,#stage.clean-ui.report-open.voice-open #mission-brief{display:none}
 }
+#mission-brief #brief-timeline{border-top:1px solid #2a4054;margin-top:20px;padding-top:14px;font-size:12px}#brief-timeline summary{cursor:pointer;color:#a5c8df}#brief-timeline summary:focus-visible{outline:2px solid #a5c8df;outline-offset:3px}#mission-brief .brief-timeline-list{padding-left:18px;margin:12px 0}#mission-brief .brief-timeline-list li{margin:0 0 14px;overflow-wrap:anywhere}#mission-brief .brief-timeline-list p{color:#cfe3f5;margin:3px 0}#mission-brief .brief-timeline-list small{font-size:10px;color:#91a9bd}#mission-brief dd{overflow-wrap:anywhere}

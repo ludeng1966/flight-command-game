@@ -2,10 +2,12 @@ import {preparePilotPlan,commitPilotPlan} from '../sim/orders.js';
 import {createCommandExchange,pilotUnable,verifyReadback,unitRadioName} from '../sim/radio-procedure.js';
 import {ROUTINE_INTENTS} from '../sim/pilot-watch.js';
 import {needsDeparturePlan} from '../sim/departure-plan.js';
-import {createCommanderTransmission,captureCommanderMessage} from '../sim/commander-message.js';
+import {createCommanderTransmission,captureCommanderMessage,captureAcceptedCommanderMessage} from '../sim/commander-message.js';
 import {towerTask,createTowerTransmission} from '../sim/control-radio.js';
 import {controlAuthority,requestHandoff} from '../sim/control-authority.js';
 import {transmitHandoff} from './control-handoff.js';
+import {validateAtcAssignment} from '../sim/atc-command.js';
+import {AIRPORT_STATIONS} from '../sim/airport-atc.js';
 
 const abortError=()=>new DOMException('通联已取消','AbortError');
 export function radioPause(ms,signal){
@@ -19,42 +21,55 @@ export function radioPause(ms,signal){
 
 // Routine orders are handled by the computer pilot without model review.
 // Event-driven judgment runs independently and never stalls continuous flight.
-export async function runCommandSession({world,reply,expectedRevision,selectedUnitId=null,style='pla',radio,signal,onPreview=()=>{},onCommitted=()=>{},onSimulation=()=>{},pause=radioPause,assertCurrent=()=>{},assertWorldCurrent=()=>{},reviewPilot=null,checkPilotResult=null,planPilotCommand=null,pilotLabel='AI',enforceAuthority=false}){
+export async function runCommandSession({world,reply,expectedRevision,selectedUnitId=null,style='pla',radio,signal,onPreview=()=>{},onCommitted=()=>{},onSimulation=()=>{},pause=radioPause,assertCurrent=()=>{},assertWorldCurrent=()=>{},reviewPilot=null,checkPilotResult=null,planPilotCommand=null,preparePlan=preparePilotPlan,pilotLabel='AI',enforceAuthority=false,responsive=false,speechSignal=null,onSpeechError=()=>{},executionGuard=null}){
   let {plan,interpretation,execution}=reply;const language=style==='nato'?'en-US':'zh-CN';
   const throughTower=plan.status==='accepted'&&towerTask(reply,world),airport=world.airportOps?.airport.id??'BAY';
+  const detachedSpeech=responsive&&!throughTower;
+  const speechError=error=>{try{void Promise.resolve(onSpeechError(error)).catch(()=>{});}catch{/* Reporting must not reject an installed command. */}};
+  let towerStation='tower';
   const transmit=(message,options)=>{
     if(throughTower&&message.speaker==='pilot'){
-      const address=(text,en=false)=>{if(!text)return text;const target=en?`${airport} TOWER`:`${airport}塔台`;if(text.startsWith(target))return text;return target+(en?', ':'，')+text.replace(en?/^CONTROL[., ]*/:/^指挥台[，,。]*/,'');};
+      const address=(text,en=false)=>{if(!text)return text;const station=AIRPORT_STATIONS[towerStation]??AIRPORT_STATIONS.tower,target=en?`${airport} ${station.en}`:`${airport}${station.zh}`;if(text.startsWith(target))return text;return target+(en?', ':'，')+text.replace(en?/^CONTROL[., ]*/:/^指挥台[，,。]*/,'');};
       message={...message,text:address(message.text,message.language==='en-US'),...(message.texts?{texts:{zh:address(message.texts.zh),en:address(message.texts.en,true)}}:{})};
     }
-    return radio.transmit(message,options);
+    message={...message,commandId:reply.requestId,unitIds:[...new Set(plan.tasks.map(t=>t.unitId).filter(Boolean))]};
+    if(!detachedSpeech)return radio.transmit(message,options);
+    // Cancellation of sound never cancels the command's planning/commit signal.
+    const speechOptions={...options,signal:speechSignal};
+    try{
+      if(radio.publish){const handle=radio.publish(message,speechOptions);void handle.completion.catch(speechError);return Promise.resolve(handle.record);}
+      // Small adapters/tests can retain transmit-only consoles.
+      void Promise.resolve().then(()=>radio.transmit(message,speechOptions)).catch(speechError);
+      return Promise.resolve({...message,id:reply.requestId,delivery:'queued',reception:'accepted'});
+    }catch(error){speechError(error);return Promise.resolve({...message,id:reply.requestId,delivery:'unavailable',reception:'accepted'});}
   };
-  const check=()=>{if(signal?.aborted)throw abortError();assertCurrent();if(world.revision!==expectedRevision)throw Error('收到新指令，本次通联作废');};
+  const check=()=>{if(signal?.aborted)throw abortError();if(executionGuard){executionGuard.assertCurrent();expectedRevision=executionGuard.rebase?.()??world.revision;}else{assertCurrent();if(world.revision!==expectedRevision)throw Error('收到新指令，本次通联作废');}};
   const send=(speaker,text,unitId=null)=>transmit({speaker,text,unitId,language},{signal});
   async function checkedReadback(outcome,result,reason=null){
     if(!checkPilotResult)return null;
     const revision=world.revision;
-    const current=()=>{if(signal?.aborted)throw abortError();assertWorldCurrent();if(world.revision!==revision)throw Error('检查期间收到新操作，旧结果不再复述');};
+    const current=()=>{if(signal?.aborted)throw abortError();assertWorldCurrent();if(executionGuard)executionGuard.assertCurrent();else if(world.revision!==revision)throw Error('检查期间收到新操作，旧结果不再复述');};
     try{
-      current();radio.phase('pilot-result-check',`${pilotLabel} 飞行员 · 正在检查指令执行结果`);
+      current();radio.phase('pilot-result-check','核对实际装订与执行状态');
       const reviewed=await checkPilotResult({outcome,result,reason,revision,commanderMessage:reply.commanderMessage});current();
       if(!reviewed?.checks?.length)throw Error(`${pilotLabel} 未返回执行结果`);
       for(const item of reviewed.checks){
         current();const unit=world.units.find(u=>u.id===item.unitId),name=unit?unitRadioName(unit,world.units.indexOf(unit),style):'指挥台';
-        radio.phase('pilot-result-readback',`${pilotLabel} 飞行员 · 检查后复述`);
+        radio.phase('pilot-result-readback',reviewed.checkedBy==='flight-computer'?'程序已核实 · 飞行员复述':`${pilotLabel} 飞行员 · 检查后复述`);
         const englishName=unit?unitRadioName(unit,world.units.indexOf(unit),'nato'):'CONTROL',speakerUnit=unit??world.units.find(u=>u.id===selectedUnitId)??world.units[0],speakerIndex=world.units.indexOf(speakerUnit);
         const blocked=item.verdict==='blocked',zhReason=(item.readbackTexts?.zh??item.readbackText).replace(/[，,\s]*(?:当前)?无法执行[。.]?$/,''),enReason=(item.readbackTexts?.en??item.readbackText).replace(/[.\s]*Unable to execute\.[\s]*$/i,'');
         const texts=blocked?{zh:pilotUnable(speakerUnit,speakerIndex,zhReason,'pla'),en:pilotUnable(speakerUnit,speakerIndex,enReason,'nato')}:item.readbackTexts?{zh:`${unit?unitRadioName(unit,world.units.indexOf(unit),style):'指挥台'}，${item.readbackTexts.zh}`,en:`${englishName}. ${item.readbackTexts.en}`}:undefined;
         const pilotText=blocked?pilotUnable(speakerUnit,speakerIndex,zhReason,style):`${name}，${item.readbackText}`;
-        await transmit({speaker:'pilot',unitId:item.unitId,text:pilotText,texts,language:'zh-CN',checkedByModel:true,model:reviewed.checkedBy},{signal});
+        await transmit({speaker:'pilot',unitId:item.unitId,text:pilotText,texts,language:'zh-CN',checkedByModel:reviewed.checkedBy!=='flight-computer',model:reviewed.checkedBy,simTime:reviewed.simTimeSec},{signal,isCurrent:()=>{try{current();return reviewed.isCurrent?.()!==false;}catch{return false;}}});
       }
-      return {reviewed,summary:reviewed.checks.map(item=>item.readbackText).join('；')};
+      return {reviewed,verifiedByModel:reviewed.checkedBy!=='flight-computer',summary:reviewed.checks.map(item=>item.readbackText).join('；')};
     }catch(error){error.pilotResultCheckFailure=true;throw error;}
   }
   check();
   if(enforceAuthority&&plan.status==='accepted')for(const id of new Set(plan.tasks.map(t=>t.unitId).filter(Boolean))){
     const u=world.units.find(u=>u.id===id),c=controlAuthority(world,u),tasks=plan.tasks.filter(t=>t.unitId===id);
-    if(throughTower&&tasks.some(t=>t.action==='airport')){
+    if(throughTower&&tasks.some(t=>['airport','atc'].includes(t.action))){
+      for(const t of tasks.filter(t=>t.action==='atc'))validateAtcAssignment(world,u,t.atcOrder);
       for(const t of tasks.filter(t=>t.action==='airport'))world.airportOps?.validate(u,t.airportOrder,world.executionMode);
       if(c.owner==='commander'){if(c.mode==='manual')throw Error('严苛模式需要手动交接：先点击“返场联系塔台”，等待塔台确认接管');requestHandoff(world,u,'tower');await transmitHandoff(world,u,radio,{signal});check();}
     }else if(!throughTower&&c.owner==='tower'&&tasks.some(t=>!['report_status','pause','resume'].includes(t.action))){
@@ -63,10 +78,14 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
     }
   }
   const transmission=throughTower?createTowerTransmission(reply,world,style,world.unitSystem):createCommanderTransmission(reply,world.units,style,world.unitSystem);
+  towerStation=transmission.controllerRole??'tower';
   radio.phase(throughTower?'tower-command':'commander',throughTower?'指挥官AI已核对 · 以塔台身份发令':'空中指挥 · 正在播报命令');
   const record=await transmit(transmission,{signal});check();
-  reply.commanderMessage=captureCommanderMessage(transmission,record,reply.requestId,world.unitSystem);
-  if(planPilotCommand){
+  reply.commanderMessage=(detachedSpeech?captureAcceptedCommanderMessage:captureCommanderMessage)(transmission,record,reply.requestId,world.unitSystem);
+  // The structured commander plan is already validated. Only navigation tasks
+  // require the pilot's explicit 3D waypoint output (see validateAiNavigation).
+  const requiresPilotPlan=!responsive||plan.status==='accepted'&&plan.tasks.some(t=>['fly_to','fly_heading'].includes(t.action));
+  if(planPilotCommand&&requiresPilotPlan){
     radio.phase('pilot-model',`${pilotLabel} 飞行员 · 正在处理收到的指挥通话`);
     const planned=await planPilotCommand({commanderMessage:reply.commanderMessage});check();
     reply.commanderInterpretation=interpretation;
@@ -81,11 +100,11 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
     }
     if(execution.status==='informational'){
       const checked=await checkedReadback('informational',null,plan.summary);radio.phase('reported','通报已记录');
-      return {summary:checked?.summary??plan.summary,status:'informational',committed:false,verifiedByModel:!!checked};
+      return {summary:checked?.summary??plan.summary,status:'informational',committed:false,verifiedByModel:checked?.verifiedByModel??false};
     }
     if(checkPilotResult){
-      const checked=await checkedReadback('blocked',null,plan.summary);radio.phase('unable',`${pilotLabel} 已核实 · 当前无法执行`);
-      return {summary:checked.summary,status:'unable',committed:false,verifiedByModel:true};
+      const checked=await checkedReadback('blocked',null,plan.summary);radio.phase('unable','程序已核实 · 当前无法执行');
+      return {summary:checked.summary,status:'unable',committed:false,verifiedByModel:checked.verifiedByModel};
     }
     const ids=[...new Set((interpretation?.orders||[]).flatMap(o=>o.unitIds))];
     for(const id of ids){
@@ -103,12 +122,12 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
     try{await reviewPilot({commanderMessage:reply.commanderMessage});check();}catch(error){
       if(signal?.aborted||!checkPilotResult)throw error;
       const checked=await checkedReadback('blocked',null,error.message);radio.phase('unable','飞行员规划后报告无法执行');
-      return {summary:checked.summary,status:'unable',committed:false,verifiedByModel:true};
+      return {summary:checked.summary,status:'unable',committed:false,verifiedByModel:checked.verifiedByModel};
     }
   }
   if(plan.tasks.every(t=>t.action==='report_status')){
     const result=commitPilotPlan(preparePilotPlan(world,plan,expectedRevision,{radioStyle:style}));onCommitted(result,null);
-    if(checkPilotResult){const checked=await checkedReadback('applied',result);radio.phase('reported',`${pilotLabel} 已检查并报告状态`);return {summary:checked.summary,status:'reported',committed:true,verifiedByModel:true};}
+    if(checkPilotResult){if(detachedSpeech){void checkedReadback('applied',result).catch(speechError);return {summary:result.summary,status:'reported',committed:true,verifiedByModel:false,resultReviewPending:true};}const checked=await checkedReadback('applied',result);radio.phase('reported','已核实并报告状态');return {summary:checked.summary,status:'reported',committed:true,verifiedByModel:checked.verifiedByModel};}
     radio.phase('reported','电脑飞行员报告当前状态');await transmit({speaker:'pilot',unitId:plan.tasks[0].unitId,text:result.summary,language:'zh-CN'},{signal});
     return {summary:result.summary,status:'reported',committed:true};
   }
@@ -116,23 +135,34 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
     const commands=plan.tasks.filter(t=>t.unitId===pilot.unitId);verifyReadback(commands,pilot.tasks);
     radio.phase('readback',`${pilot.callsign} · 复诵关键参数`);await send('pilot',pilot.readbackText,pilot.unitId);check();
   }
-  radio.phase('planning',checkPilotResult?`程序正在规划并装订，随后由${pilotLabel} 检查结果`:'复诵核对通过 · 电脑飞行员正在规划航路');await pause(40,signal);check();
+  radio.phase('planning',checkPilotResult?'飞行员已拟定航点 · 校验可飞性与装订结果':'复诵核对通过 · 后台规划航路');if(!responsive)await pause(40,signal);check();
   let draft;
   try{
-    draft=preparePilotPlan(world,plan,expectedRevision,{radioStyle:style,pilotProcedures:reply.pilotProcedures});check();
+    const prepare=()=>preparePlan(world,plan,expectedRevision,{radioStyle:style,pilotProcedures:reply.pilotProcedures,aiRoutes:reply.pilotCommandPlanning?.pilotNavigationPlans??[],scoped:responsive},signal);
+    draft=await prepare();check();
     for(const preview of draft.previews){
+      if(responsive){world.pilotPreview={...preview,requestId:reply.requestId,count:preview.points.length};onPreview(world.pilotPreview);check();continue;}
       for(let count=1;count<=preview.points.length;count++){
         check();world.pilotPreview={...preview,requestId:reply.requestId,count};onPreview(world.pilotPreview);
         radio.phase('plotting',`${world.units.find(u=>u.id===preview.unitId).callsign} · 飞行员拟设航点 ${count}/${preview.points.length}`);
         await pause(320,signal);
       }
     }
-    check();const result=commitPilotPlan(draft);world.pilotPreview=null;
+    check();
+    // Preview/model latency never freezes flight. Revalidate/recompute from live state before installation.
+    let result;
+    for(let attempt=0;attempt<3;attempt++){
+      if(draft.backgroundPrepared&&world.time-draft.sampledAt>.5){draft=await prepare();check();}
+      check();if(executionGuard)draft.expectedRevision=expectedRevision;
+      try{result=commitPilotPlan(draft);break;}catch(error){if(error.code!=='FLIGHT_STATE_CHANGED'||attempt===2)throw error;draft=await prepare();check();}
+    }
+    world.pilotPreview=null;
     if(result.simulation)onSimulation(result.simulation==='resume');
     onCommitted(result,draft);
     if(checkPilotResult){
-      const checked=await checkedReadback('applied',result);radio.phase('executing',`${pilotLabel} 已检查并复述 · 程序继续飞行`);
-      return {summary:checked.summary,status:'executing',committed:true,verifiedByModel:true};
+      if(detachedSpeech){void checkedReadback('applied',result).catch(speechError);radio.phase('executing','任务已装订 · 飞行员执行中');return {summary:result.summary,status:'executing',committed:true,verifiedByModel:false,resultReviewPending:true};}
+      const checked=await checkedReadback('applied',result);radio.phase('executing','已核实并复述 · 程序继续飞行');
+      return {summary:checked.summary,status:'executing',committed:true,verifiedByModel:checked.verifiedByModel};
     }
     radio.phase('executing','航路已装订 · 电脑飞行员执行中');
     for(const pilot of exchange.pilots){
@@ -147,7 +177,7 @@ export async function runCommandSession({world,reply,expectedRevision,selectedUn
     if(draft?.committed)throw error;
     if(signal?.aborted)throw error;
     if(checkPilotResult&&!error.pilotResultCheckFailure){
-      await checkedReadback('blocked',null,error.message);radio.phase('unable',`${pilotLabel} 已核实 · 程序无法执行`);
+      await checkedReadback('blocked',null,error.message);radio.phase('unable','程序已核实 · 当前无法执行');
       error.pilotResultReviewed=true;throw error;
     }
     radio.phase('unable','飞行员 · 无法按当前指令执行');

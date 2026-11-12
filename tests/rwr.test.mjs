@@ -31,9 +31,9 @@ test('RWR按辐射工作：关雷达无告警，搜索波束扫描才发现，�
   assert.equal(own(w).rwr.events.filter(e=>e.type==='detected').length,1);
 });
 
-test('稳定跟踪升级并报告，等满8秒才装订自主规避，未知信号不冒充精确坐标或距离',()=>{
-  const w=locked(),u=own(w),e=u.rwrDefense.episode;assert.equal(strongest(w).level,'track');assert.ok(e);assert.equal(u.rwrDefense.active,null);
-  sense(w,7);assert.equal(u.rwrDefense.active,null);sense(w,1);assert.ok(u.rwrDefense.active);assert.equal(u.rwrDefense.active.decidedBy,'local_rule');
+test('稳定跟踪升级立即自主规避，未知信号不冒充精确坐标或距离',()=>{
+  const w=locked(),u=own(w),e=u.rwrDefense.episode;assert.equal(strongest(w).level,'track');assert.ok(e);assert.ok(u.rwrDefense.active);
+  assert.equal(e.autoAt,e.firstSeen);assert.equal(u.rwrDefense.active.decidedBy,'local_rule');
   const c=rwrContext(u,w.time);assert.doesNotMatch(JSON.stringify(c),/SECRET|red-1|range|position|velocity|targetId/);assert.ok(c.contacts[0].bearingDeg%15===0);
 });
 
@@ -50,11 +50,10 @@ test('被动红外弹和未开机主动弹不产生RWR发射告警，主动开�
   sense(w,.2);assert.equal(u.rwr.contacts.length,0);m.active=true;sense(w,.2);assert.equal(strongest(w).level,'launch');assert.equal(strongest(w).signalType,'active_seeker');
 });
 
-test('半主动弹由真实照射信号产生发射告警，4秒等待生效，非所有跟踪都称为发射',()=>{
+test('半主动弹真实照射产生发射告警后立即规避，非所有跟踪都称为发射',()=>{
   const w=locked(),u=own(w);assert.equal(strongest(w).level,'track');
   spawnMissile(w,source(w),u,MISSILE_MODELS.get('us_aim7p_sparrow_fa_18'),{position:u.position,velocity:u.velocity});sense(w,.1);
-  assert.equal(strongest(w).level,'launch');const e=u.rwrDefense.episode;assert.equal(e.level,'launch');assert.ok(Math.abs(e.autoAt-e.firstSeen-4)<1e-6);
-  sense(w,3.8);assert.equal(u.rwrDefense.active,null);sense(w,.3);assert.ok(u.rwrDefense.active);
+  assert.equal(strongest(w).level,'launch');const e=u.rwrDefense.episode;assert.equal(e.level,'launch');assert.equal(e.autoAt,e.firstSeen);assert.ok(u.rwrDefense.active);
 });
 
 test('雷达因横切丢失回波，不等于RWR也收不到仍在照射的发射机',()=>{
@@ -63,17 +62,18 @@ test('雷达因横切丢失回波，不等于RWR也收不到仍在照射的发�
 
 test('新玩家指令取消本轮等待或现有规避，同一告警不会再次抢夺控制',()=>{
   for(const started of [false,true]){
-    const w=locked(),u=own(w);if(started)sense(w,9);assert.equal(!!u.rwrDefense.active,started);
+    const w=locked(),u=own(w);if(started)sense(w,9);assert.ok(u.rwrDefense.active);
     notePlayerDefenseOrder(w,u);assert.equal(u.rwrDefense.active,null);assert.equal(u.rwrDefense.episode.playerOverride,true);sense(w,20);assert.equal(u.rwrDefense.active,null);
-    spawnMissile(w,source(w),u,MISSILE_MODELS.get('us_aim7p_sparrow_fa_18'),{position:u.position,velocity:u.velocity});sense(w,.1);assert.equal(u.rwrDefense.episode.playerOverride,false);assert.equal(u.rwrDefense.episode.level,'launch');
+    spawnMissile(w,source(w),u,MISSILE_MODELS.get('us_aim7p_sparrow_fa_18'),{position:u.position,velocity:u.velocity});sense(w,.1);assert.equal(u.rwrDefense.episode.playerOverride,true);assert.equal(u.rwrDefense.episode.level,'launch');assert.equal(u.rwrDefense.active,null);
   }
 });
 
-test('玩家正在下令时延后计时，只报告模式不自主规避，恢复自动策略重新等待',()=>{
-  const w=locked(),u=own(w);w.playerCommandPending=true;sense(w,20);assert.equal(u.rwrDefense.active,null);
-  w.playerCommandPending=false;sense(w,7);assert.equal(u.rwrDefense.active,null);sense(w,1.2);assert.ok(u.rwrDefense.active);
+test('未装订的新指令不延后既有防御时限，只报告与已装订策略仍优先',()=>{
+  const w=locked(),u=own(w),deadline=u.rwrDefense.episode.autoAt;w.playerCommandPending=true;
+  sense(w,7);assert.ok(u.rwrDefense.active);assert.equal(u.rwrDefense.episode.autoAt,deadline);
+  sense(w,1.2);assert.ok(u.rwrDefense.active);w.playerCommandPending=false;
   configureDefense(w,u,{mode:'report_only'});sense(w,20);assert.equal(u.rwrDefense.active,null);
-  configureDefense(w,u,{mode:'auto',lockDelaySec:2});sense(w,1.5);assert.equal(u.rwrDefense.active,null);sense(w,.6);assert.ok(u.rwrDefense.active);
+  configureDefense(w,u,{mode:'auto',lockDelaySec:2});sense(w,.05);assert.ok(u.rwrDefense.active);assert.equal(u.rwrDefense.lockDelaySec,0);
 });
 
 test('告警只报告/横切/背向命令能编译执行；玩家指定航向保留，不能虚构不支持的措施',()=>{
@@ -100,7 +100,7 @@ test('告警判断模型只收到本机遥测和方位观测，玩家接管/只�
   const result=await service(input());assert.equal(result.modelInvoked,true);assert.equal(result.decision.maneuver,'notch');await service(input());assert.equal(calls,1);
   notePlayerDefenseOrder(w,u);assert.equal((await service(input())).modelInvoked,false);assert.equal(calls,1);
   const forged=rwrContext(u,w.time);forged.contacts[0].position=[1,2,3];assert.equal(parseRwrContext(forged,w.time).contacts[0].position,undefined);forged.contacts[0].bearingDeg=Infinity;assert.throws(()=>parseRwrContext(forged,w.time));
-  assert.throws(()=>validateRwrDecision({maneuver:'notch',side:'left',message:'立即横切'}),/等待玩家/);
+  assert.doesNotThrow(()=>validateRwrDecision({maneuver:'notch',side:'left',message:'立即横切'}));
 });
 
 test('迟到模型建议不能覆盖玩家新指令；健康无告警不请求推理',async()=>{
@@ -108,8 +108,8 @@ test('迟到模型建议不能覆盖玩家新指令；健康无告警不请求�
   pilot.tick();assert.equal(calls,0);const alarm=locked();Object.assign(w,alarm);at=2000;pilot.tick();assert.equal(calls,1);const target=own(w);notePlayerDefenseOrder(w,target);release();await microtask();await microtask();assert.equal(target.rwrDefense.modelReview,null);assert.equal(target.rwrDefense.active,null);
 });
 
-test('RWR报告遵守通联忙碌和静音接口，不反复报告同一事件',async()=>{
-  const w=locked(),sent=[];let busy=true;const radio=new RwrRadio({getWorld:()=>w,isBusy:()=>busy,radio:{async transmit(m){sent.push(m);}}});radio.pump();assert.equal(sent.length,0);busy=false;radio.pump();await microtask();assert.equal(sent.length,1);assert.match(sent[0].text,/告警|跟踪/);radio.pump();await microtask();assert.equal(sent.length,1);
+test('紧急RWR报告可以插入普通通联，不反复报告同一事件',async()=>{
+  const w=locked(),sent=[];let busy=true;const radio=new RwrRadio({getWorld:()=>w,isBusy:()=>busy,radio:{async transmit(m){sent.push(m);}}});radio.pump();assert.equal(sent.length,1);assert.equal(sent[0].priority,100);busy=false;await microtask();assert.match(sent[0].text,/告警|跟踪|威胁/);radio.pump();await microtask();assert.equal(sent.length,1);
 });
 
 test('告警、等待时间和玩家接管状态随存档恢复，旧存档仍可加载',()=>{
@@ -118,11 +118,11 @@ test('告警、等待时间和玩家接管状态随存档恢复，旧存档仍�
   const old=captureWorld(create());for(const unit of old.units){delete unit.rwr;delete unit.rwrDefense;}delete old.rwrPracticeEmitters;delete old.rwrPracticeSequence;assert.equal(own(restoreWorld(old,scenario,profiles)).rwr.available,true);
 });
 
-test('同一辐射源再次出现独立发射照射时重新报告，不沿用上一轮玩家处置',()=>{
+test('同一辐射源再次发射重新报告，明确冲突飞行指令仍优先',()=>{
   const w=locked(),u=own(w),s=source(w),model=MISSILE_MODELS.get('us_aim7p_sparrow_fa_18');
   const first=spawnMissile(w,s,u,model,{position:u.position,velocity:u.velocity});sense(w,.1);const key=u.rwrDefense.episode.key;
   notePlayerDefenseOrder(w,u);first.alive=false;sense(w,.1);assert.equal(strongest(w).level,'track');
-  spawnMissile(w,s,u,model,{position:u.position,velocity:u.velocity});sense(w,.1);assert.notEqual(u.rwrDefense.episode.key,key);assert.equal(u.rwrDefense.episode.playerOverride,false);
+  spawnMissile(w,s,u,model,{position:u.position,velocity:u.velocity});sense(w,.1);assert.notEqual(u.rwrDefense.episode.key,key);assert.equal(u.rwrDefense.episode.playerOverride,true);
 });
 
 test('慢模型不阻塞默认自卫，返回后只能修订同一有效告警的建议',async()=>{
@@ -134,8 +134,8 @@ test('慢模型不阻塞默认自卫，返回后只能修订同一有效告警�
 test('规避中暂缓旧航路重规划，成功下达普通新飞行参数后立即交还控制',()=>{
   const w=locked(),u=own(w);sense(w,9);u.waypoints=[Object.assign([0,50000,4500],{number:1})];let replans=0;w.deferNavigation=()=>{replans++;};u.navigationKey=null;
   w.ensureNavigation(u);assert.equal(replans,0);
-  applyPlan(w,{status:'accepted',summary:'保持新速度',tasks:[{unitId:u.id,action:'set_flight',altitudeM:null,speedMps:280,headingDeg:null,eastM:null,northM:null,distanceM:null,append:false}]},w.revision);
-  assert.equal(u.rwrDefense.active,null);assert.equal(u.rwrDefense.episode.playerOverride,true);assert.equal(u.targetSpeed,280);sense(w,20);assert.equal(u.rwrDefense.active,null);
+  applyPlan(w,{status:'accepted',summary:'保持新高度',tasks:[{unitId:u.id,action:'set_flight',altitudeM:5000,speedMps:null,headingDeg:null,eastM:null,northM:null,distanceM:null,append:false}]},w.revision);
+  assert.equal(u.rwrDefense.active,null);assert.equal(u.rwrDefense.episode.playerOverride,true);assert.equal(u.targetAltitude,5000);sense(w,20);assert.equal(u.rwrDefense.active,null);
 });
 
 test('语音排队期间改成只报告，不播报旧的自主规避承诺',async()=>{
@@ -143,6 +143,9 @@ test('语音排队期间改成只报告，不播报旧的自主规避承诺',asy
   const radio=new RwrRadio({getWorld:()=>w,isBusy:()=>false,radio:{async transmit(m){sent.push(m);}}});radio.pump();await microtask();assert.equal(sent.length,1);assert.match(sent[0].text,/只报告/);assert.doesNotMatch(sent[0].text,/8秒后/);
 });
 
+test('真实云建议不能虚构自动投放干扰弹',()=>{
+ assert.throws(()=>validateRwrDecision({maneuver:'notch',side:'left',message:'建议保持左横切，同时等待防御系统自动投放干扰弹。'}),/未接入动作/);
+});
 test('尚未装订的新指令不撤回正在飞行的自卫，成功装订后才交还控制',()=>{
   const w=locked(),u=own(w);sense(w,9);const active=u.rwrDefense.active;
   w.playerCommandPending=true;sense(w,1);assert.equal(defenseGuidance(u),active);

@@ -47,6 +47,7 @@ export function initInterface({onDisplayChange,getMapObstacles=()=>[]}){
   }
   for(const [id,key]of [['toggle-panels','roster'],['voice-toggle','voice'],['settings-toggle','settings']])$('#'+id).onclick=()=>open(panel===key?'close-primary':key,{focus:true});
   stage.addEventListener('mission-open-command',()=>{open('voice');$('#command-text').focus({preventScroll:true});});
+  stage.addEventListener('atc-open',()=>{open('roster');const atc=$('#atc-workbench');if(atc){atc.open=true;atc.scrollIntoView({block:'start'});}});
   stage.addEventListener('training-command-issued',()=>{if(narrow.matches)open('training');});
   document.querySelectorAll('[data-close-panel]').forEach(button=>button.onclick=()=>{if(button.closest('#mission-brief')){open('close-report');$('#mission-report-toggle').focus({preventScroll:true});return;}const from=panel;open('close-primary');$('#'+({settings:'settings-toggle',voice:'voice-toggle',roster:'toggle-panels'}[from]??'settings-toggle')).focus({preventScroll:true});});
   $('#training-toggle')?.addEventListener('click',()=>open(coach?.hidden?'close-report':'training'));

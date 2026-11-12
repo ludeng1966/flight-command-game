@@ -18,6 +18,7 @@ export function clearanceMessage(clearance,unit,airport,{readback=false,system=g
   else if(c.type==='cross'){zh=`许可穿越跑道${p.runway}，经滑行道${p.taxiway}`;en=`CROSS RUNWAY ${p.runway} VIA TAXIWAY ${p.taxiway}`;}
   else if(c.type==='go_around'){zh='复飞，按公布复飞程序爬升';en='GO AROUND, FLY PUBLISHED MISSED APPROACH';}
   else{zh='保持原位，等待进一步许可';en='HOLD POSITION, AWAIT FURTHER CLEARANCE';}
+  if(!readback&&['takeoff','land'].includes(c.type)&&airport.weather){const w=airport.weather,h=String(Math.round(w.windFromDeg)).padStart(3,'0');zh+=`，风向${h}度，风速${Math.round(w.windSpeedMps)}米每秒${w.gustMps>w.windSpeedMps?'，阵风'+Math.round(w.gustMps)+'米每秒':''}`;en+=`, WIND ${h} AT ${Math.round(w.windSpeedMps*1.94384)} KNOTS${w.gustMps>w.windSpeedMps?' GUSTING '+Math.round(w.gustMps*1.94384):''}`;}
   if(!readback&&p.qnhHpa){zh+=`，修正海压${p.qnhHpa}${p.atisCode?'，本场通播'+p.atisCode:''}`;en+=`, QNH ${p.qnhHpa}${p.atisCode?', INFORMATION '+p.atisCode:''}`;}
   const texts=readback?{zh:`${airport.id}${station.zh}，${zh}，${name}。`,en:`${airport.id} ${station.en}, ${en}. ${name}.`}:
     {zh:`${name}，${airport.id}${station.zh}。${c.reasonZh?c.reasonZh+'。':''}${zh}。`,en:`${name}, ${airport.id} ${station.en}. ${c.reasonEn?c.reasonEn+'. ':''}${en}.`};
