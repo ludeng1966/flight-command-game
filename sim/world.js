@@ -9,28 +9,33 @@ import {applyPlan} from './orders.js';
 import {executionMode} from './execution-policy.js';
 import {resolveEntityCollisions,terrainBodyCollision} from './entity-collision.js';
 import {updateFormation,leaveFormation,FORMATION_ACTIONS} from './formation.js';
-import {createRadar,stepRadars,radarView,applyRadarOrder} from './radar.js';
+import {createRadar,stepRadars,radarView,applyRadarOrder,setRadarSilence,setIffMode,interrogateIff,setRadarScan,setRadarTws} from './radar.js';
+import {isAirspaceStandard,airspaceContext} from './airspace.js';
 import {beginPilotExecution} from './pilot-execution.js';
 import {configureRouteLoop,extendRouteLoop,captureLoopRoute,restoreLoopRoute} from './route-loop.js';
 import {createWeapons,stepWeapons,F16_LOADOUT,F16_LOADOUT_ID} from './weapons.js';
 import {stepMissiles,missileModel} from './missiles.js';
 import {createRwr,stepRwr} from './rwr.js';
+import {updateKnowledge} from './knowledge.js';
 import {createRwrDefense,stepRwrDefense,notePlayerDefenseOrder} from './rwr-defense.js';
 import {controlAuthority,updateControlAuthority} from './control-authority.js';
 import {initializeMass,updateAircraftMass} from './aircraft-mass.js';
 import {applyAtmosphere,updateWeather} from './airport-weather.js';
 export class World {
   constructor(scenario,profiles,terrain=null,{spawnMode='airborne',mode='strict'}={}) {
-    this.spawnMode=spawnMode;this.radarTargets=[];this.radarTargetSequence=0;
+    this.spawnMode=spawnMode;this.radarTargets=[];this.radarTargetSequence=0;this.knowledge=[];
+    this.threatZones=(scenario.threatZones??[]).filter(z=>z&&Array.isArray(z.center)&&Number.isFinite(z.radiusM))
+      .map(z=>({name:z.name??'威胁区',center:[z.center[0],z.center[1]],radiusM:z.radiusM}));
     this.missiles=[];this.missileSequence=0;this.weaponEvents=[];
     this.rwrPracticeEmitters=[];this.rwrPracticeSequence=0;
+    this.airspaceStandard=isAirspaceStandard(scenario.airspaceStandard)?scenario.airspaceStandard:'faa';
     this.executionMode=executionMode(mode);
     this.bullseye=scenario.bullseye?structuredClone(scenario.bullseye):null;
     this.time=0;this.ai=0;this.history=0;this.revision=0;this.terrain=terrain;this.commandLog=[];
     if(scenario.airport)this.airportOps=new AirportOperations(createAirport(scenario.airport,terrain));
     this.units=scenario.units.map(s=>{
       const profile=profiles[s.profile],v=s.speed,a=s.heading*Math.PI/180;
-      return {...s,profile,radar:createRadar(s.profile,profile.radar),weapons:createWeapons(s.profile,s.loadout),rwr:createRwr(s.profile,profile.rwr),rwrDefense:createRwrDefense(),position:[...s.position],velocity:[Math.sin(a)*v,Math.cos(a)*v,0],
+      return {...s,profile,radar:createRadar(s.profile,s.radar??profile.radar),weapons:createWeapons(s.profile,s.loadout),rwr:createRwr(s.profile,s.rwr??profile.rwr),rwrDefense:createRwrDefense(),position:[...s.position],velocity:[Math.sin(a)*v,Math.cos(a)*v,0],
         bank:0,cl:profile.mass*G/(.5*density(s.position[2])*v*v*profile.area),
         speed:v,mach:v/atmosphere(s.position[2]).soundSpeed,loadFactor:1,throttle:0,afterburner:0,targetAltitude:s.position[2],holdAltitude:s.position[2],targetSpeed:v,
         orbit:[s.position[0]+4000,s.position[1]],waypoints:[],completedWaypoints:0,nextWaypointNumber:1,alive:true,flightState:'normal',recoveryTime:0,terrain,trail:[],trailRevision:0,control:{bank:0,cl:0,throttle:0}};
@@ -64,6 +69,7 @@ export class World {
     stepRadars(this,dt);
     stepWeapons(this,dt);stepMissiles(this,dt,previous);monitorAttackTasks(this);
     stepRwr(this,dt);stepRwrDefense(this);
+    this.knowledge=updateKnowledge(this,{now:this.time});
     if(this.history>=.2){for(const u of this.units){u.trail.push([...u.position]);if(u.trail.length>256)u.trail.shift();u.trailRevision++;}this.history-=.2;}
   }
   checkRoute(id,points){
@@ -86,7 +92,33 @@ export class World {
   cancelAirportNavigation(u){if(this.atcRouteInstall||!u.surface||u.surface.grounded||!['approach','final','missed'].includes(u.surface.phase))return;
     this.airportOps?.traffic.cancelUnit(u,this,'新飞行任务已接管','NEW FLIGHT TASK HAS CONTROL');for(const q of this.airportOps?.traffic.state.requests??[])if(q.unitId===u.id)q.status='cancelled';u.surface.phase='airborne';u.surface.towerHold=null;
   }
+  threatWarnings(points=[]){
+    const zones=this.threatZones??[];if(!zones.length||!points.length)return[];
+    const hits=[];
+    for(const zone of zones){
+      let inside=false;
+      for(let i=0;i<points.length&&!inside;i++){
+        const point=points[i],prev=i?points[i-1]:this.units.find(u=>u.waypoints?.[0]===point)?.position??point;
+        for(let t=0;t<=1+1e-9;t+=.2){
+          const x=prev[0]+(point[0]-prev[0])*t,y=prev[1]+(point[1]-prev[1])*t;
+          if(Math.hypot(x-zone.center[0],y-zone.center[1])<=zone.radiusM){inside=true;break;}
+        }
+      }
+      if(inside)hits.push(zone.name);
+    }
+    return hits;
+  }
   radarCommand(id,radarOrder){return applyPlan(this,{status:'accepted',summary:'雷达操作',tasks:[{unitId:id,action:'radar',radarOrder}]},this.revision);}
+  radarScanCommand(id,scan){const u=this.units.find(x=>x.id===id);if(!u)throw Error('飞机不存在');return setRadarScan(this,u,scan);}
+  setRadarTws(id,targetIds){const u=this.units.find(x=>x.id===id);if(!u)throw Error('飞机不存在');return setRadarTws(this,u,targetIds);}
+  setAirspaceStandard(standard){
+    if(!isAirspaceStandard(standard))throw Error('空域标准无效');
+    this.airspaceStandard=standard;this.revision=(this.revision??0)+1;return standard;
+  }
+  airspaceContext(id){const u=this.units.find(x=>x.id===id);return airspaceContext(this,u??null);}
+  radarSilence(id,silent){const u=this.units.find(x=>x.id===id);if(!u)throw Error('飞机不存在');return setRadarSilence(this,u,silent);}
+  iffMode(id,mode){const u=this.units.find(x=>x.id===id);if(!u)throw Error('飞机不存在');return setIffMode(this,u,mode);}
+  iffInterrogate(id){const u=this.units.find(x=>x.id===id);if(!u)throw Error('飞机不存在');return interrogateIff(this,u);}
   attackManeuver(id,summary,d){
     const unit=this.units.find(u=>u.id===id);if(unit?.rwrDefense?.active||this.playerCommandPending)throw Error('告警规避或玩家下令中，暂缓自主攻击航向调整');
     this.autonomousCommand=true;try{return applyPlan(this,{status:'accepted',summary,tasks:[{unitId:id,action:'fly_heading',altitudeM:d.altitudeM,speedMps:d.speedMps,headingDeg:d.headingDeg,eastM:null,northM:null,distanceM:null,append:false}]},this.revision);}finally{this.autonomousCommand=false;}
@@ -94,7 +126,7 @@ export class World {
   weaponCommand(id,weaponOrder){return applyPlan(this,{status:'accepted',summary:'武器操作',tasks:[{unitId:id,action:'weapon',weaponOrder}]},this.revision);}
   defenseCommand(id,defenseOrder){return applyPlan(this,{status:'accepted',summary:'告警与自卫',tasks:[{unitId:id,action:'defense',defenseOrder}]},this.revision);}
   addRwrPracticeEmitter(id,mode){
-    const u=this.units.find(u=>u.id===id);if(!u?.alive||u.surface?.grounded||!u.rwr?.available)throw Error('请在空中选择具有RWR的飞机');
+    const u=this.units.find(u=>u.id===id);if(!u?.alive||!u.rwr?.available)throw Error('请选择具有RWR的飞机');
     this.rwrPracticeEmitters=this.rwrPracticeEmitters.filter(e=>this.time-e.createdAt<=120);
     if(!['search','track','illumination','active'].includes(mode)||this.rwrPracticeEmitters.length>=4)throw Error('告警演练源数量或类型无效');
     const bearing=Math.atan2(u.velocity[0],u.velocity[1])+Math.PI/4;
@@ -118,6 +150,7 @@ export class World {
     const ground=this.terrain?.heightAt?.(position[0],position[1]);if(ground!==null&&ground!==undefined)position[2]=Math.max(position[2],ground+300);
     this.radarTargets=this.radarTargets.filter(t=>t.alive!==false);
     const number=++this.radarTargetSequence,target={id:'tgt-'+number,callsign:'TGT '+String(number).padStart(2,'0'),team:'practice',radarPractice:true,
+      aircraftCategory:'战斗机',aircraftType:'F-16 同型靶',
       position,velocity:f.map(v=>-v/n*250),alive:true};
     this.radarTargets.push(target);this.revision++;return target;
   }
@@ -207,14 +240,14 @@ export class World {
       u.safetyOrbit??=[u.position[0]+4000,u.position[1]];u.safetyAltitude=Math.max(u.position[2],(this.terrain?.heightAt?.(u.position[0],u.position[1])??0)+800);
     }
   }
-  command(id,point,append=false,prepared) {
+  command(id,point,append=false,prepared,options={}) {
     const u=this.units.find(u=>u.id===id);if(!u)return;
     if(!u.alive)throw Error('飞机已坠毁，无法执行航路');
     const route=append?[...u.waypoints,point]:[point],check=this.checkRoute(id,route);
     if(!check.valid)throw Error(check.reason);
     const plan=this.resolvePlan(u,route,prepared,{resetPower:true});if(!plan.valid)throw Error(plan.reason);
     this.rememberRoute(u);this.cancelAirportNavigation(u);
-    notePlayerDefenseOrder(this,u);cancelAttackTask(this,u);
+    notePlayerDefenseOrder(this,u);if(!options.keepTask)cancelAttackTask(this,u);
     leaveFormation(u,'新航点已接管，退出编队');
     u.departurePowerPlan=null;
     this.revision++;u.routeRevision=(u.routeRevision??0)+1;u.headingTarget=null;u.headingRoute=null;
@@ -238,6 +271,6 @@ export class World {
   snapshot(selectedId,{forecast=true}={}){
     const u=this.units.find(u=>u.id===selectedId),key=JSON.stringify([selectedId,this.revision,Math.floor(this.time),u.waypoints]);
     if(forecast&&this.forecastKey!==key){this.forecastKey=key;this.prediction=u.alive&&u.waypoints.length&&!u.navigationBlocked?traceFlight(u,u.waypoints,u.navLegs??[],{duration:180,cursor:u.navCursor??0}):{points:[],warnings:[]};}
-    return {time:this.time,selectedId,prediction:this.prediction,pilotPreview:this.pilotPreview??null,missiles:this.missiles,weaponEvents:this.weaponEvents,radarTargets:this.radarTargets.map(t=>({...t,position:[...t.position],velocity:[...t.velocity]})),units:this.units.map(u=>({...u,radar:radarView(u,this.time),...(u.alive?basis(u):u.lastPose??basis(u))}))};
+    return {time:this.time,selectedId,prediction:this.prediction,pilotPreview:this.pilotPreview??null,missiles:this.missiles,weaponEvents:this.weaponEvents,radarTargets:this.radarTargets.map(t=>({...t,position:[...t.position],velocity:[...t.velocity]})),knowledge:this.knowledge??[],units:this.units.map(u=>({...u,radar:radarView(u,this.time),...(u.alive?basis(u):u.lastPose??basis(u))}))};
   }
 }

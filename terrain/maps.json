@@ -1,0 +1,12 @@
+{
+  "schema": "flight-command-map-catalog/1",
+  "default": "air_skyscraper_city",
+  "maps": {
+    "air_skyscraper_city": {
+      "name": "海湾天空城",
+      "heightPrefix": "air_skyscraper_city",
+      "contours": "air_skyscraper_city_contours.json",
+      "landmask": "air_skyscraper_city_landmask.json"
+    }
+  }
+}

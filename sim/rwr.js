@@ -1,4 +1,4 @@
-import {basis,dot,norm} from './flight.js';
+import {basis,dot,norm,unitHeadingRad} from './flight.js';
 import {radarGeometry} from './radar.js';
 import {lineClear,MISSILE_MODELS} from './missiles.js';
 import {RWR_REFERENCE} from '../data/rwr-reference.js';
@@ -6,7 +6,8 @@ import {RWR_REFERENCE} from '../data/rwr-reference.js';
 export const RWR_LEVELS={search:1,track:2,launch:3};
 export const RWR_LABELS={search:'搜索辐射',track:'雷达跟踪',launch:'疑似雷达导弹发射'};
 export const RWR_DEFAULTS={rangeM:RWR_REFERENCE.rangeM,holdSec:RWR_REFERENCE.holdSec,trackedMax:RWR_REFERENCE.trackedMax,
-  elevationHalfDeg:45,bearingStepDeg:15,minFrequencyGHz:2,maxFrequencyGHz:20,detectTracking:true,detectLaunch:true};
+  elevationHalfDeg:45,bearingStepDeg:15,minFrequencyGHz:2,maxFrequencyGHz:20,detectTracking:true,detectLaunch:true,digitalLevel:'high'};
+export const RWR_DIGITAL_LEVELS=Object.freeze(['high','mid','low']);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),degrees=v=>v*180/Math.PI;
 const difference=(a,b)=>Math.abs(((a-b+540)%360)-180),distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
 export function createRwr(profileId,override){
@@ -14,6 +15,7 @@ export function createRwr(profileId,override){
   const config={...RWR_DEFAULTS,...(override&&typeof override==='object'?override:{})};
   for(const key of ['rangeM','holdSec','trackedMax','elevationHalfDeg','bearingStepDeg','minFrequencyGHz','maxFrequencyGHz'])if(!Number.isFinite(config[key])||config[key]<=0)throw Error('RWR参数无效');
   if(config.trackedMax>32||config.elevationHalfDeg>90||config.bearingStepDeg>90||config.minFrequencyGHz>=config.maxFrequencyGHz||typeof config.detectTracking!=='boolean'||typeof config.detectLaunch!=='boolean')throw Error('RWR配置无效');
+  if(!RWR_DIGITAL_LEVELS.includes(config.digitalLevel))throw Error('RWR数字化档位无效');
   return {available,enabled:true,config,contacts:[],events:[],sequence:0,contactSequence:0,accumulator:0};
 }
 export function rwrEvent(unit,time,type,text,extra={}){
@@ -73,17 +75,28 @@ function receive(world,unit,signal,time){
 export function stepRwr(world,dt){
   for(const unit of world.units){const r=unit.rwr;if(!r?.available)continue;r.accumulator+=dt;
     if(r.accumulator+1e-9<.05)continue;const interval=r.accumulator;r.accumulator=0;
-    if(!r.enabled||unit.alive===false||unit.surface?.grounded){r.contacts=[];continue;}
+    if(!r.enabled||unit.alive===false){r.contacts=[];continue;}
     const time=world.time;
+    const practice=()=>{
+      for(const e of world.rwrPracticeEmitters??[]){
+        if(e.ownerId!==unit.id||time-e.createdAt>120)continue;
+        const level=e.mode==='search'?'search':e.mode==='track'?'track':'launch';
+        // Training signals are deliberately directed at the receiver, not hidden missiles.
+        if(level==='search'&&(time-e.createdAt)%2>.15)continue;
+        receive(world,unit,{key:e.id,position:e.position,frequencyGHz:e.frequencyGHz,signature:e.mode==='active'?'missile':'fighter',level},time);
+      }
+    };
+    // 地面状态不接收真实战场辐射，但允许“告警演练”源，方便在停机位检查 RWR。
+    if(unit.surface?.grounded){
+      practice();
+      const expired=r.contacts.filter(c=>time-c.observedAt>r.config.holdSec);
+      for(const c of expired)rwrEvent(unit,time,'lost','辐射信号消失；不代表威胁已解除',{contactId:c.id,level:c.level});
+      r.contacts=r.contacts.filter(c=>time-c.observedAt<=r.config.holdSec);
+      continue;
+    }
     for(const source of [...world.units,...(world.radarTargets??[])])if(source.id!==unit.id){const signal=radarEmission(world,source,unit,interval);if(signal)receive(world,unit,signal,time);}
     for(const m of world.missiles??[]){if(m.ownerId===unit.id)continue;const signal=missileEmission(m);if(signal)receive(world,unit,signal,time);}
-    for(const e of world.rwrPracticeEmitters??[]){
-      if(e.ownerId!==unit.id||time-e.createdAt>120)continue;
-      const level=e.mode==='search'?'search':e.mode==='track'?'track':'launch';
-      // Training signals are deliberately directed at the receiver, not hidden missiles.
-      if(level==='search'&&(time-e.createdAt)%2>.15)continue;
-      receive(world,unit,{key:e.id,position:e.position,frequencyGHz:e.frequencyGHz,signature:e.mode==='active'?'missile':'fighter',level},time);
-    }
+    practice();
     const expired=r.contacts.filter(c=>time-c.observedAt>r.config.holdSec);
     for(const c of expired)rwrEvent(unit,time,'lost','辐射信号消失；不代表威胁已解除',{contactId:c.id,level:c.level});
     r.contacts=r.contacts.filter(c=>time-c.observedAt<=r.config.holdSec);
@@ -102,5 +115,5 @@ export function parseRwrContext(r,time){
   return {available:r.available,enabled:r.enabled,contacts:r.contacts.map(({id,level,epoch,bearingDeg,signalType,firstSeen,observedAt,ageSec})=>({id,level,epoch,bearingDeg,signalType,firstSeen,observedAt,ageSec}))};
 }
 export function strongestRwr(unit,time){return unit.rwr?.enabled?unit.rwr.contacts.filter(c=>time-c.observedAt<=Math.min(2.5,unit.rwr.config.holdSec)).sort((a,b)=>RWR_LEVELS[b.level]-RWR_LEVELS[a.level]||b.observedAt-a.observedAt)[0]??null:null;}
-export function bearingClock(unit,bearing){const heading=(degrees(Math.atan2(unit.velocity[0],unit.velocity[1]))+360)%360;return Math.round(((bearing-heading+360)%360)/30)%12||12;}
+export function bearingClock(unit,bearing){const heading=(degrees(unitHeadingRad(unit))+360)%360;return Math.round(((bearing-heading+360)%360)/30)%12||12;}
 export {difference as angleDifference};
