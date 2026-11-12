@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three/three.module.js';
-import {buildAircraft} from './aircraft.js';
+import {buildAircraft,disposeAircraft} from './aircraft.js';
+import {aircraftModelId,AIRCRAFT_MODELS} from './aircraft-catalog.js';
 // Render the same mesh as the map once; the rail uses static images, not extra render loops.
 export function aircraftPortraits(units){
   const canvas=document.createElement('canvas'),renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,preserveDrawingBuffer:true});
@@ -10,13 +11,13 @@ export function aircraftPortraits(units){
   const light=new THREE.DirectionalLight(0xffffff,2.6);light.position.set(-8,12,-12);scene.add(light);
   const images=new Map(),cache=new Map();
   try{for(const unit of units){
-    const key=(unit.profile?.name??'')+':'+unit.color;
+    const id=aircraftModelId(unit),key=id+':'+unit.color;
     if(!cache.has(key)){
-      const model=buildAircraft(unit.color);scene.add(model);renderer.render(scene,camera);cache.set(key,canvas.toDataURL('image/png'));scene.remove(model);
-      const geometries=new Set(),materials=new Set();model.traverse(o=>{if(o.geometry)geometries.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[])materials.add(m);});
-      geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
+      const size=Math.max(AIRCRAFT_MODELS[id].lengthM,AIRCRAFT_MODELS[id].wingspanM),extent=size*.59;
+      camera.left=camera.bottom=-extent;camera.right=camera.top=extent;camera.far=size*8;camera.position.set(size*.7,size*.9,-size*1.2);camera.lookAt(0,0,0);camera.updateProjectionMatrix();
+      const model=buildAircraft(unit.color,unit);scene.add(model);renderer.render(scene,camera);cache.set(key,canvas.toDataURL('image/png'));scene.remove(model);disposeAircraft(model);
     }
     images.set(unit.id,cache.get(key));
-  }}finally{renderer.dispose();}
+  }}finally{renderer.dispose();renderer.forceContextLoss();}
   return images;
 }

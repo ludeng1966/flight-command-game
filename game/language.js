@@ -9,6 +9,16 @@ export function setLanguages(value){
   for(const listener of listeners)listener(getLanguages());return getLanguages();
 }
 export function translateEnglish(text){return dictionary.english(text);}
+// A translation request can be shared by UI and radio consumers. Cancelling a
+// radio wait must be immediate without cancelling another consumer's request.
+function waitForTranslation(value,signal){
+  if(!signal)return Promise.resolve(value);
+  return new Promise((resolve,reject)=>{
+    const abort=()=>{signal.removeEventListener('abort',abort);reject(new DOMException('Cancelled','AbortError'));};
+    Promise.resolve(value).then(result=>{signal.removeEventListener('abort',abort);resolve(result);},error=>{signal.removeEventListener('abort',abort);reject(error);});
+    if(signal.aborted)abort();else signal.addEventListener('abort',abort,{once:true});
+  });
+}
 async function flush(){
   queueTimer=null;if(running)return;running=true;
   try{while(pending.size){
@@ -28,7 +38,7 @@ export async function translateText(text,target,{source=hasChinese(text)?'zh':'e
   const masked=maskTranslationNumbers(text),key=JSON.stringify([source,target,masked.text]);
   let value=cache.get(key);
   if(!value){value=new Promise((resolve,reject)=>pending.set(key,{key,text:masked.text,source,target,resolve,reject}));cache.set(key,value);if(!running&&!queueTimer)queueTimer=setTimeout(()=>void flush(),30);}
-  const result=unmaskTranslationNumbers(await value,masked.values);if(signal?.aborted)throw new DOMException('Cancelled','AbortError');return result;
+  const result=unmaskTranslationNumbers(await waitForTranslation(value,signal),masked.values);if(signal?.aborted)throw new DOMException('Cancelled','AbortError');return result;
 }
 export async function localizeRadio(message,{signal}={}){
   const settings=getLanguages(),texts={...(message.texts??{})},source=hasChinese(message.text)?'zh':'en';texts[source]??=message.text;

@@ -3,8 +3,8 @@ import {SAVE_VERSION,encodeState,decodeState} from '../sim/save-state.js';
 export const SAVE_KEYS=['flight-autosave-v1-a','flight-autosave-v1-b'];
 // Each write replaces only one slot. The other remains a usable previous save.
 export class AutoSave{
-  constructor({storage,fingerprint,capture,restore,onStatus=()=>{},now=()=>Date.now(),intervalMs=2000}){
-    Object.assign(this,{storage,fingerprint,capture,restore,onStatus,now,intervalMs});this.sequence=0;this.lastAt=0;this.lastAttemptAt=-Infinity;this.lastRevision=null;this.ready=false;this.lastError=null;
+  constructor({storage,fingerprint,compatibleFingerprints=[],capture,restore,onStatus=()=>{},now=()=>Date.now(),intervalMs=2000,schedule=run=>typeof requestIdleCallback==='function'?requestIdleCallback(run,{timeout:1000}):run()}){
+    Object.assign(this,{storage,fingerprint,compatibleFingerprints,capture,restore,onStatus,now,intervalMs,schedule});this.sequence=0;this.lastAt=0;this.lastAttemptAt=-Infinity;this.lastRevision=null;this.ready=false;this.lastError=null;this.pending=null;
   }
   load(){
     const candidates=[];let found=false;
@@ -12,7 +12,7 @@ export class AutoSave{
       try{
         const raw=this.storage.getItem(key);if(!raw)continue;found=true;
         const value=JSON.parse(raw);
-        if(value.version!==SAVE_VERSION||value.fingerprint!==this.fingerprint||!Number.isSafeInteger(value.sequence)||value.sequence<1||!Number.isFinite(value.savedAt))continue;
+        if(value.version!==SAVE_VERSION||value.fingerprint!==this.fingerprint&&!this.compatibleFingerprints.includes(value.fingerprint)||!Number.isSafeInteger(value.sequence)||value.sequence<1||!Number.isFinite(value.savedAt))continue;
         this.sequence=Math.max(this.sequence,value.sequence);candidates.push(value);
       }catch(error){this.lastError=error;}
     }
@@ -26,6 +26,7 @@ export class AutoSave{
     return {restored:false,blocked:found};
   }
   save(){
+    this.pending=null;
     if(!this.ready)return false;
     this.lastAttemptAt=this.now();
     try{
@@ -36,9 +37,14 @@ export class AutoSave{
       this.onStatus({type:'saved',savedAt});return true;
     }catch(error){this.lastError=error;this.onStatus({type:'error',message:'自动保存失败：请保留游戏页面，检查浏览器本地存储空间'});return false;}
   }
+  requestSave(){
+    if(!this.ready||this.pending||this.now()-this.lastAttemptAt<250)return;
+    const token={};this.pending=token;
+    this.schedule(()=>{if(this.pending===token)this.save();});
+  }
   tick(world){
     const at=this.now();if(!this.ready||at-this.lastAt<250||at-this.lastAttemptAt<(this.lastError?this.intervalMs:250))return;
-    if(world.revision!==this.lastRevision||at-this.lastAt>=this.intervalMs)this.save();
+    if(world.revision!==this.lastRevision||at-this.lastAt>=this.intervalMs)this.requestSave();
   }
   newGame(){this.ready=true;return this.save();}
   bind(window,document){

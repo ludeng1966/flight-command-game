@@ -1,0 +1,49 @@
+/* Extension of the existing dark tactical interface; bounded to the command dock. */
+#tactical-commands{position:absolute;z-index:18;left:50%;bottom:76px;transform:translateX(-50%);width:min(840px,calc(100% - 190px));max-height:min(260px,42dvh);overflow:auto;padding:12px 14px;background:#09131ff5;border:1px solid #345268;box-shadow:0 6px 22px #0004;backdrop-filter:blur(10px);font:11px/1.5 Consolas,"Microsoft YaHei",monospace;color:#cfe3f5}
+#tactical-commands .tactical-heading{display:flex;align-items:baseline;gap:12px;min-width:0;flex-wrap:wrap}
+#tactical-commands #tactical-title{font-size:11px;letter-spacing:1px;color:#8ea9bb;font-weight:400}
+#tactical-commands #tactical-selection{font-size:12px;color:#a5dfbc;overflow-wrap:anywhere}
+#tactical-commands #tactical-primary{margin-left:auto;font-size:10px;color:#8ea9bb}
+#tactical-commands .tactical-receivers{display:flex;gap:5px;margin:7px 0 9px;flex-wrap:wrap}
+#tactical-commands button{font:inherit;padding:6px 9px;border:1px solid #2c4b67;color:#adc8da;background:#0a1828;transition:background .12s,border-color .12s}
+#tactical-commands button:hover{background:#142b3c;border-color:#62849c;color:#e0eff8}
+#tactical-commands button:focus-visible{outline:2px solid #6fe3ff;outline-offset:2px}
+#tactical-commands button:disabled{cursor:not-allowed;opacity:.45;background:#0a1520;border-color:#243a4c}
+#tactical-commands button[aria-pressed=true]{background:#153329;border-color:#61ba83;color:#c7f0d7}
+#tactical-commands .tactical-receivers button{font-size:10px;padding:3px 8px}
+#tactical-commands .tactical-actions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+#tactical-commands .tactical-actions button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 6px}
+#tactical-commands kbd{margin:0;padding:1px 4px;background:#152635;border:1px solid #345268;color:#8eb1c9;font:10px/1.2 Consolas,monospace;min-width:17px}
+#tactical-commands [data-tactical-action=hold]{border-color:#74604c;color:#e0c9a6}
+#tactical-commands .tactical-readout{display:flex;align-items:center;gap:8px;margin-top:8px;min-height:19px;color:#96aebf;font-size:10px}
+#tactical-commands #tactical-cancel-target{padding:2px 6px;margin-left:auto;font-size:10px}
+#tactical-commands #tactical-feedback{margin:5px 0 0;line-height:1.55;min-height:17px;color:#b4d6c2;overflow-wrap:anywhere}
+#tactical-commands #tactical-feedback[data-status=unable]{color:#efb09d}
+#tactical-commands #tactical-feedback[data-status=planning],#tactical-commands #tactical-feedback[data-status=queued]{color:#d5c595}
+#tactical-commands .tactical-missions{display:flex;flex-wrap:wrap;gap:3px 16px;margin-top:3px;font-size:10px;color:#8ca8bc}
+#tactical-commands #tactical-queue{display:flex;align-items:center;gap:8px;margin-top:7px;border-top:1px solid #233c50;padding-top:7px;font-size:10px}
+#tactical-commands #tactical-queue[hidden],#tactical-commands [hidden]{display:none}
+#tactical-commands .tactical-queue-label{white-space:nowrap;color:#c2d5e3}
+#tactical-commands #tactical-queue ol{list-style:none;display:flex;gap:7px;margin:0;padding:0;overflow:auto;flex:1;white-space:nowrap;color:#91aabf}
+#tactical-commands #tactical-queue li+li::before{content:'→';margin-right:7px;color:#617f95}
+#tactical-commands #tactical-queue button{padding:3px 6px;font-size:10px}
+#tactical-commands .tactical-help{font-size:9px;color:#7897ac;margin:7px 0 0}
+#stage.tactical-targeting #scene{cursor:crosshair}
+#stage:not(.panels-hidden) #tactical-commands,#stage.voice-open #tactical-commands{left:calc((100% - 330px)/2);width:min(840px,calc(100% - 430px))}
+#stage.tactical-active.radio-open #radio-console{bottom:calc(86px + var(--tactical-dock-height,180px))}
+#stage.tactical-active.radio-open #radio-transcript{max-height:min(280px,calc(100dvh - 245px - var(--tactical-dock-height,180px)))}
+#stage.tactical-active .legend{bottom:calc(88px + var(--tactical-dock-height,180px))}
+@media(max-width:900px){#tactical-commands{width:calc(100% - 160px);padding:10px}#stage:not(.panels-hidden) #tactical-commands,#stage.voice-open #tactical-commands{left:calc((100% - 300px)/2);width:calc(100% - 390px)}#tactical-commands .tactical-actions{display:flex;overflow-x:auto;padding-bottom:3px}#tactical-commands .tactical-actions button{flex:0 0 auto;min-width:81px}#tactical-commands #tactical-primary{margin-left:0}}
+@media(max-width:650px){#tactical-commands,#stage:not(.panels-hidden) #tactical-commands,#stage.voice-open #tactical-commands{left:14px;right:14px;transform:none;width:auto;bottom:72px;max-height:35dvh;padding:9px 10px}#tactical-commands .tactical-heading{gap:3px 9px}#tactical-commands #tactical-selection{font-size:11px}#tactical-commands #tactical-primary{font-size:9px}#tactical-commands .tactical-receivers{margin:5px 0 7px}#tactical-commands .tactical-help{display:none}#tactical-commands .tactical-actions{gap:5px}#tactical-commands .tactical-actions button{min-height:34px;min-width:77px;font-size:10px}#tactical-commands .tactical-readout{font-size:9px}#tactical-commands #tactical-feedback{font-size:10px}#tactical-commands .tactical-missions{font-size:9px}#stage.tactical-active.radio-open #radio-console{bottom:calc(82px + var(--tactical-dock-height,180px))}#stage.tactical-active.radio-open #radio-transcript{max-height:max(80px,calc(100dvh - 250px - var(--tactical-dock-height,180px)))}}
+@media(prefers-reduced-motion:reduce){#tactical-commands button{transition:none}}
+#tactical-command-menu{position:relative;font:11px Consolas,"Microsoft YaHei",monospace}
+#stage.clean-ui #panel-controls:has(#tactical-command-menu[open]){z-index:70!important}
+#tactical-command-menu>summary{list-style:none;cursor:pointer;padding:6px 12px;line-height:18px;color:#adc8da;background:#0a1828;border:1px solid #2c4b67}
+#tactical-command-menu[open]>summary{border-color:#61ba83;color:#c7f0d7}
+#tactical-command-menu #tactical-commands{position:fixed;left:auto;right:18px;top:56px;bottom:auto;transform:none;width:min(520px,calc(100vw - 28px));max-height:calc(100dvh - 140px);padding:14px;box-sizing:border-box}
+#tactical-command-menu .tactical-methods{display:grid;gap:7px;margin:10px 0}
+#tactical-command-menu .tactical-methods label{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#91aabd}
+#tactical-command-menu select{font:inherit;color:#c6dae7;background:#0c1c29;border:1px solid #345268;padding:6px;width:200px;max-width:65%}
+#tactical-command-menu select:disabled{opacity:.45}
+#tactical-command-menu #tactical-commands .tactical-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}
+#tactical-command-menu #tactical-commands .tactical-actions button{min-width:0;font-size:10px;padding:6px}

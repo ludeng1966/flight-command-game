@@ -8,7 +8,9 @@ import {needsDeparturePlan,departurePlanReadback} from './departure-plan.js';
 import {radarContext} from './radar.js';
 import {radarTaskContext} from './radar-task.js';
 import {attackTaskContext} from './attack-task.js';
+import {sensorTaskCoveredByAttack} from './mission-composition.js';
 import {groundStatusReport} from './ground-radio.js';
+import {atcOrderPhrase} from './atc-command.js';
 
 const number=value=>String(Math.round(value*100)/100);
 const near=(a,b,tolerance=.01)=>typeof a==='number'&&Number.isFinite(a)&&Math.abs(a-b)<=tolerance;
@@ -20,11 +22,13 @@ export function captureCommandResult(world,{outcome='applied',reason=null,clockR
     headingRoute:u.headingRoute?{headingDeg:u.headingRoute.headingDeg,targetAltitudeM:u.headingRoute.targetAltitudeM,continuous:u.headingRoute.continuous}:null,
     flightRole:u.flightRole?{...u.flightRole}:null,
     formation:u.formation?{leaderId:u.formation.leaderId,shape:u.formation.shape,side:u.formation.side,rangeM:u.formation.rangeM,intent:u.formation.intent,status:u.formation.status}:null,
-    surface:u.surface?{phase:u.surface.phase,runway:u.surface.runway??null,depart:!!u.surface.depart,lineUp:!!u.surface.lineUp,landCleared:!!u.surface.landCleared,destination:u.surface.destination??null}:null,
+    atc:{authorizations:structuredClone(u.surface?.playerAuthorizations??{}),inhibits:structuredClone(u.surface?.clearanceInhibits??{}),holding:(u.surface?.atcHoldUntil??0)>world.time,clearances:(world.airportOps?.traffic.state.clearances??[]).filter(c=>c.unitId===u.id&&['issued','delivered','active'].includes(c.status)).map(c=>({type:c.type,status:c.status,runway:c.parameters.runway??null})),sequence:(world.airportOps?.traffic.state.requests??[]).find(q=>q.id===u.surface?.atcRequestId)?.sequence??null},
+    surface:u.surface?{phase:u.surface.phase,runway:u.surface.runway??null,pendingRunway:u.surface.pendingRunwayChange?.runway??null,depart:!!u.surface.depart,lineUp:!!u.surface.lineUp,landingRequested:!!u.surface.landingRequested,landCleared:!!u.surface.landCleared,destination:u.surface.destination??null}:null,
     radar:radarContext(u,world.time),radarTask:radarTaskContext(u),attackTask:attackTaskContext(u),weapons:weaponsContext(u,world.time),rwrDefense:defenseContext(u),gearDown:!!u.gearDown,flaps:u.flaps??null,departurePowerPlan:u.departurePowerPlan?structuredClone(u.departurePowerPlan):null,
     waypoints:u.waypoints.slice(0,32).map(w=>w.slice(0,3)),orbit:[...u.orbit],navigationBlocked:u.navigationBlocked||null}))};
 }
 function instruction(task,system,units){
+  if(task.action==='atc')return atcOrderPhrase(task.atcOrder,units);
   if(task.action==='attack_task'){const o=task.attackOrder,labels=unitLabels(system);return '执行攻击任务，'+(o.targetRef??o.targetId??'搜索并识别任务目标')+'，'+(o.weaponRef?'使用'+o.weaponRef:'自主选择导弹')+'，本次最多'+o.shotLimit+'枚'+(o.altitudeM!==null?'，高度'+radioAltitude(o.altitudeM,system)+labels.altitudeSpoken:'')+(o.speedMps!==null?'，真空速'+radioSpeed(o.speedMps,system)+labels.speedSpoken:'');}
   if(task.action==='defense')return defensePhrase(task.defenseOrder);
   if(task.action==='sensor_task')return (task.sensorTask.goal==='search'?'搜索前方空域':'持续跟踪目标')+'，由飞行员自主操作雷达';
@@ -69,6 +73,12 @@ export function inspectCommandResult(context,plan,interpretation,result){
     }else if(unit?.alive===false&&tasks.some(t=>t.action!=='report_status'))verdict='blocked';
     else{
       for(const t of tasks){
+        if(t.action==='atc'){
+          const o=t.atcOrder,a=state.atc,ordered=context.airportTraffic?.queue??[],own=ordered.find(q=>q.unitId===unitId),peer=ordered.find(q=>q.unitId===o.targetId),cleared=phase=>a?.clearances.some(c=>c.type===phase&&(!o.runway||c.runway===o.runway));
+          const matched=o.operation==='sequence'?(o.sequenceNumber!==null?a?.sequence===o.sequenceNumber:!!own&&!!peer&&(o.relation==='before'?own.sequence<peer.sequence:own.sequence>peer.sequence)):
+            o.operation==='change_runway'?state.surface?.runway===o.runway||state.surface?.pendingRunway===o.runway:o.operation==='clearance'?a?.authorizations[o.phase]===true||cleared(o.phase):o.operation==='cancel'?(o.phase==='all'?['taxi','line_up','takeoff','approach','land']:[o.phase]).every(phase=>a?.inhibits[phase]===true&&!cleared(phase)):o.operation==='hold'?a?.holding===true:a?.holding===false;
+          installation.push({field:'塔台排序、跑道或许可指示（许可仍须播报复诵）',expected:o,actual:a?{...a,runway:state.surface?.runway??null,pendingRunway:state.surface?.pendingRunway??null}:null,matched:!!matched});continue;
+        }
         if(t.action==='defense'){const d=state.rwrDefense,o=t.defenseOrder,matched=o.mode==='execute'?d?.active?.manual&&d.active.maneuver===o.maneuver&&(o.headingDeg===null||near(d.active.headingDeg,o.headingDeg)):d?.mode===o.mode;installation.push({field:'RWR防御策略与规避装订',expected:o,actual:d,matched:!!matched});goals.push(false);continue;}
         if(t.action==='weapon'){
           const o=t.weaponOrder,w=state.weapons,l=w?.lastLaunch;
@@ -76,15 +86,21 @@ export function inspectCommandResult(context,plan,interpretation,result){
           installation.push({field:o.operation==='launch'?'实际发射记录（不等于命中）':'武器设置',expected:o,actual:o.operation==='launch'?l:w,matched:!!matched});goals.push(!!matched);continue;
         }
         if(t.action==='report_status')continue;
-        if(t.action==='attack_task'){const s=state.attackTask,o=t.attackOrder,matched=s?.active===true&&['targetId','targetRef','weaponRef','shotLimit','altitudeM','speedMps','headingDeg'].every(k=>s[k]===o[k]);installation.push({field:'攻击任务授权',expected:o,actual:s??null,matched});continue;}
-        if(t.action==='sensor_task'){const s=state.radarTask,matched=s?.active===true&&s.goal===t.sensorTask.goal&&s.targetId===t.sensorTask.targetId&&s.targetRef===t.sensorTask.targetRef;installation.push({field:'雷达任务',expected:t.sensorTask,actual:s?{...s,phase:state.radar?.phase}:null,matched});continue;}
+        if(t.action==='attack_task'){const s=state.attackTask,o=t.attackOrder,matched=s?.active===true&&['targetId','targetRef','weaponRef','shotLimit','altitudeM','speedMps','headingDeg'].every(k=>s[k]===o[k]);installation.push({field:'攻击任务授权',expected:o,actual:s??null,matched});goals.push(false);continue;}
+        if(t.action==='sensor_task'){
+          const s=state.radarTask,a=state.attackTask;
+          const integrated=tasks.find(task=>task.action==='attack_task'&&sensorTaskCoveredByAttack(t.sensorTask,task.attackOrder)&&a?.active===true&&
+            ['targetId','targetRef','weaponRef','shotLimit','altitudeM','speedMps','headingDeg'].every(key=>a[key]===task.attackOrder[key]));
+          const matched=!!integrated||s?.active===true&&s.goal===t.sensorTask.goal&&s.targetId===t.sensorTask.targetId&&s.targetRef===t.sensorTask.targetRef;
+          installation.push({field:'雷达任务',expected:t.sensorTask,actual:integrated?{integratedIntoAttackTask:a.id,attackOrder:integrated.attackOrder}:s?{...s,phase:state.radar?.phase}:null,matched:!!matched});goals.push(false);continue;
+        }
         if(t.action==='radar'){const o=t.radarOrder,r=state.radar,matched=o.operation==='mode'?r?.mode===o.mode:o.operation==='lock'?r?.targetId===o.targetId:r?.targetId===null;installation.push({field:'雷达设置',expected:o,actual:r?{mode:r.mode,phase:r.phase,targetId:r.targetId}:null,matched});continue;}
         if(t.action==='assign_role'){const matched=state.flightRole?.role===t.role&&state.flightRole?.partnerId===t.targetId;installation.push({field:'长僚机角色',expected:{role:t.role,partnerId:t.targetId},actual:state.flightRole??null,matched});goals.push(matched);}
         if(t.action==='airport'){
           const o=t.airportOrder,s=state.surface,phase=s?.phase;
           const supported={taxi:['taxi','holding','parked'],hold_short:['taxi','holding'],line_up:['holding','lineup_taxi','lined_up'],takeoff:['taxi','holding','lineup_taxi','lined_up','takeoff_roll','climb'],abort_takeoff:['rejected','exit','parked'],approach:['approach','final'],land:['approach','final','rollout','exit','parked'],go_around:['missed','climb']};
           const matched=o.intent==='gear'?state.gearDown===(o.mode!=='up'):o.intent==='flaps'?state.flaps===(o.mode??'landing'):
-            airportModeSupported(o)&&(!needsDeparturePlan(o)||state.departurePowerPlan?.mode===o.mode)&&!!s&&supported[o.intent]?.includes(phase)&&(!o.runway||s.runway===o.runway)&&(o.intent!=='land'||s.landCleared||['rollout','exit','parked'].includes(phase))&&(o.intent!=='takeoff'||s.depart||phase==='climb')&&(o.intent!=='line_up'||s.lineUp||phase==='lined_up');
+            airportModeSupported(o)&&(!needsDeparturePlan(o)||state.departurePowerPlan?.mode===o.mode)&&!!s&&supported[o.intent]?.includes(phase)&&(!o.runway||s.runway===o.runway)&&(o.intent!=='land'||s.landingRequested||s.landCleared||['rollout','exit','parked'].includes(phase))&&(o.intent!=='takeoff'||s.depart||phase==='climb')&&(o.intent!=='line_up'||s.lineUp||phase==='lined_up');
           if(needsDeparturePlan(o))installation.push({field:'飞行员推力与离场航路',expected:o.mode,actual:state.departurePowerPlan,matched:!!state.departurePowerPlan&&state.departurePowerPlan.mode===o.mode});
           installation.push({field:'机场任务',expected:o,actual:s??null,matched:!!matched});
           goals.push(['gear','flaps'].includes(o.intent)||o.intent==='taxi'&&['holding','parked'].includes(phase)||o.intent==='hold_short'&&phase==='holding'||o.intent==='line_up'&&phase==='lined_up'||o.intent==='takeoff'&&phase==='climb'||o.intent==='land'&&['rollout','exit','parked'].includes(phase));
@@ -111,6 +127,7 @@ export function inspectCommandResult(context,plan,interpretation,result){
       if(tasks.every(t=>t.action==='report_status')){
         verdict='reported';requiredReadback=groundStatusReport(unit)??`航向${number(Math.round(unit.headingDeg))}度，高度${number(radioAltitude(unit.position[2],system))}${labels.altitudeSpoken}，真空速${number(radioSpeed(unit.speedMps,system))}${labels.speedSpoken}`;
       }else if(installation.some(item=>!item.matched))verdict='mismatch';
+      else if(tasks.every(t=>t.action==='atc'))verdict='reported';
       else if(tasks.every(t=>t.action==='defense'&&t.defenseOrder.mode!=='execute'))verdict='reported';
       else if(tasks.every(t=>t.action==='weapon')){verdict='reported';if(tasks.some(t=>t.weaponOrder.operation==='launch'))requiredReadback+='，已发射，尚未确认命中';}
       else if(tasks.every(t=>t.action==='radar'))verdict=tasks.some(t=>t.radarOrder.operation==='lock')&&state.radar?.phase!=='locked'?'executing':'reported';
@@ -122,7 +139,8 @@ export function inspectCommandResult(context,plan,interpretation,result){
     if(tasks.some(t=>t.action==='airport'&&needsDeparturePlan(t.airportOrder))&&state?.departurePowerPlan)requiredReadback+='，'+departurePlanReadback(state.departurePowerPlan,system);
     details.push(result.reason||'');if(state?.navigationBlocked)details.push(state.navigationBlocked);
     return {unitId,requiredReadback,expectedVerdict:verdict,departurePlan:state?.departurePowerPlan??null,modelFacts:{unitId,callsign:unit?.callsign??'指挥台',instruction:requiredReadback,
-      comparisonSummary:{executing:'目标设置与命令一致；当前飞行状态尚未全部达到目标，正在执行。',reached:'当前飞行参数已达到本次指令要求；达到参数目标后仍可继续飞行，不要求航点队列清空。',
+      clockRunning:result.clockRunning,
+      comparisonSummary:{executing:result.clockRunning===false?'目标设置与命令一致，航路或任务已装订；模拟已暂停，等待玩家继续。':'目标设置与命令一致；当前飞行状态尚未全部达到目标，正在执行。',reached:'当前飞行参数已达到本次指令要求；达到参数目标后仍可继续飞行，不要求航点队列清空。',
         blocked:'程序无法执行这条指令。',mismatch:'程序实际装订的设置与指挥命令不一致。只对比installation里的expected和actual说明设置差异；当前飞机还没转向或爬升到位不代表装订错误。',reported:'这是一份已经核实的状态或通报。'}[verdict],
       claimedOutcome:result.outcome,units:unitPolicy(system),installation,goalReached:goals.length?goals.every(Boolean):null,
       tolerances:{headingDeg:3,altitudeM:50,speedKph:5},
@@ -145,7 +163,9 @@ export function validateResultReadbacks(value,facts){
     const allowedNumbers=new Set(((fact.requiredReadback+' '+fact.modelFacts.callsign+' '+JSON.stringify({installation:fact.modelFacts.installation,observed:fact.modelFacts.observed,reason:check.verdict==='blocked'?fact.modelFacts.reason:null})).match(/\d+(?:\.\d+)?/g)??[]));
     for(const numeric of check.readbackText.match(/\d+(?:\.\d+)?/g)??[])if(!allowedNumbers.has(numeric))throw Error('复述添加了指令没有要求的数值，请只复述instruction和结果状态');
     if(check.verdict!=='reached'&&/(已(?:经)?(?:到达|达到)|已(?:经)?完成(?:任务|目标|飞行)|目标已(?:完成|达成)|\b(?:TARGET REACHED|MISSION COMPLETE)\b)/i.test(check.readbackText))throw Error('任务尚未完成，不能报告已经达到目标');
-    if(check.verdict==='executing'&&!/(执行中|正在(?:执行|转向|爬升|下降|飞行))/.test(check.readbackText))throw Error('2B需要说明任务仍在执行中');
+    if(check.verdict==='executing'&&fact.modelFacts.clockRunning===false){
+      if(!/暂停|等待(?:玩家)?继续/.test(check.readbackText)||/正在(?:执行|转向|爬升|下降|飞行)/.test(check.readbackText))throw Error('模拟暂停时应报告已装订、暂停或等待继续，不能声称正在飞行执行');
+    }else if(check.verdict==='executing'&&!/(执行中|正在(?:执行|转向|爬升|下降|飞行))/.test(check.readbackText))throw Error('2B需要说明任务仍在执行中');
     if(check.verdict==='reached'&&!/(已(?:经)?(?:达到|到达)|目标已达成)/.test(check.readbackText))throw Error('2B需要说明采样数据已经达到目标');
     if(check.verdict==='blocked'&&!/(无法|不能执行|未执行)/.test(check.readbackText))throw Error('2B需要说明任务无法执行');
     if(check.verdict==='mismatch'&&!/((装订|设置).*(不一致|未通过|不匹配)|(不一致|不匹配).*装订|未装订)/.test(check.readbackText))throw Error('2B需要明确报告装订或设置不一致，不能仅因当前飞机尚未到达目标而报告错误');

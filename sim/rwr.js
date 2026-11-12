@@ -2,6 +2,8 @@ import {basis,dot,norm} from './flight.js';
 import {radarGeometry} from './radar.js';
 import {lineClear,MISSILE_MODELS} from './missiles.js';
 import {RWR_REFERENCE} from '../data/rwr-reference.js';
+import {beamGate,inBeam} from './radar-beam.js';
+const emissionGates=new WeakMap();
 
 export const RWR_LEVELS={search:1,track:2,launch:3};
 export const RWR_LABELS={search:'搜索辐射',track:'雷达跟踪',launch:'疑似雷达导弹发射'};
@@ -21,6 +23,13 @@ export function rwrEvent(unit,time,type,text,extra={}){
 }
 function radarEmission(world,source,receiver,dt){
   const r=source.radar;if(!r?.available||r.mode==='off'||source.alive===false||source.surface?.grounded)return null;
+  if(r.sensorModelVersion===2){
+    let cached=emissionGates.get(r);
+    if(!cached||cached.events!==r.emissions||cached.time!==world.time){const pose=source.sensorPose??r.antennaPose??basis(source);cached={events:r.emissions,time:world.time,gates:(r.emissions??[]).map(e=>({e,gate:beamGate(source.position,pose,e,e.beamHalfDeg,r.config)}))};emissionGates.set(r,cached);}
+    const e=cached.gates.find(({gate})=>inBeam(gate,receiver.position[0],receiver.position[1],receiver.position[2]))?.e;
+    if(!e)return null;
+    return {key:'radar:'+source.id,position:source.position,level:e.role==='illumination'?'launch':e.job==='search'?'search':'track',frequencyGHz:r.config.frequencyGHz??8.5,signature:'fighter'};
+  }
   const g=radarGeometry(source,receiver,r.config,world.terrain);
   if(Math.abs(g.azimuthDeg)>r.config.azimuthHalfDeg||Math.abs(g.elevationDeg)>r.config.elevationHalfDeg)return null;
   let level='search',beam;

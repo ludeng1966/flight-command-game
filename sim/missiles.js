@@ -1,6 +1,9 @@
 import {MISSILE_DATA} from '../data/missile-runtime.js';
 import {G,atmosphere,density,dot,cross,norm,basis} from './flight.js';
-import {radarVisibility,RADAR_DEFAULTS} from './radar.js';
+import {radarVisibility,radarGeometry,RADAR_DEFAULTS} from './radar.js';
+import {radarSupport} from './radar-quality.js';
+import {V2_DEFAULTS,measurement} from './radar-v2.js';
+import {initializeFilter,predictFilter,filterInnovation,correctFilter} from './radar-filter.js';
 
 export const MISSILE_MODELS=new Map(MISSILE_DATA.map(m=>[m.id,m]));
 export const GUIDANCE_LABELS={infrared:'红外寻的',semi_active_radar:'半主动雷达',active_radar:'惯导/数据链 → 主动雷达'};
@@ -49,35 +52,62 @@ export function seekerObservation(model,position,forward,target,terrain,{launch=
 export function spawnMissile(world,own,target,model,observation){
   const forward=norm(own.velocity),position=add(own.position,mul(forward,5));position[2]-=2;
   const velocity=add(model.launch.useStartSpeed?own.velocity:[0,0,0],mul(forward,model.launch.initialSpeedMps??0));
-  const missile={id:'missile-'+(++world.missileSequence),modelId:model.id,ownerId:own.id,targetId:target.id,team:own.team??own.faction??'blue',
+  const missile={id:'missile-'+(++world.missileSequence),modelId:model.id,ownerId:own.id,targetId:observation.trackId??target.id,truthTargetId:target.id,sensorModelVersion:own.radar?.sensorModelVersion??1,team:own.team??own.faction??'blue',
     position,velocity,forward,ageSec:0,travelM:0,alive:true,phase:model.kind==='infrared'?'infrared':model.kind==='semi_active_radar'?'semi_active':'datalink',
     active:false,massKg:model.massKg,thrustN:0,speedMps:length(velocity),mach:0,loadFactor:0,dragN:0,
-    observation:{position:[...observation.position],velocity:[...observation.velocity],ageSec:0},lastLos:null,lostSec:0,trail:[position.slice()],trailClock:0,
+    observation:{position:[...observation.position],velocity:[...observation.velocity],ageSec:Math.max(0,world.time-(observation.measuredAt??world.time))},lastLos:null,lostSec:0,trail:[position.slice()],trailClock:0,
     launchedAt:world.time,endedAt:null,minMissM:null,sensorClock:0,sensorGuiding:true};
   world.missiles.push(missile);return missile;
 }
 function finish(world,m,phase){m.alive=false;m.phase=phase;m.endedAt=world.time;m.thrustN=0;}
+function seekerV2Observation(world,m,model){
+  const time=m.launchedAt+m.ageSec,slot=Math.floor((time+1e-8)/.1);
+  if(m.seekerVisit===slot)return null;m.seekerVisit=slot;
+  const predicted=add(m.observation.position,mul(m.observation.velocity,m.observation.ageSec)),aim=norm(sub(predicted,m.position));
+  const right=norm(cross(m.forward,Math.abs(m.forward[2])>.99?[0,1,0]:[0,0,1])),up=norm(cross(right,m.forward));
+  const own={id:m.id,position:m.position,velocity:m.velocity,groundVelocity:m.velocity,sensorPose:{forward:m.forward,up}};
+  const config={...RADAR_DEFAULTS,...V2_DEFAULTS,minRangeM:1,rangeM:model.guidance.radar?.receiver?.range??16000,
+    azimuthHalfDeg:Math.min(85,model.seeker.gimbalAngleDeg??55),elevationHalfDeg:Math.min(85,model.seeker.gimbalAngleDeg??55)};
+  const r={sensorModelVersion:2,config,mode:'pd'},choices=[];
+  if(m.seekerTrack)predictFilter(m.seekerTrack,time);
+  for(const target of [...world.units,...(world.radarTargets??[])]){
+    if(target.id===m.ownerId||target.alive===false)continue;
+    const g=radarGeometry(own,target,config,world.terrain);
+    // Prediction-centred acquisition aperture, never steer at the hidden entity.
+    if(dot(aim,g.los)<Math.cos(rad(m.seekerTrack?6:10))||!radarVisibility(own,target,r,world.terrain).visible)continue;
+    const hit=measurement(world,own,target,r,g,`${world.sensorSeed??1}|${m.id}|${slot}|${target.id}`);if(!hit)continue;
+    const fit=m.seekerTrack?filterInnovation(m.seekerTrack,hit):null;
+    if(m.seekerTrack&&(!fit||fit.d2>18.5))continue;
+    choices.push({hit,fit,score:fit?.d2??length(sub(hit.position,predicted))});
+  }
+  choices.sort((a,b)=>a.score-b.score);const chosen=choices[0];if(!chosen)return null;
+  if(!m.seekerTrack)m.seekerTrack=initializeFilter(chosen.hit.position,chosen.hit.z[3]+dot(m.velocity,chosen.hit.los),chosen.hit.los,time,Math.max(chosen.hit.sigma[0],chosen.hit.z[0]*chosen.hit.sigma[1]));
+  else correctFilter(m.seekerTrack,chosen.hit,chosen.fit);
+  m.seekerLastMeasuredAt=time;
+  return {position:m.seekerTrack.x.slice(0,3),velocity:m.seekerTrack.x.slice(3),los:chosen.hit.los};
+}
 function guidanceObservation(world,m,model,dt){
   if(m.ageSec>(model.seeker.workSec??model.lifetimeSec)){m.phase=model.guidance.inertialNavigation?'inertial':'lost';return model.guidance.inertialNavigation;}
-  const own=world.units.find(u=>u.id===m.ownerId),target=[...world.units,...(world.radarTargets??[])].find(t=>t.id===m.targetId);
-  const supported=own?.alive!==false&&own?.radar?.canIlluminate&&own.radar.targetId===m.targetId;
+  const own=world.units.find(u=>u.id===m.ownerId),target=[...world.units,...(world.radarTargets??[])].find(t=>t.id===(m.truthTargetId??m.targetId));
+  const support=own?radarSupport(own,m.targetId,model.kind,world.time):{};
+  const supported=model.kind==='semi_active_radar'?support.illuminationAvailable:support.midcourseAvailable;
   let observation=null;
   if(model.kind==='infrared'){
     observation=seekerObservation(model,m.position,m.forward,target,world.terrain,{previousLos:m.lastLos,dt});m.phase=observation?'infrared':'lost';
   }else if(model.kind==='semi_active_radar'){
-    if(supported)observation=seekerObservation(model,m.position,m.forward,target,world.terrain,{previousLos:m.lastLos,dt});
-    m.phase=observation?'semi_active':model.guidance.inertialNavigation?'inertial':'lost';
+    if(supported)observation=m.sensorModelVersion===2?seekerV2Observation(world,m,model):seekerObservation(model,m.position,m.forward,target,world.terrain,{previousLos:m.lastLos,dt});
+    m.phase=observation||m.sensorModelVersion===2&&supported&&m.seekerLastMeasuredAt!=null&&m.launchedAt+m.ageSec-m.seekerLastMeasuredAt<.15?'semi_active':model.guidance.inertialNavigation?'inertial':'lost';
   }else{
     // Activation is based on the last received track, never the hidden target range.
     const estimated=add(m.observation.position,mul(m.observation.velocity,m.observation.ageSec));
     if(length(sub(estimated,m.position))<=(model.guidance.lockDistanceM??model.guidance.radar?.receiver?.range??16000))m.active=true;
-    if(m.active)observation=seekerObservation(model,m.position,m.forward,target,world.terrain,{previousLos:m.lastLos,dt});
+    if(m.active)observation=m.sensorModelVersion===2?seekerV2Observation(world,m,model):seekerObservation(model,m.position,m.forward,target,world.terrain,{previousLos:m.lastLos,dt});
     if(observation)m.phase='active';
     else if(supported&&model.guidance.datalink){
       const c=own.radar.contacts.find(c=>c.id===m.targetId);
-      if(c&&world.time-c.observedAt<=.2){observation={position:c.position,velocity:c.velocity,los:null};m.phase='datalink';}
+      if(c&&(m.sensorModelVersion===2?support.midcourseAvailable:world.time-c.observedAt<=.2)){const age=Math.max(0,world.time-c.observedAt);observation={position:c.position.map((v,i)=>v+c.velocity[i]*age),velocity:c.velocity,los:null};m.phase='datalink';m.lastUpdateMeasuredAt=c.observedAt;}
     }
-    if(!observation)m.phase='inertial';
+    if(!observation)m.phase=m.sensorModelVersion===2&&m.seekerLastMeasuredAt!=null&&m.launchedAt+m.ageSec-m.seekerLastMeasuredAt<.15?'active':'inertial';
   }
   if(observation){m.observation={position:[...observation.position],velocity:[...observation.velocity],ageSec:0};m.lastLos=observation.los;m.lostSec=0;}
   else{m.lostSec+=dt;m.lastLos=null;}
@@ -131,7 +161,7 @@ export function stepMissiles(world,dt,previousTargets=new Map()){
       if(target.id===m.ownerId||target.alive===false)continue;
       const previous=previousTargets.get(target.id)??sub(target.position,mul(target.velocity,dt));
       const approach=closestSegment(sub(before,previous),sub(m.position,target.position));
-      if(target.id===m.targetId)m.minMissM=Math.min(m.minMissM??Infinity,approach.distance);
+      if(target.id===(m.truthTargetId??m.targetId))m.minMissM=Math.min(m.minMissM??Infinity,approach.distance);
       const armed=ageBefore+approach.t*dt>=(model.proximityFuse.armingDelaySec??0);
       const radius=model.proximityFuse.enabled?model.proximityFuse.radiusM:2;
       if(armed&&approach.distance<=radius){

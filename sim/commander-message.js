@@ -15,11 +15,17 @@ export function captureCommanderMessage(source,record,requestId,system='metric')
   return {id:record?.id??requestId??'commander',speaker:source.speaker==='controller'?'controller':'commander',text:record?.speechText??record?.text??source.text,
     language:record?.speechLanguage??record?.language??source.language,unitSystem:system};
 }
+// The validated command can be received as data before its optional audio plays.
+// Freeze the semantic message so localization or TTS cannot rewrite its orders.
+export function captureAcceptedCommanderMessage(source,record,requestId,system='metric'){
+  return Object.freeze({id:record?.id??requestId??'commander',speaker:source.speaker==='controller'?'controller':'commander',text:source.text,
+    language:source.language,unitSystem:system,receipt:'accepted',delivery:'queued'});
+}
 // Legacy API callers may supply instruction as a transcript. A supplied message always wins.
 export function receivedCommanderMessage(input){
   const message=input?.commanderMessage??{id:input?.requestId??'commander',speaker:'commander',text:input?.instruction,language:'zh-CN'};
-  if(!message||!['commander','controller'].includes(message.speaker)||typeof message.id!=='string'||!/^[-\w]{1,100}$/.test(message.id)||typeof message.text!=='string'||!message.text.trim()||message.text.length>4000||!['zh-CN','en-US'].includes(message.language))throw Error('需要指挥员或塔台实际播报的完整通话，不能以玩家输入代替');
-  return {id:message.id,speaker:message.speaker,text:message.text,language:message.language,...(message.unitSystem?{unitSystem:message.unitSystem}:{})};
+  if(!message||!['commander','controller'].includes(message.speaker)||typeof message.id!=='string'||!/^[-\w]{1,100}$/.test(message.id)||typeof message.text!=='string'||!message.text.trim()||message.text.length>4000||!['zh-CN','en-US'].includes(message.language)||message.receipt!==undefined&&message.receipt!=='accepted')throw Error('需要已接收的指挥员或塔台完整命令消息，不能以玩家输入代替');
+  return {id:message.id,speaker:message.speaker,text:message.text,language:message.language,...(message.unitSystem?{unitSystem:message.unitSystem}:{}),...(message.receipt?{receipt:message.receipt}:{})};
 }
 export const normalizedCommanderTranscript=message=>normalizeRadioInstruction(message.text);
 const zhDigits={'零':0,'〇':0,'洞':0,'幺':1,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'拐':7,'八':8,'九':9,'勾':9,'钩':9};
@@ -73,6 +79,14 @@ export function verifyCommanderHeading(interpretation,message){
 // player's free-form request or constructing an executable order from keywords.
 export function verifyCommanderAirportInstruction(interpretation,message){
   if(interpretation.status!=='understood')return;
+  const phaseNames={滑行:'taxi',进入跑道对正等待:'line_up',起飞:'takeoff',进近:'approach',着陆:'land',所有阶段:'all',TAXI:'taxi','LINE UP AND WAIT':'line_up',TAKEOFF:'takeoff',APPROACH:'approach',LANDING:'land','ALL PHASES':'all'},administrative=new Map();
+  for(const match of message.text.matchAll(/(签发|取消)(滑行|进入跑道对正等待|起飞|进近|着陆|所有阶段)许可|(ISSUE|CANCEL) (TAXI|LINE UP AND WAIT|TAKEOFF|APPROACH|LANDING|ALL PHASES) CLEARANCE/gi)){
+    const intent=match[1]==='签发'||match[3]?.toUpperCase()==='ISSUE'?'atc_clearance':'atc_cancel_clearance';if(!administrative.has(intent))administrative.set(intent,new Set());administrative.get(intent).add(phaseNames[match[2]??match[4].toUpperCase()]);
+  }
+  if(administrative.size)for(const o of interpretation.orders){
+    if(['takeoff','land','approach','taxi','line_up','hold_short'].includes(o.intent))throw Error('本次实际通话是签发或取消已有任务的阶段许可，须保留为atc_clearance/atc_cancel_clearance，不得重建机场任务');
+    if(administrative.has(o.intent)&&!administrative.get(o.intent).has(o.parameters.mode))throw Error('飞行员改变了实际播报的许可阶段，请按原许可复诵');
+  }
   const text=message.text.toUpperCase(),rules=[
     ['abort_takeoff',/中断起飞|ABORT TAKEOFF|REJECT(?:ED)? TAKEOFF/],
     ['go_around',/复飞|GO AROUND/],['line_up',/进入跑道|对正等待|LINE UP/],

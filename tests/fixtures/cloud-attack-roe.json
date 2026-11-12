@@ -1,0 +1,163 @@
+{
+  "source": "Local real-cloud capture: responsive-cloud-interpretation.json, 2026-11-11",
+  "cases": [
+    {
+      "instruction": "Alpha，搜索并攻击发现的敌机，授权自主选择目标并开火。",
+      "unitId": "blue-1",
+      "interpretation": {
+        "version": "1.0",
+        "status": "understood",
+        "summary": "Alpha 01，已收到指令。执行搜索并攻击前方发现的敌机任务，授权自主选择目标及开火。保持当前高度与速度，飞行员自主规划航路与战术。",
+        "orders": [
+          {
+            "id": "order-1",
+            "intent": "attack",
+            "unitIds": [
+              "blue-1"
+            ],
+            "speechAct": "directive",
+            "timing": "now",
+            "condition": null,
+            "parameters": {
+              "altitudeM": null,
+              "speedMps": null,
+              "headingDeg": null,
+              "eastM": null,
+              "northM": null,
+              "distanceM": null,
+              "durationSec": null,
+              "rangeM": null,
+              "quantity": null,
+              "bearingDeg": null,
+              "targetId": null,
+              "targetRef": "discovered enemy aircraft",
+              "runway": null,
+              "airportRef": null,
+              "formation": null,
+              "side": null,
+              "weapon": null,
+              "mode": null,
+              "role": null,
+              "holdPoint": null,
+              "constraints": null,
+              "append": false
+            }
+          },
+          {
+            "id": "order-2",
+            "intent": "weapons_free",
+            "unitIds": [
+              "blue-1"
+            ],
+            "speechAct": "directive",
+            "timing": "now",
+            "condition": null,
+            "parameters": {
+              "altitudeM": null,
+              "speedMps": null,
+              "headingDeg": null,
+              "eastM": null,
+              "northM": null,
+              "distanceM": null,
+              "durationSec": null,
+              "rangeM": null,
+              "quantity": null,
+              "bearingDeg": null,
+              "targetId": null,
+              "targetRef": null,
+              "runway": null,
+              "airportRef": null,
+              "formation": null,
+              "side": null,
+              "weapon": null,
+              "mode": "free",
+              "role": null,
+              "holdPoint": null,
+              "constraints": null,
+              "append": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "instruction": "Bravo，搜索并攻击发现的敌机，授权自主选择目标并开火。",
+      "unitId": "blue-2",
+      "interpretation": {
+        "version": "1.0",
+        "status": "understood",
+        "summary": "Bravo，已下达搜索并攻击指令。你被授权自主选择目标并开火，请保持雷达开启进行搜索，发现敌机后自主执行攻击程序。",
+        "orders": [
+          {
+            "id": "order-1",
+            "intent": "attack",
+            "unitIds": [
+              "blue-2"
+            ],
+            "speechAct": "directive",
+            "timing": "now",
+            "condition": null,
+            "parameters": {
+              "altitudeM": null,
+              "speedMps": null,
+              "headingDeg": null,
+              "eastM": null,
+              "northM": null,
+              "distanceM": null,
+              "durationSec": null,
+              "rangeM": null,
+              "quantity": null,
+              "bearingDeg": null,
+              "targetId": null,
+              "targetRef": "发现的敌机",
+              "runway": null,
+              "airportRef": null,
+              "formation": null,
+              "side": null,
+              "weapon": null,
+              "mode": "auto_tactics",
+              "role": null,
+              "holdPoint": null,
+              "constraints": null,
+              "append": false
+            }
+          },
+          {
+            "id": "order-2",
+            "intent": "weapons_free",
+            "unitIds": [
+              "blue-2"
+            ],
+            "speechAct": "directive",
+            "timing": "now",
+            "condition": null,
+            "parameters": {
+              "altitudeM": null,
+              "speedMps": null,
+              "headingDeg": null,
+              "eastM": null,
+              "northM": null,
+              "distanceM": null,
+              "durationSec": null,
+              "rangeM": null,
+              "quantity": null,
+              "bearingDeg": null,
+              "targetId": null,
+              "targetRef": null,
+              "runway": null,
+              "airportRef": null,
+              "formation": null,
+              "side": null,
+              "weapon": null,
+              "mode": "free",
+              "role": null,
+              "holdPoint": null,
+              "constraints": null,
+              "append": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

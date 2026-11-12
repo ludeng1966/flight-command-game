@@ -6,3 +6,7 @@
 #rwr-control .rwr-help,#rwr-control .rwr-practice p{font-size:10px;line-height:1.7;color:var(--rwr-muted)}#rwr-control .rwr-practice{border-top:1px solid var(--rwr-line);padding-top:10px;margin-top:10px}#rwr-action,#rwr-message{font-size:11px;line-height:1.7;color:#efb68d}
 #rwr-control .rwr-buttons{display:flex;gap:5px;flex-wrap:wrap}#rwr-control button{font:inherit;font-size:11px;padding:6px 8px}#rwr-control :focus-visible{outline:2px solid #78c99d;outline-offset:2px}#rwr-control :disabled{opacity:.45}
 @media(max-width:600px){#rwr-control .rwr-head{flex-wrap:wrap}}
+#rwr-control .rwr-legend{font-size:10px;color:var(--rwr-muted);line-height:1.6;margin:8px 0}
+#panel-controls #rwr-toggle[data-level="track"]{border-color:#ac8b54;color:#ffd38c}
+#panel-controls #rwr-toggle[data-level="launch"]{border-color:#cf6772;color:#ff8d97}
+#panel-controls #rwr-toggle[data-memory="true"]{border-style:dashed}

@@ -62,7 +62,7 @@ function fitAltitude(points,origin,goal,terrain,limits){
 function cloneUnit(original,goals,legs){
   // Forecast the candidate route after takeover, not an unbounded old defensive overlay.
   // The real aircraft keeps evading until the new route is validated and committed.
-  const u={...original,formation:null,formationGuidance:null,rwrDefense:null,position:[...original.position],velocity:[...original.velocity],orbit:[...original.orbit],
+  const u={...original,formation:null,formationGuidance:null,rwrDefense:null,attackTask:null,position:[...original.position],velocity:[...original.velocity],orbit:[...original.orbit],
     surface:original.surface?{...original.surface,towerHold:null}:undefined,
     departurePowerPlan:original.departurePowerPlan?structuredClone(original.departurePowerPlan):null,
     pilotPowerPlan:original.pilotPowerPlan?structuredClone(original.pilotPowerPlan):null,
@@ -122,6 +122,7 @@ export function traceFlight(original,goals,legs,{duration=900,dt=.1,cursor=0,set
 
 export function planSafeRoute(original,goals,terrain){
   if(!goals.length)return {valid:true,legs:[],points:[],warnings:[],detour:false};
+  if(goals.some(p=>p[2]>(original.profile.limits?.ceilingM??Infinity)))return {valid:false,reason:'航点超出本机型实用升限',points:[],warnings:['超出升限'],legs:[]};
   if(terrain?.checkPoint){for(const p of goals){const check=terrain.checkPoint(p);if(!check.valid)return {valid:false,reason:check.reason,points:[],warnings:[check.reason]};}}
   else if(terrain?.checkRoute){const check=terrain.checkRoute(original.position,goals);if(!check.valid)return {...check,points:[],warnings:[check.reason]};}
   if(needsRecovery(original)){
@@ -133,7 +134,7 @@ export function planSafeRoute(original,goals,terrain){
     if(!trace.valid||!trace.completed){const reason=trace.warnings.join('、')||'改出后仍无法安全到达航点';return {valid:false,reason,points:trace.points,warnings:[reason],legs:[]};}
     return {...tail,legs,points:trace.points,routeLength:trace.missionDistance,peakG:trace.peakG,minAgl:trace.minAgl,afterburnerSeconds:trace.afterburnerSeconds,initialRecovery:true,recoverySeconds:entry.seconds,reason:'先自动改出恢复速度，再衔接安全航路'};
   }
-  const V=Math.max(90,Math.hypot(...original.velocity)),startEnvelope=energyEnvelope(original.profile,original.position[2],V);
+  const V=Math.max(90,Math.hypot(...original.velocity)),startEnvelope=energyEnvelope(original.profile,original.position[2],V,original);
   let failure='没有找到可安全到达的路径',best=null;
   const candidates=[],seen=new Set();
   const direct=goals.reduce((sum,p,i)=>sum+distance(i?goals[i-1]:original.position,p),0);
@@ -147,16 +148,18 @@ export function planSafeRoute(original,goals,terrain){
       candidates.push({legs,length,setting:{through:true,angle:0},trace});
     }
   }
-  const settings=[{direct:true},...[1.6,2.2,3].flatMap(g=>[1,-1].map(side=>({g,side,angle:0}))),
-    ...[Math.PI/6,Math.PI/3,Math.PI/2,Math.PI*2/3,Math.PI].flatMap(angle=>[1,-1].map(side=>({g:3,side,angle}))),
-    ...[-1,1].flatMap(via=>[1,-1].map(side=>({g:2.2,side,via,angle:0}))),
-    ...[Math.PI/3,Math.PI*2/3,Math.PI,TAU,TAU*2,TAU*3].flatMap(angle=>[1,-1].map(side=>({g:2.2,side,angle}))),
-    ...[1.3,1.5,1.7].flatMap(g=>[TAU*2,TAU*3,TAU*4].flatMap(angle=>[1,-1].map(side=>({g,side,angle}))))];
+  // Candidate turn loads are fractions of this aircraft's current usable envelope, never universal G ceilings.
+  const settings=[{direct:true},...[.35,.65,1].flatMap(loadFraction=>[1,-1].map(side=>({loadFraction,side,angle:0}))),
+    ...[Math.PI/6,Math.PI/3,Math.PI/2,Math.PI*2/3,Math.PI].flatMap(angle=>[1,-1].map(side=>({loadFraction:1,side,angle}))),
+    ...[-1,1].flatMap(via=>[1,-1].map(side=>({loadFraction:.65,side,via,angle:0}))),
+    ...[Math.PI/3,Math.PI*2/3,Math.PI,TAU,TAU*2,TAU*3].flatMap(angle=>[1,-1].map(side=>({loadFraction:.65,side,angle}))),
+    ...[.12,.22,.32].flatMap(loadFraction=>[TAU*2,TAU*3,TAU*4].flatMap(angle=>[1,-1].map(side=>({loadFraction,side,angle}))))];
   for(const setting of settings){
     let origin=[...original.position],heading=Math.atan2(original.velocity[0],original.velocity[1]),legs=[],okay=true;
     for(const [index,goal] of goals.entries()){
-      const envelope=energyEnvelope(original.profile,Math.max(origin[2],goal[2]),V);
-      const n=Math.max(1.25,Math.min(setting.g??2.2,startEnvelope.budgetG*.94,envelope.budgetG*.94));
+      const envelope=energyEnvelope(original.profile,Math.max(origin[2],goal[2]),V,original);
+      const bankG=original.profile.controlLimits?.bankRad?1/Math.cos(original.profile.controlLimits.bankRad):Infinity;
+      const available=Math.min(startEnvelope.budgetG*.94,envelope.budgetG*.94,bankG*.97),n=1+Math.max(.001,available-1)*(setting.loadFraction??.65);
       const radius=Math.max(400,V*V/(G*Math.sqrt(n*n-1)))*1.06;
       const limits={climb:Math.max(.025,Math.min(.32,envelope.climbRate(Math.min(n,1.5),0,true)/V*.8)),descent:.25};
       const dx=goal[0]-origin[0],dy=goal[1]-origin[1],span=Math.hypot(dx,dy);

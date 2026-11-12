@@ -259,18 +259,31 @@ function installCommandUi(t,onFetch){
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 const instantRadio=()=>({radio:{transmit:async()=>{},phase(){},cancel(){},clear(){}},pause:async()=>{}});
 
-test('实际指挥通话完成后才发送飞行员规划，飞行员请求不含玩家原文',async t=>{
- const w=world(),events=[];let body;
+test('等待飞行员输出时手动暂停，重新按零延时规划且不恢复时钟',async t=>{
+  const w=world(),forecasts=[];let playing=true,calls=0,applied=0;
+  installCommandUi(t,async(url,options)=>{
+    if(url==='/api/health')return Response.json({service:'tactical-voice',commandReady:true,pilotAssistant:{commandPlanning:true}});
+    const input=JSON.parse(options.body),interpretation=military(militaryOrder('fly_heading',{headingDeg:0,altitudeM:6500,speedMps:180})),compiled=compileMilitaryInterpretation(interpretation,input.context);
+    if(url==='/api/tactical/interpret')return Response.json({requestId:input.requestId,revision:input.context.revision,simTimeSec:input.context.simTimeSec,interpretation,...compiled});
+    assert.equal(url,'/api/tactical/pilot/plan');calls++;if(calls===1)playing=false;
+    return Response.json({requestId:input.requestId,revision:input.context.revision,simTimeSec:input.context.simTimeSec,commanderMessageId:input.commanderMessage.id,latencyPredictionSec:input.context.decisionTiming.estimatedOutputSec,interpretation,...compiled});
+  });
+  const control=initVoiceCommands({...instantRadio(),getState:()=>({world:w,selectedId:'blue-1',playing,rate:1}),onApplied(){applied++;},onSimulation(){throw Error('不应改变暂停状态');},forecastCommand:async(_world,timing)=>{forecasts.push(timing);return timing;}});
+  try{await settle();const result=await control.issue('Alpha，航向洞洞洞，高度六千五百米');assert.equal(result.committed,true);assert.equal(calls,2);assert.equal(applied,1);assert.equal(playing,false);assert.equal(forecasts[0].playing,true);assert.equal(forecasts[1].estimatedOutputSec,0);assert.deepEqual(forecasts[1].horizonsSec,[0]);assert.equal(w.time,0);}finally{control.cancel();}
+});
+
+test('正式接令消息发布后即可规划，不等待TTS且飞行员请求不含玩家原文',async t=>{
+ const w=world(),events=[];let body,acceptedText;
  installCommandUi(t,async(url,options)=>{
   if(url==='/api/health')return Response.json({service:'tactical-voice',commandReady:true,voiceReady:true,pilotAssistant:{commandPlanning:true,enabled:false}});
   const input=JSON.parse(options.body);events.push(url);
   if(url==='/api/tactical/interpret')return Response.json({requestId:input.requestId,revision:input.context.revision,simTimeSec:input.context.simTimeSec,plan:plan(task('fly_heading',{headingDeg:90,altitudeM:6096,speedMps:350*1852/3600}))});
-  assert.equal(url,'/api/tactical/pilot/plan');body=input;assert.equal(input.instruction,undefined);assert.equal(input.interpretation,undefined);assert.equal(input.commanderMessage.text,'指挥台实际通话：航向90，高度6100米，真空速648公里每小时。');
+  assert.equal(url,'/api/tactical/pilot/plan');body=input;assert.equal(input.instruction,undefined);assert.equal(input.interpretation,undefined);assert.equal(input.commanderMessage.text,acceptedText);assert.equal(input.commanderMessage.receipt,'accepted');assert.equal(input.commanderMessage.delivery,'queued');
   return Response.json({requestId:input.requestId,revision:input.context.revision,simTimeSec:input.context.simTimeSec,commanderMessageId:input.commanderMessage.id,plan:plan(task('fly_heading',{headingDeg:90,altitudeM:6100,speedMps:648/3.6})),execution:{status:'ready'}});
  });
- const mocks=instantRadio();mocks.radio.transmit=async m=>{events.push(m.speaker);return {id:'heard-command',speechText:'指挥台实际通话：航向90，高度6100米，真空速648公里每小时。',speechLanguage:'zh-CN',text:m.text};};
+ const mocks=instantRadio();mocks.radio.publish=m=>{events.push(m.speaker);if(m.speaker==='commander')acceptedText=m.text;return {record:{...m,id:'accepted-command',reception:'accepted',delivery:'queued'},completion:new Promise(()=>{})};};
  const control=initVoiceCommands({...mocks,getState:()=>({world:w,selectedId:'blue-1',mapPoint:null}),onApplied(){},onSimulation(){}});await settle();
- const r=await control.issue('玩家原始输入：Alpha，航向090，高度20000英尺，速度350节。');assert.equal(r.committed,true);assert.ok(events.indexOf('commander')<events.indexOf('/api/tactical/pilot/plan'));assert.equal(w.units[0].holdAltitude,6100);assert.equal(body.commanderMessage.id,'heard-command');assert.equal(w.units[0].pilotExecution.instruction,body.commanderMessage.text);assert.equal(w.units[0].pilotExecution.instructionSource,'commander');control.cancel();
+ const r=await control.issue('玩家原始输入：Alpha，航向090，高度20000英尺，速度350节。');assert.equal(r.committed,true);assert.ok(events.indexOf('commander')<events.indexOf('/api/tactical/pilot/plan'));assert.equal(w.units[0].holdAltitude,6100);assert.equal(body.commanderMessage.id,'accepted-command');assert.equal(w.units[0].pilotExecution.instruction,body.commanderMessage.text);assert.equal(w.units[0].pilotExecution.instructionSource,'commander');control.cancel();
 });
 
 test('手动航点成功后通过控制器复诵，指挥AI未就绪也不妨碍播报',async t=>{

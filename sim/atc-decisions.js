@@ -18,6 +18,7 @@ export function applyAtcDecision(world,d,{requestId=null}={}){
   const q=ops.traffic.state.requests.find(q=>q.id===s.atcRequestId);
   if(d.action==='continue')return;
   if(d.action==='priority'){
+    if(!Number.isInteger(d.priority)||d.priority<0||d.priority>100)throw Error('排序优先级须为0至100的整数');
     if(!q)throw Error('该机不在进离场队列');q.priority=s.emergency||u.fuel?.status==='emergency'?100:d.priority;
   }else if(d.action==='hold_ground'){
     if(!s.grounded||s.phase==='takeoff_roll')throw Error('只能对尚未滑跑的地面飞机保持等待');
@@ -27,6 +28,9 @@ export function applyAtcDecision(world,d,{requestId=null}={}){
   }else if(d.action==='change_runway'){
     if(!d.runway||s.phase==='takeoff_roll'||s.phase==='lined_up'||s.runwayLocked)throw Error('当前阶段不能改跑道');
     const r=ops.runway(d.runway);if(!runwayWeatherLimits(ops.airport.weather,r,u.profile).valid)throw Error('新跑道气象条件不符合本机限制');
+    if(s.grounded&&s.phase==='taxi'&&s.route?.length&&s.node&&Math.hypot(u.position[0]-ops.airport.nodes[s.node][0],u.position[1]-ops.airport.nodes[s.node][1])>4){
+      s.pendingRunwayChange=structuredClone(d);ops.notice(u,world,`改跑道指示已收到，沿当前许可滑行至下一路口后改用${d.runway}`,`RUNWAY CHANGE RECEIVED. CONTINUE AS CLEARED TO THE NEXT TAXI JUNCTION, THEN CHANGE TO RUNWAY ${d.runway}.`,'ground');return;
+    }
     const order={intent:s.grounded?s.depart?'takeoff':'taxi':'land',runway:d.runway,airportId:ops.airport.id,taxiways:d.taxiways,gate:s.arrivalGate??null,altitudeM:s.climbAltitude??null,mode:s.grounded?s.originalMode??null:d.approachType??s.approachType??null};
     const power=s.grounded&&u.departurePowerPlan?evaluateDeparturePlan(world,u,order,u.departurePowerPlan):null;
     if(s.grounded&&u.departurePowerPlan&&!power)throw Error('新跑道无法满足原推力要求');ops.apply(u,order,world,power);

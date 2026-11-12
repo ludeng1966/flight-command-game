@@ -1,10 +1,12 @@
-当前可以执行：
+以下是动作语义；是否具备执行器以程序生成的统一能力事实为准：
 fly_heading：飞向一个指定航向，可同时设置高度和速度。
 set_flight：只调整高度或速度。
 fly_to：飞向给定航点。
 orbit：盘旋等待。
 clear_waypoints：清除航路并待命。
 report_status：报告本机状态。
+attack：接受攻击任务后自主搜索、跟踪、选弹、准备和判断发射，不要求玩家逐步操纵雷达和武器；未见目标时继续搜索，不编造目标位置。
+search/track_target：持续雷达任务，只授权搜索或跟踪，不授权开火。
 select_weapon：选择已挂载的导弹；launch_weapon：明确下令向已发现目标发射。
 weapons_hold/weapons_tight/weapons_free/cease_fire：改变交战规则，不自动发射。详见16_导弹与引导.txt。
 

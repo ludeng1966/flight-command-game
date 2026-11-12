@@ -53,7 +53,7 @@ test('战术选择与航路责任分别声明，已指定战术保留；未接�
 test('Flash请求真实附带分工文件与靶眼基准，2B简版教材不会膨胀',async()=>{
  const w=world();w.bullseye={name:'TEST',position:[1000,2000,0]};let calls=0;
  const client=createQwenClient({apiKey:'test-only',baseUrl:'http://test',commandModel:'flash',timeoutMs:5000},async(_url,options)=>{
-  calls++;const body=JSON.parse(options.body),data=JSON.parse(body.messages[1].content);assert.deepEqual(data.context.bullseye,w.bullseye);assert.match(body.messages[0].content,/12_谁来规划航路/);assert.match(body.messages[0].content,/不追问航点/);
+  calls++;const body=JSON.parse(options.body),data=JSON.parse(body.messages[1].content);assert.deepEqual(data.context.bullseye,w.bullseye);assert.match(body.messages[0].content,/玩家给目的地\/任务/);assert.match(body.messages[0].content,/不要求玩家画常规路线/);
   return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify(value(order('cruise')))}}]});
  });
  const result=await client.interpret({requestId:'planning-test',instruction:'Alpha开始巡航',context:commandContext(w,'blue-1')});assert.equal(calls,1);assert.equal(result.plan.status,'accepted');assert.ok(result.knowledgeUsed.some(f=>f.id==='planning'));assert.equal(pilotReading('接敌',{compact:true}).files.some(f=>f.id==='planning'),false);

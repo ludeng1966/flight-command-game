@@ -1,9 +1,11 @@
 import {airportRadioProcedure} from '../sim/airport-radio-procedure.js';
 import {clearanceMessage} from '../sim/atc-radio.js';
+import {currentStageRequest} from '../sim/pilot-stage-request.js';
 // Airport events are history, not a queue of commands that remain valid forever.
 export function airportEventIsCurrent(world,event,unit,{checkAge=true}={}){
   if(!unit||!event||typeof event.text!=='string')return false;
   if(world.airportOps?.traffic.state.communicationFailures.includes(unit.id))return false;
+  if(event.kind==='pilot_request')return unit.alive!==false&&currentStageRequest(unit,event)?.status==='pending';
   if(event.clearanceId){const c=world.airportOps?.airport.atc?.clearances.find(c=>c.id===event.clearanceId);return unit.alive!==false&&!!c&&['issued','delivered'].includes(c.status);}
   if(event.kind==='atc_notice')return unit.alive!==false&&world.time-event.time<120;
   if(unit.alive===false&&!event.text.startsWith('着陆碰撞：'))return false;
@@ -22,7 +24,7 @@ export function airportEventIsCurrent(world,event,unit,{checkAge=true}={}){
     [/^接地，/,true,['rollout','exit']],
     [/^正在脱离跑道|^已越过跑道等待线/,true,['exit','taxi','waiting_gate','parked']],
     [/^抬轮离地，/,false,['climb']],
-    [/^\d{2}[LRC]?进近，|^着陆许可请求已记录/,false,['approach']],
+    [/^\d{2}[LRC]?进近，|^请求\d{2}[LRC]?进近许可|^着陆许可请求已记录/,false,['approach']],
     [/^复飞：/,false,['missed','climb']]
   ];
   const rule=phaseRules.find(([pattern])=>pattern.test(text));
@@ -38,19 +40,23 @@ export class AirportRadio{
   pump(){
     const world=this.getWorld();if(this.world!==world){this.pending?.controller.abort();this.world=world;this.cursor=world.airportRadioStartId??0;if(world.airportOps?.airport.atc)world.airportOps.airport.atc.radioRequired=true;}
     if(this.pending){const p=this.pending;if(!airportEventIsCurrent(world,p.event,world.units.find(u=>u.id===p.event.unitId),{checkAge:false}))p.controller.abort();}
-    if(this.active||this.isBusy())return;
+    if(this.active||this.isBusy()||Date.now()<(this.retryAt??0))return;
     for(const event of world.airportOps?.airport.events??[]){
       if(event.id<=this.cursor)continue;this.cursor=event.id;
       const unit=world.units.find(u=>u.id===event.unitId);if(!airportEventIsCurrent(world,event,unit))continue;
       const message=airportRadioProcedure(event,unit,world.airportOps.airport),controller=new AbortController(),job={event,controller};this.pending=job;this.active=true;
       void (async()=>{
         await this.radio.transmit({...message,unitId:event.unitId,text:message.texts.zh,simTime:event.time,airportEventId:event.id},{signal:controller.signal});
+        if(event.kind==='pilot_request'&&!controller.signal.aborted)world.airportOps.traffic.pilotRequestSent(unit,event.pilotRequestId,world);
         if(event.clearanceId&&!controller.signal.aborted){
           const atc=world.airportOps.traffic,c=atc.state.clearances.find(c=>c.id===event.clearanceId);if(!c||!atc.delivered(c.id,world))return;
           const readback=structuredClone(c.parameters);await this.radio.transmit({...clearanceMessage(c,unit,world.airportOps.airport,{readback:true}),simTime:world.time},{signal:controller.signal});
           if(!controller.signal.aborted)atc.acknowledge(c.id,readback,world);
         }
-      })().catch(()=>{}).finally(()=>{if(this.pending===job){this.pending=null;this.active=false;}});
+      })().catch(()=>{if(!controller.signal.aborted&&this.getWorld()===world){
+        if(event.kind==='pilot_request'&&currentStageRequest(unit,event)?.status==='pending'){world.airportOps.traffic.emitPilotRequest(unit,currentStageRequest(unit,event),world);this.retryAt=Date.now()+2000;}
+        if(event.clearanceId){const c=world.airportOps.traffic.state.clearances.find(c=>c.id===event.clearanceId);if(c&&['issued','delivered'].includes(c.status)){c.status='issued';c.deliveredAt=null;world.airportOps.airport.events.push({...event,id:++world.airportOps.eventSequence,time:world.time});this.retryAt=Date.now()+2000;}}
+      }}).finally(()=>{if(this.pending===job){this.pending=null;this.active=false;}});
       break;
     }
   }

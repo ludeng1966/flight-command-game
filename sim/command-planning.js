@@ -3,11 +3,11 @@ const tactical=new Set(['intercept','attack','banzai','crank','f_pole','defend',
 const specifiedTactics=new Set(['banzai','crank','f_pole','notch','drag','bracket','extend']);
 const automatic=new Set(['cruise','fly_heading','orbit','clear_waypoints','follow_unit','join_formation','formation_change','assign_role','cover','escort','taxi','hold_short','line_up','takeoff','abort_takeoff','approach','land','return_to_base','go_around','divert']);
 export const planningModeLabel=mode=>({auto_tactics:'自主选择任务内战术',bullseye:'靶眼方位距离',custom_route:'玩家自定义航路'})[mode]??null;
-export const COMMAND_PLANNING_RULES=`航路责任：玩家提供任务、目的地/目标和限制，程序生成中间航点并执行避障、转弯、起降和编队航路。不能把自动规划工作退给玩家。
-巡航用cruise，未指定航向沿现有航路，无航路时保持当前航向；未指定高度速度沿用当前目标设置，不追问航点。明确要求沿玩家自定义路线时才用mode=custom_route，路线不存在只请求该自定义路线。
+export const COMMAND_PLANNING_RULES=`航路责任：玩家提供任务、目的地/目标和限制；指挥员只解释和转达；飞行员在导航规划接口中提出中间航点；程序生成连续可飞曲线、验证地形与能量并驾驶。编队移动队位、机场程序及未开放AI航点的专用动作由各自执行器规划。不能把自动规划工作退给玩家。
+巡航用cruise，未指定航向沿现有航路，无航路时保持当前航向。指挥员对未指定高度速度保留null，接令飞行员依据任务、实况与能力选择常规参数；旧目标只是实况参考，不能当成玩家硬性要求，不追问航点。已有三维航路各点高度、地图点高度与机场许可仍须保留，不为自主选值拉平航路。明确要求沿玩家自定义路线时才用mode=custom_route，路线不存在只请求该自定义路线。
 飞往已知坐标/标记点只需要目的地，不需要玩家规划整条航线。靶眼是参考坐标，不是路线；飞往靶眼方位距离用fly_to、mode=bullseye、bearingDeg和rangeM，坐标由程序结合context.bullseye计算，不能自行猜基准，也不能用本机位置或标记点冒充靶眼。距离按玩家明确单位或当前全局单位换算为米。
 单独通报靶眼坐标使用report_event和speechAct=report，保留方位、距离、mode=bullseye，不自动飞过去；明确说飞往才是导航，明确说接敌才是intercept。这里的靶眼方位按地图正北为0度、顺时针增加。
-接敌、拦截和战术任务不要求人工航点。目标/威胁数据不足只询问目标编号、方位距离或新鲜航迹；缺执行器报告缺能力，不要求玩家画路线替代。玩家指定战术就保留该战术；委托自行选取战术时保留原任务并用mode=auto_tactics，在任务范围内选择方法，不自行更换目标或增加开火授权。只有“自行选战术”却没有任务目的时才询问任务目标。`;
+接敌、拦截和战术任务不要求人工航点。attack允许先搜索：明确“攻击前方目标”等描述已经足以接令，无回波是搜索中的状态，不要求玩家先给目标编号或锁定；其他任务确实缺必要目标/威胁数据才询问缺项。缺执行器报告缺能力，不要求玩家画路线替代。玩家指定战术就保留该战术；委托自行选取战术时保留原任务并用mode=auto_tactics，在任务范围内选择方法，不自行更换目标或增加开火授权。只有“自行选战术”却没有任务目的时才询问任务目标。`;
 
 export function planningRequirement(order,context){
   const p=order.parameters,custom=p.mode==='custom_route',isTactical=tactical.has(order.intent);

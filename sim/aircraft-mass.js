@@ -1,13 +1,17 @@
 import {MISSILE_MODELS} from './missiles.js';
+import {density,thrustAt,dryFraction} from './flight.js';
 export function initializeMass(unit,profile,profileId,configuration={}){
-  unit.profileId=profileId;unit.operatingMassKg=profile.mass;unit.referenceFuelKg=configuration.referenceFuelKg??2000;
-  unit.fuel={capacityKg:configuration.fuelCapacityKg??3200,massKg:configuration.fuelKg??unit.referenceFuelKg,bingoKg:700,emergencyKg:300};
+  unit.profileId=profileId;unit.referenceFuelKg=configuration.referenceFuelKg??profile.referenceFuelKg??2000;
+  unit.operatingMassKg=profile.emptyMassKg!==undefined?profile.emptyMassKg+(profile.payloadMassKg??0)+unit.referenceFuelKg:profile.mass;
+  const capacityKg=configuration.fuelCapacityKg??profile.fuelCapacityKg??3200;
+  unit.fuel={capacityKg,massKg:Math.min(capacityKg,configuration.fuelKg??unit.referenceFuelKg),bingoKg:profile.category==='transport'?capacityKg*.1:700,emergencyKg:profile.category==='transport'?capacityKg*.04:300};
   unit.profile={...profile};updateAircraftMass(unit,0);
 }
 export function updateAircraftMass(unit,dt=0){
   if(!unit.fuel)return;
   if(unit.alive!==false&&dt>0&&(unit.throttle??0)>.01){
-    const rate=unit.surface?.grounded?.08:.25+.7*(unit.throttle??0)+3.2*(unit.afterburner??0);
+    const flow=unit.profile.fuelFlow,thrust=unit.thrustN??thrustAt(unit.profile,unit.position[2],unit.speed,unit.afterburner)*dryFraction(unit.profile,unit.throttle);
+    const rate=flow?Math.max(flow.idleKgS,Math.max(0,thrust)*flow.tsfcKgPerNs*(1+(unit.afterburner??0)*((flow.afterburnerMultiplier??1)-1))*Math.pow(1.225/density(unit.position[2]),flow.altitudeExponent??0)):(unit.surface?.grounded?.08:.25+.7*(unit.throttle??0)+3.2*(unit.afterburner??0));
     unit.fuel.massKg=Math.max(0,unit.fuel.massKg-rate*dt);
   }
   unit.storesMassKg=Object.entries(unit.weapons?.inventory??{}).reduce((sum,[id,n])=>sum+(MISSILE_MODELS.get(id)?.massKg??0)*n,0);

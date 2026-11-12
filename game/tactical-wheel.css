@@ -1,0 +1,12 @@
+#tactical-wheel{position:fixed;left:var(--wheel-x);top:var(--wheel-y);transform:translate(-50%,-50%);width:var(--wheel-size,340px);height:var(--wheel-size,340px);z-index:1000;filter:drop-shadow(0 12px 32px #000a);font:11px/1.4 Consolas,"Microsoft YaHei",monospace;user-select:none;touch-action:none}
+#tactical-wheel[hidden]{display:none}#tactical-wheel .wheel-sectors{position:absolute;width:100%;height:100%;inset:0;overflow:visible}
+#tactical-wheel path{fill:#0a1828f5;stroke:#3b6178;stroke-width:1}#tactical-wheel path[data-selected=true]{fill:#234d3c;stroke:#8ae9a5;stroke-width:2}
+#tactical-wheel .wheel-choice{position:absolute;transform:translate(-50%,-50%);width:80px;min-height:34px;padding:3px;border:0;background:transparent;color:#b6d0df;font:inherit;text-align:center;white-space:normal;cursor:pointer}
+#tactical-wheel .wheel-choice[data-selected=true]{color:#ceffda}#tactical-wheel .wheel-choice:focus-visible{outline:2px solid #8ae9a5}
+#tactical-wheel .wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#9fb8c7;font-size:10px;text-align:center;pointer-events:none;max-width:60px}
+#tactical-wheel .wheel-hint{position:absolute;top:-32px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#09131ff5;border:1px solid #345268;padding:5px 10px;color:#b8d6e6;font-size:10px}
+.tactical-wheel-open #scene{cursor:crosshair}#tactical-command-menu .tactical-wheel-launchers{display:flex;gap:5px;margin:10px 0}#tactical-command-menu .tactical-wheel-launchers button{flex:1;font-size:10px;padding:6px}
+#tactical-policy-status{font-size:10px;color:#92bdab;margin:7px 0;line-height:1.6}
+#tactical-wheel .wheel-pages{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;white-space:nowrap;background:#09131ff5;color:#b6d0df;border:1px solid #345268;font-size:10px}
+#tactical-wheel .wheel-pages button{background:#132838;color:#b6d0df;border:0;padding:3px 12px;font:inherit}
+@media(max-width:600px){#tactical-wheel .wheel-choice{width:62px;font-size:9px;line-height:1.35}}

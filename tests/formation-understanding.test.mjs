@@ -5,7 +5,7 @@ import {World} from '../sim/world.js';
 import {commandContext,applyPlan} from '../sim/orders.js';
 import {COMMAND_CATALOG} from '../sim/military-commands.js';
 import {FORMATIONS,COOPERATION_MODES} from '../sim/formation-doctrine.js';
-import {pilotReading} from '../server/pilot-handbook.mjs';
+import {readPilotFile,pilotReading} from '../server/pilot-handbook.mjs';
 import {EMPTY_PARAMETERS,normalizeMilitaryInterpretation,compileMilitaryInterpretation} from '../server/military-planner.mjs';
 import {createLocalAiClient} from '../server/local-ai-client.mjs';
 import {createQwenClient} from '../server/qwen.mjs';
@@ -24,7 +24,7 @@ test('队形和合作词触发对应版本手册，普通航向不加载；2B知
     assert.ok(small.files.some(f=>f.id==='formation_compact'));assert.ok(!small.files.some(f=>f.id==='formation'));
   }
   assert.ok(!pilotReading('Alpha，航向270').files.some(f=>f.id.startsWith('formation')));
-  const small=pilotReading('双机自由配合',{compact:true}).text.split('【参考文件：08_编队协同速记.txt】\n')[1];
+  const small=readPilotFile('formation_compact').text;
   assert.ok(small.length<700,small.length);
 });
 
@@ -76,12 +76,12 @@ test('Flash完整知识与2B精简知识经过各自真实请求构造，保留�
   const params={targetId:'blue-1',formation:'echelon',side:'right',rangeM:2000};
   const cloud=createQwenClient({apiKey:'test',baseUrl:'https://example.invalid/v1',commandModel:'flash',timeoutMs:1000},async(_url,options)=>{
     const body=JSON.parse(options.body),system=body.messages[0].content;
-    assert.match(system,/07_编队与协同/);assert.doesNotMatch(system,/08_编队协同速记/);
+    assert.match(system,/队形是排列，协同是职责/);assert.doesNotMatch(system,/【参考文件：/);
     assert.ok(body.response_format.json_schema.schema.properties.orders.items.anyOf[1].properties.intent.enum.includes('cooperate'));
     return Response.json({choices:[{message:{content:JSON.stringify(value(order('join_formation',['blue-2'],params)))}}]});
   });
   const local=createLocalAiClient({async complete(role,messages){
-    assert.equal(role,'commander');assert.match(messages[0].content,/08_编队协同速记/);assert.doesNotMatch(messages[0].content,/07_编队与协同/);
+    assert.equal(role,'commander');assert.match(messages[0].content,/23_对局操作手册/);assert.match(messages[0].content,/unitIds仅受令机/);
     assert.equal(messages.length,4); // system + one relevant example + actual input
     return {value:{status:'understood',summary:'Bravo加入Alpha右梯队',orders:[{intent:'join_formation',unitIds:['blue-2'],parameters:params}]},timing:{}};
   }},cloud);
@@ -94,7 +94,7 @@ test('Flash完整知识与2B精简知识经过各自真实请求构造，保留�
 test('事件2B识别规范协同意图并仅读取速记，结束后卸载',async()=>{
   let stopped=false;
   const assistant=new PilotAssistant('.',{runtimeFactory:()=>({health:()=>({status:'ready',memory:{}}),async start(){},async stop(){stopped=true;},
-    async complete(_role,messages,schema){assert.match(messages[0].content,/队形是位置/);assert.doesNotMatch(messages[0].content,/07_编队与协同/);
+    async complete(_role,messages,schema){assert.match(messages[0].content,/队形是排列/);assert.doesNotMatch(messages[0].content,/07_编队与协同/);
       assert.deepEqual(schema.properties.decision.enum,['notify_commander']);assert.equal(schema.properties.missingData.maxItems,0);
       return {value:{decision:'notify_commander',message:'已理解双机自由配合，协同执行器尚未接入',missingData:[]},timing:{}};}})});
   const w=world(),u=w.units[0];u.pilotMission={id:'coop-1',intent:'cooperate',timing:'now',condition:null,parameters:{mode:'loose_deuce'},revision:w.revision};

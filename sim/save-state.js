@@ -1,4 +1,6 @@
+import {validateV2State} from './radar-v2.js';
 import {World} from './world.js';
+import {validateGuidanceState} from './tactical-guidance.js';
 import {controlAuthority} from './control-authority.js';
 import {createRadar,radarContext,parseRadarContext} from './radar.js';
 import {radarTaskContext,parseRadarTaskContext} from './radar-task.js';
@@ -8,9 +10,12 @@ import {MISSILE_MODELS,MISSILE_PHASES} from './missiles.js';
 import {createRwr,rwrContext,parseRwrContext} from './rwr.js';
 import {defenseContext,parseDefenseContext} from './rwr-defense.js';
 import {updateAircraftMass} from './aircraft-mass.js';
+import {airportWeather} from './airport-weather.js';
+import {playerOrderVersion} from './command-scope.js';
+import {resetDatalink} from './datalink.js';
 
 export const SAVE_VERSION=1;
-const worldKeys=['spawnMode','executionMode','unitSystem','bullseye','time','ai','history','revision','commandLog','lastDt','radarTargets','radarTargetSequence','missiles','missileSequence','weaponEvents','rwrPracticeEmitters','rwrPracticeSequence'];
+const worldKeys=['sensorModelVersion','sensorSeed','spawnMode','executionMode','unitSystem','playerTeam','battleMode','bullseye','time','ai','history','revision','commandLog','lastDt','radarTargets','radarTargetSequence','missiles','missileSequence','weaponEvents','rwrPracticeEmitters','rwrPracticeSequence','tacticalCommands'];
 const airportKeys=['clock','events','wind','closed','closedTaxiways','weather','weatherSequence','weatherUpdatedAt','atc','procedures','frequencies'];
 const forbidden=new Set(['__proto__','constructor','prototype']);
 const fields=(value,exclude=[])=>Object.fromEntries(Object.entries(value).filter(([key,v])=>!exclude.includes(key)&&!forbidden.has(key)&&typeof v!=='function'));
@@ -58,7 +63,18 @@ export function saveFingerprint(scenario,profiles){
 }
 export function captureWorld(world){
   return {...Object.fromEntries(worldKeys.filter(k=>world[k]!==undefined).map(k=>[k,world[k]])),
-    units:world.units.map(u=>fields(u,['profile','terrain'])),
+    units:world.units.map(u=>{
+      const state=fields(u,['profile','terrain','pilotMissionOrderVersion']),mission=u.pilotMission;
+      if(u.datalink)state.datalink={config:{...u.datalink.config}};
+      if(mission){
+        const version=playerOrderVersion(world,u.id),current=mission.orderVersion!==undefined?mission.orderVersion===version:mission.revision===world.revision;
+        // Invalidated missions are history, not resumable work. Mark retained
+        // missions against the saved manual generation before rebasing on load.
+        state.pilotMission=current?{...mission,orderVersion:version}:null;
+        if(current)state.pilotMissionOrderVersion=version;
+      }
+      return state;
+    }),
     airportOps:world.airportOps?{leases:world.airportOps.leases,cooldown:world.airportOps.cooldown,eventSequence:world.airportOps.eventSequence,nextThink:world.airportOps.traffic.nextThink,groundSlots:world.airportOps.groundSlots,groundNodeSlots:world.airportOps.groundNodeSlots,
       airport:Object.fromEntries(airportKeys.filter(k=>world.airportOps.airport[k]!==undefined).map(k=>[k,world.airportOps.airport[k]]))}:null};
 }
@@ -80,10 +96,13 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
   }
   if(saved.radarTargets!==undefined&&(!Array.isArray(saved.radarTargets)||saved.radarTargets.length>8||saved.radarTargets.some(t=>!t||!/^tgt-\d+$/.test(t.id)||!vec(t.position)||!vec(t.velocity)||typeof t.callsign!=='string'||typeof t.alive!=='boolean')||!Number.isSafeInteger(saved.radarTargetSequence)||saved.radarTargetSequence<0))throw Error('雷达演练存档无效');
   for(const u of saved.units){
+    validateGuidanceState(u?.tacticalGuidance);
     if(!u||ids.has(u.id)||!scenario.units.some(s=>s.id===u.id)||!vec(u.position)||!vec(u.velocity)||
       typeof u.alive!=='boolean'||!['speed','bank','cl','holdAltitude','targetSpeed'].every(k=>Number.isFinite(u[k]))||
       !Array.isArray(u.waypoints)||!u.waypoints.every(vec)||!u.control||!Number.isFinite(u.control.bank))throw Error('飞机存档无效');
     ids.add(u.id);
+    const savedProfileId=u.profileId??scenario.units.find(s=>s.id===u.id).profile;if(!Object.hasOwn(profiles,savedProfileId))throw Error('存档机型不存在');
+    if(u.fuel&&(!['capacityKg','massKg','bingoKg','emergencyKg'].every(k=>Number.isFinite(u.fuel[k])&&u.fuel[k]>=0)||u.fuel.capacityKg>(profiles[savedProfileId].fuelCapacityKg??10000)||u.fuel.massKg>u.fuel.capacityKg||!Number.isFinite(u.operatingMassKg)||u.operatingMassKg<1000||!Number.isFinite(u.referenceFuelKg)||u.referenceFuelKg<0))throw Error('燃油与质量存档无效');
     if(u.rwr){try{
       createRwr('f16',u.rwr.config);parseRwrContext(rwrContext(u,saved.time),saved.time);
       if(!['sequence','contactSequence'].every(k=>Number.isSafeInteger(u.rwr[k])&&u.rwr[k]>=0)||!Number.isFinite(u.rwr.accumulator)||u.rwr.accumulator<0||u.rwr.accumulator>=.051||!Array.isArray(u.rwr.events)||u.rwr.events.length>48)throw Error();
@@ -94,20 +113,24 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
     if(u.weapons){try{parseWeaponsContext(weaponsContext(u,saved.time),saved.time);if(!Number.isFinite(u.weapons.readySec)||u.weapons.readySec<0||!Number.isInteger(u.weapons.sequence)||u.weapons.sequence<0)throw Error();}catch{throw Error('武器存档无效');}}
     if(u.radar){
       const r=u.radar;
-      try{createRadar('f16',r.config);parseRadarContext(radarContext(u,saved.time),saved.time);}catch{throw Error('雷达存档无效');}
+      try{if(r.sensorModelVersion===2)validateV2State(r,saved.time);createRadar('f16',r.config);parseRadarContext(radarContext(u,saved.time),saved.time);}catch{throw Error('雷达存档无效');}
       if(!['scanPhase','accumulator','acquiredSec','missingSec','sequence'].every(k=>Number.isFinite(r[k])&&r[k]>=0)||r.scanPhase>=1||r.accumulator>=.051||!Number.isInteger(r.sequence)||!Array.isArray(r.events)||r.events.length>32)throw Error('雷达存档无效');
     }
   }
-  const world=new World(scenario,profiles,terrain,{spawnMode:saved.spawnMode,mode:saved.executionMode});
+  const world=new World(scenario,profiles,terrain,{spawnMode:saved.spawnMode,mode:saved.executionMode,sensorModelVersion:saved.sensorModelVersion??1});
   for(const key of worldKeys)if(saved[key]!==undefined)world[key]=saved[key];
   for(const unit of world.units){
-    const state=saved.units.find(u=>u.id===unit.id);Object.assign(unit,fields(state,['profile','terrain']));
+    const state=saved.units.find(u=>u.id===unit.id);Object.assign(unit,fields(state,['profile','terrain','pilotMissionOrderVersion']));
+    const profileId=state.profileId??scenario.units.find(u=>u.id===unit.id).profile;unit.profileId=profileId;unit.profile={...profiles[profileId]};
+    if(unit.profile.emptyMassKg!==undefined){unit.referenceFuelKg=unit.profile.referenceFuelKg;unit.operatingMassKg=unit.profile.mass;if(unit.fuel)unit.fuel.capacityKg=unit.profile.fuelCapacityKg;}
     if(!state.controlAuthority){delete unit.controlAuthority;controlAuthority(world,unit);}
-    unit.weapons=restoreCarrierLoadout(scenario.units.find(u=>u.id===unit.id).profile,unit.weapons);
+    unit.weapons=restoreCarrierLoadout(profileId,unit.weapons);
     updateAircraftMass(unit,0);
     unit.terrain=terrain;if(unit.navigationPending)unit.navigationKey=null;unit.navigationPending=false;
     if(unit.radarTask)unit.radarTask.pending=false;
     if(unit.attackTask)unit.attackTask.pending=false;
+    if(!state.aircraftTypeVersion&&state.visualModel&&state.visualModel!==profileId&&Object.hasOwn(profiles,state.visualModel))world.setAircraftType(unit.id,state.visualModel,{restoring:true});
+    else if(unit.profile.visualModel)unit.visualModel=unit.profile.visualModel;
   }
   if(world.airportOps){
     const savedOps=saved.airportOps;
@@ -116,9 +139,23 @@ export function restoreWorld(saved,scenario,profiles,terrain=null){
     Object.assign(world.airportOps,{leases:savedOps.leases,cooldown:savedOps.cooldown,eventSequence:savedOps.eventSequence});
     world.airportOps.groundSlots=savedOps.groundSlots??{};world.airportOps.groundNodeSlots=savedOps.groundNodeSlots??{};world.airportOps.traffic.nextThink=savedOps.nextThink??saved.time;
     for(const key of airportKeys)if(savedOps.airport[key]!==undefined)world.airportOps.airport[key]=savedOps.airport[key];
+    const airport=world.airportOps.airport;airport.weather=airportWeather(airport.weather);const atc=airport.atc;
+    if(!atc||!Array.isArray(atc.requests)||atc.requests.length>64||!Array.isArray(atc.clearances)||atc.clearances.length>128||!Array.isArray(atc.communicationFailures)||atc.communicationFailures.some(id=>!ids.has(id))||!Number.isSafeInteger(atc.sequence)||!Number.isSafeInteger(atc.requestSequence)||!Number.isSafeInteger(atc.revision))throw Error('机场管制存档无效');
+    for(const q of atc.requests)if(!q||!ids.has(q.unitId)||typeof q.id!=='string'||!['arrival','departure'].includes(q.kind)||!Number.isFinite(q.requestedAt)||q.requestedAt>saved.time||!Number.isFinite(q.priority)||q.priority<0||q.priority>100)throw Error('管制队列存档无效');
+    for(const c of atc.clearances)if(!c||!ids.has(c.unitId)||typeof c.id!=='string'||!['issued','delivered','active','completed','cancelled','expired'].includes(c.status)||!['taxi','line_up','takeoff','approach','land','cross','hold','go_around','contact','vector'].includes(c.type)||!c.parameters||!Number.isFinite(c.issuedAt)||c.issuedAt>saved.time||c.parameters.runway&&!airport.runways.some(r=>r.designator===c.parameters.runway))throw Error('管制许可存档无效');
   }
   // Restored airport events remain history; only events created after this point go on air.
   world.airportRadioStartId=Math.max(world.airportOps?.eventSequence??0,...(world.airportOps?.airport.events??[]).map(e=>Number.isSafeInteger(e.id)?e.id:0));
   if(world.airportOps?.traffic.state.radioRequired)world.airportOps.traffic.resume(world);
+  for(const unit of world.units){
+    const state=saved.units.find(u=>u.id===unit.id),mission=unit.pilotMission;
+    if(!mission)continue;
+    const recorded=state.pilotMissionOrderVersion;
+    // Legacy saves have no manual-generation marker: retain only missions
+    // valid under their original revision rule, rather than reviving old work.
+    const current=recorded!==undefined?typeof recorded==='string'&&/^\d+:\d+$/.test(recorded)&&mission.orderVersion===recorded:mission.revision===saved.revision;
+    unit.pilotMission=current?{...mission,orderVersion:playerOrderVersion(world,unit.id)}:null;
+  }
+  for(const unit of world.units)resetDatalink(unit);
   return world;
 }

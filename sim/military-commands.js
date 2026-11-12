@@ -7,13 +7,19 @@ export const CAPABILITIES=Object.freeze({
   protection_flight:{label:'双机掩护、护航伴飞与长僚分工',available:true},
   radar_tasking:{label:'飞行员自主雷达搜索与跟踪任务',available:true},
   attack_tasking:{label:'飞行员自主搜索、选弹与攻击执行',available:true},
-  sensors:{label:'简化机载雷达搜索与单目标锁定',available:true},combat:{label:'交战战术决策',available:false},weapons:{label:'导弹选择、明确发射与交战规则',available:true},
+  sensors:{label:'机载雷达搜索与跟踪，具体模式以本机能力为准',available:true},combat:{label:'交战战术决策',available:false},weapons:{label:'导弹选择、明确发射与交战规则',available:true},
   countermeasures:{label:'告警与对抗措施',available:false},airfields:{label:'机场与跑道任务',available:true},ground:{label:'地面滑行与滑跑',available:true},
   takeoff:{label:'起飞控制',available:true},landing:{label:'进近与着陆控制',available:true},airframe:{label:'起落架与襟翼控制',available:true},
   power:{label:'发动机模式管理',available:false},fuel:{label:'燃油与续航管理',available:false},advanced_control:{label:'高级飞行约束',available:false}
 });
 export const COMMAND_GROUPS=Object.freeze({navigation:'导航与飞行',formation:'编队与协同',mission:'任务与巡逻',combat:'交战与防御',weapons:'武器与交战规则',sensors:'传感器与对抗',airfield:'起飞与降落',emergency:'应急与报告',simulation:'模拟控制'});
 const rows=[
+  ['atc_sequence','airfield','调整进离场排序',['airfields'],'塔台，让Bravo排第一，Alpha排在Bravo后面'],
+  ['change_runway','airfield','更换跑道',['airfields'],'Alpha，改用09R跑道，其他要求不变'],
+  ['atc_clearance','airfield','签发阶段许可',['airfields'],'Alpha，跑道09L，可以起飞'],
+  ['atc_cancel_clearance','airfield','取消阶段许可',['airfields'],'Alpha，取消09L起飞许可，对正等待'],
+  ['atc_hold','airfield','地面保持原位',['airfields'],'Bravo，原位等待三十秒'],
+  ['atc_resume','airfield','恢复滑行',['airfields'],'Bravo，可以继续按原许可滑行'],
   ['cruise','navigation','巡航 / CRUISE',['navigation'],'Alpha，开始巡航，保持现有高度和速度'],
   ['fly_heading','navigation','航向与前出',['navigation'],'Alpha，航向两拐洞，前出十公里'],
   ['set_flight','navigation','高度与速度',['navigation'],'幺洞幺，爬升八千米，速度六百公里每小时'],

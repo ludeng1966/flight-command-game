@@ -3,6 +3,9 @@ import {World} from '../sim/world.js';import {commandContext} from '../sim/order
 import {applyAtcDecision} from '../sim/atc-decisions.js';import {clearanceMessage} from '../sim/atc-radio.js';import {AirportRadio} from '../game/airport-radio.js';
 import {separationSeconds} from '../sim/airport-atc.js';import {captureWorld,restoreWorld,encodeState,decodeState} from '../sim/save-state.js';
 import {airportExitReady} from '../sim/control-authority.js';
+import {TowerSupervisor} from '../game/tower-supervisor.js';
+import {createTowerAssistant} from '../server/tower-assistant.mjs';
+import {pilotReading} from '../server/pilot-handbook.mjs';
 const scenario=JSON.parse(fs.readFileSync(new URL('../data/scenarios/demo.json',import.meta.url))),profiles=JSON.parse(fs.readFileSync(new URL('../data/aircraft.json',import.meta.url)));
 const make=(spawnMode='stands')=>new World(scenario,profiles,null,{spawnMode});
 const run=(w,seconds,until=()=>false)=>{for(let i=0;i<seconds*60&&!until();i++)w.step(1/60);};
@@ -57,4 +60,25 @@ test('双机返场先分离等待，再依次着陆，均到达不同机位',()=
 });
 test('存档保留气象燃油许可，待复诵许可恢复发送而不提前移动',()=>{
  const w=make(),u=w.units[0];w.airportOps.traffic.state.radioRequired=true;w.airportCommand(u.id,{intent:'taxi',runway:'09L'});w.setAirportWeather({visibilityM:3000,runwayCondition:'wet'});const restored=restoreWorld(decodeState(JSON.parse(JSON.stringify(encodeState(captureWorld(w))))),scenario,profiles);assert.equal(restored.airportOps.airport.weather.visibilityM,3000);assert.equal(restored.units[0].fuel.massKg,u.fuel.massKg);assert(restored.airportOps.airport.events.some(e=>e.text==='恢复待确认许可'));const before=[...restored.units[0].position];run(restored,4);assert.deepEqual(restored.units[0].position,before);assert(!airportExitReady(restored,restored.units[0]));
+});
+
+test('严苛逐项许可，宽松整体任务自动许可；两者重大改跑道均等玩家指示',()=>{
+ for(const mode of ['strict','relaxed']){const w=make(),u=w.units[0],atc=w.airportOps.traffic;w.executionMode=mode;atc.state.playerDirected=true;atc.state.guidanceMode=mode==='strict'?'player':'assisted';w.airportCommand(u.id,{intent:'takeoff',runway:'09L'});
+ if(mode==='strict'){const p=[...u.position];run(w,5);assert.deepEqual(u.position,p);atc.authorize(u,'taxi',w);run(w,500,()=>u.surface.phase==='holding');assert.equal(u.surface.phase,'holding');run(w,5);assert(!atc.current(u,'line_up'));atc.authorize(u,'line_up',w);run(w,100,()=>u.surface.phase==='lined_up');assert.equal(u.surface.phase,'lined_up');run(w,5);assert(!atc.current(u,'takeoff'));atc.authorize(u,'takeoff',w);}run(w,550,()=>!u.surface.grounded);assert(!u.surface.grounded,mode);
+ const other=make();other.executionMode=mode;other.airportOps.traffic.state.playerDirected=true;other.airportOps.traffic.state.guidanceMode=mode==='strict'?'player':'assisted';other.airportCommand('blue-1',{intent:'takeoff',runway:'09L'});other.setAirportWeather({windFromDeg:270,windSpeedMps:10,gustMps:10});run(other,2);assert.equal(other.units[0].surface.runway,'09L');
+ }
+});
+test('塔台模型输出只形成建议，玩家下达后才改变实际控制',async()=>{
+ const w=make(),u=w.units[0];w.airportCommand(u.id,{intent:'takeoff',runway:'09L'});const supervisor=new TowerSupervisor({getWorld:()=>w,now:()=>0,fetchImpl:async(_url,{body})=>{const request=JSON.parse(body);return Response.json({requestId:request.requestId,revision:request.context.revision,simTimeSec:request.context.simTimeSec,decisions:[decision(u.id,'hold_ground')]});}});supervisor.tick();await new Promise(r=>setImmediate(r));const rec=w.airportOps.traffic.state.recommendations[0];assert.equal(rec.status,'pending');assert(!u.surface.atcHoldUntil);applyAtcDecision(w,rec,{requestId:rec.requestId});assert(u.surface.atcHoldUntil>w.time);supervisor.reset();
+});
+test('塔台建议校对中英文跑道与关闭事实，修正后才交给玩家',async()=>{
+ const w=make(),u=w.units[0];w.airportCommand(u.id,{intent:'takeoff',runway:'09L'});w.airportOps.airport.closed.push('RW0');let calls=0;
+ const assistant=createTowerAssistant({async completePilot(messages){calls++;if(calls===2)assert.match(messages.at(-1).content,/关闭/);return {value:{decisions:[decision(u.id,'hold_ground',{reasonZh:calls===1?'等待起飞许可':'跑道09L关闭，保持原位等待新跑道指令',reasonEn:calls===1?'HOLD POSITION, AWAIT TAKEOFF CLEARANCE':'RUNWAY 09L CLOSED. HOLD POSITION, AWAIT REVISED RUNWAY INSTRUCTIONS'})]},timing:{}};}});
+ const result=await assistant({requestId:'facts',context:commandContext(w,u.id)});assert.equal(calls,2);assert(result.modelInvoked);assert.match(result.decisions[0].reasonEn,/CLOSED/);assert(!u.surface.atcHoldUntil);
+});
+test('湿跑道中等侧风实际接地并制动脱离，不靠更改飞机位置消除漂移',()=>{
+ const w=make('airborne'),u=w.units[0];w.setAirportWeather({windFromDeg:0,windSpeedMps:5,gustMps:5,runwayCondition:'wet'});w.airportCommand(u.id,{intent:'land',runway:'09L',mode:'ils'});run(w,1300,()=>!u.alive||u.surface.phase==='parked');assert(u.alive);assert.equal(u.surface.phase,'parked');
+});
+test('中英文进近和席位通话加载机场规则，2B使用精炼版本',()=>{
+ for(const instruction of ['BAY APPROACH, CLEARED ILS RUNWAY 09L','进近，按公布离场程序飞行']){const full=pilotReading(instruction),compact=pilotReading(instruction,{compact:true});assert(full.files.some(f=>f.id==='airport'));assert(compact.files.some(f=>f.id==='airport_compact'));assert(!compact.files.some(f=>f.id==='airport'));}
 });

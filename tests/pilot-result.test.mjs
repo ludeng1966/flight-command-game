@@ -10,6 +10,7 @@ import {PilotAssistant} from '../server/pilot-assistant.mjs';
 import {createGameServer,readConfig} from '../server/game-server.mjs';
 import {EMPTY_PARAMETERS} from '../server/military-planner.mjs';
 import {pilotObservation} from '../sim/pilot-watch.js';
+import {englishResultReadback} from '../sim/result-language.js';
 const scenario=JSON.parse(await readFile(new URL('../data/scenarios/demo.json',import.meta.url))),profiles=JSON.parse(await readFile(new URL('../data/aircraft.json',import.meta.url)));
 const world=()=>new World(scenario,profiles);
 const task={unitId:'blue-1',action:'fly_heading',headingDeg:270,altitudeM:8000,speedMps:600/3.6,eastM:null,northM:null,distanceM:null,append:false};
@@ -17,6 +18,14 @@ const plan={status:'accepted',summary:'Alpha向西飞到八千米',tasks:[task]}
 const text='航向270度，高度8000米，真空速600公里每小时';
 const checked=()=>({checks:[{unitId:'blue-1',verdict:'executing',readbackText:text+'，已装订，正在执行。'}]});
 function request(){const w=world();applyPlan(w,plan,0);return {requestId:'result-test',context:commandContext(w,'blue-1'),plan,result:captureCommandResult(w)};}
+
+test('暂停下装订任务如实报告等待继续，中英文不声称正在飞行',()=>{
+  const input=request();input.result.clockRunning=false;const facts=inspectCommandResult(input.context,input.plan,null,input.result),fact=facts[0];
+  assert.equal(fact.expectedVerdict,'executing');assert.match(fact.modelFacts.comparisonSummary,/模拟已暂停/);
+  validateResultReadbacks({checks:[{unitId:fact.unitId,verdict:'executing',readbackText:fact.requiredReadback+'，已装订，模拟暂停，等待继续。'}]},facts);
+  assert.throws(()=>validateResultReadbacks(checked(),facts),/模拟暂停/);
+  assert.match(englishResultReadback(fact,input.plan,input.context),/Simulation paused; awaiting resume/);
+});
 
 test('装订成功和达到目标分别检查，快照不改变真实状态',()=>{
   const w=world(),before=JSON.stringify(w);captureCommandResult(w);assert.equal(JSON.stringify(w),before);

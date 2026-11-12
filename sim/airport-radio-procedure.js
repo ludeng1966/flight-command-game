@@ -2,7 +2,9 @@
 // must not turn internal taxi graph nodes (H09L/R09L/APRON) into spoken callsigns.
 import {clearanceMessage} from './atc-radio.js';
 import {AIRPORT_STATIONS} from './airport-atc.js';
+import {pilotStageMessage} from './pilot-stage-request.js';
 export function airportRadioProcedure(event,unit,airport){
+  if(event.kind==='pilot_request')return pilotStageMessage(event,unit,airport);
   if(event.clearanceId){const c=airport.atc?.clearances.find(c=>c.id===event.clearanceId);if(c)return clearanceMessage(c,unit,airport);}
   if(event.texts){const station=AIRPORT_STATIONS[event.station]??AIRPORT_STATIONS.tower;return {speaker:event.speaker??'controller',label:station.zh+' · '+airport.id,station:event.station,
     texts:{zh:`${unit.callsign}，${airport.id}${station.zh}。${event.texts.zh}。`,en:`${unit.callsign}, ${airport.id} ${station.en}. ${event.texts.en}.`}};}
@@ -28,6 +30,7 @@ export function airportRadioProcedure(event,unit,airport){
   else if((m=text.match(/^已到(\d{2}[LRC]?)等待点，跑道外等待$/))){zh=`已到跑道${m[1]}等待点，跑道外等待`;en=`HOLDING SHORT OF RUNWAY ${m[1]}`;}
   else if((m=text.match(/^(\d{2}[LRC]?)已对正，等待起飞许可$/))){zh=`跑道${m[1]}已对正，等待起飞许可`;en=`LINED UP RUNWAY ${m[1]}, AWAITING TAKEOFF CLEARANCE`;}
   else if((m=text.match(/^已到达([A-Z]\d+)，刹车停车$/))){zh=`已到机位${m[1]}，刹车停车`;en=`AT STAND ${m[1]}, PARKING BRAKE SET`;}
+  else if((m=text.match(/^请求(\d{2}[LRC]?)进近许可$/))){zh=`请求跑道${m[1]}进近许可`;en=`REQUEST APPROACH CLEARANCE RUNWAY ${m[1]}`;}
   else if((m=text.match(/^(\d{2}[LRC]?)进近，(请求着陆许可|到决断点等待着陆许可)$/))){zh=`跑道${m[1]}进近，${m[2]}`;en=`APPROACHING RUNWAY ${m[1]}, ${m[2]==='请求着陆许可'?'REQUEST LANDING CLEARANCE':'AWAITING LANDING CLEARANCE AT DECISION POINT'}`;}
   else if(text.startsWith('复飞：')){zh=text.replace('复飞：','复飞，');en='GOING AROUND, APPROACH DISCONTINUED';}
   else en={

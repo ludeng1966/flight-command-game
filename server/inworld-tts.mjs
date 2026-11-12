@@ -30,7 +30,7 @@ export function createInworldTts(config=readTtsConfig(),fetchImpl=fetch){
         (input.unitId!==undefined&&(typeof input.unitId!=='string'||!input.unitId.trim()||input.unitId.length>64||/[\r\n]/.test(input.unitId)))||
         (input.language!==undefined&&(typeof input.language!=='string'||!/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i.test(input.language)||input.language.length>40)))throw new ApiError(400,'通联文本、发话角色、飞机或语言无效（最多 2000 字符）');
       if(config.provider!=='inworld')throw new ApiError(409,'当前语音来源为浏览器本地语音');
-      if(!config.apiKey)throw new ApiError(503,'尚未配置 Inworld，请在 .env 填写 INWORLD_API_KEY 后重启服务');
+      if(!config.apiKey)throw new ApiError(503,'尚未配置 Inworld，请在设置 → API 接入中填写，或在本机 .env 填写 INWORLD_API_KEY 后重启服务');
       const timeout=AbortSignal.timeout(config.timeoutMs),job=new AbortController();
       const requestSignal=AbortSignal.any([...(signal?[signal]:[]),timeout,job.signal]);
       const voiceId=input.speaker==='controller'?config.controllerVoices?.[/^en/i.test(input.language??'')?'en':'zh']??config.voices.controller:input.speaker==='pilot'&&Object.hasOwn(config.pilotVoices,input.unitId)?config.pilotVoices[input.unitId]:config.voices[input.speaker];

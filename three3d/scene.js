@@ -14,7 +14,9 @@ import {formatAltitude} from '../sim/units.js';
  * 对外接口与旧实现一致：window.ACEScene = { init, render, setCamera, setOption, getReady, getStats }
  * ===================================================================== */
 import * as THREE from 'three';
-import {buildAircraft} from './aircraft.js';
+import {buildAircraft,disposeAircraft} from './aircraft.js';
+import {aircraftModelId} from './aircraft-catalog.js';
+import {aircraftQuaternion} from './aircraft-pose.js';
 import { ribbonWindow, missileVisibleStart, TRAIL_FADE_DEAD, MISSILE_FADE } from './trail-window.js';
 import { OrbitControls } from '../vendor/three/OrbitControls.js';
 import {CAMERA_DISTANCE,cameraMotionScale,installCameraFocus,terrainFocusPoint} from './camera-focus.js';
@@ -24,8 +26,11 @@ import {buildAirport} from './airport-scene.js';
 import {airportBounds,outsideAirportSegment} from './airport-detail.js';
 import {airportRoutePoints} from '../sim/airport.js';
 import {PathFade} from './path-fade.js';
-import {updateRadarScene} from './radar-scene.js';
+import {updateRadarScene,pickRadarTarget} from './radar-scene.js';
 import {updateMissileScene} from './missile-scene.js';
+import {updateRwrScene} from './rwr-scene.js';
+import {updateDatalinkScene} from './datalink-scene.js';
+import {setContactOpacity} from './contact-opacity.js';
 
 const COL = {
   own: 0x5bff8a, squad: 0x5bff8a, ally: 0x3d8bff, enemy: 0xff3b47, unknown: 0x6b7c8c,
@@ -1849,7 +1854,7 @@ export function initLive(canvas, {terrain, landmask, runways, units,heightfield,
   const motionMedia=matchMedia('(prefers-reduced-motion: reduce)');liveReducedMotion=motionMedia.matches;motionMedia.addEventListener('change',e=>liveReducedMotion=e.matches);
   liveUnits=new Map();
   for(const u of units){
-    const vis={im:buildAircraft(u.color)};state.scene.add(vis.im);vis.im.userData.unitId=u.id;
+    const vis={im:buildAircraft(u.color,u)};state.scene.add(vis.im);vis.im.userData.unitId=u.id;
     const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(256*3),3));
     const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:u.color,transparent:true,opacity:.65}));
     line.frustumCulled=false;state.scene.add(line);
@@ -1867,7 +1872,7 @@ export function initLive(canvas, {terrain, landmask, runways, units,heightfield,
   const writeForecast=(line,points)=>livePoints(line,points.map(p=>V3(...p)));
   liveForecast=new PathFade(forecastLine,writeForecast);livePreviewForecast=new PathFade(forecastLine,writeForecast);
   liveEstimate=new THREE.Line(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0xffca77,transparent:true,opacity:0,depthTest:false}));liveEstimate.visible=false;state.scene.add(liveEstimate);
-  state.ready=true;focusLive(units);resize();
+  state.ready=true;focusLive(units.filter(u=>u.controllable!==false));resize();
   window.addEventListener('resize',resize);
 }
 export function focusLive(units,distance=1){
@@ -1910,24 +1915,39 @@ export function moveLiveCamera({forward=0,right=0,up=0},dt){
 }
 export function renderLive(snapshot,dt=1/60){
   resize();const cam=state.camera, cv=state.canvas;
+  // Read layout once, before writing label transforms, instead of forcing a
+  // new layout after every aircraft/waypoint label.
+  const width=cv.clientWidth,height=cv.clientHeight;
   updateRadarScene(state.scene,cam,cv,snapshot);
   updateMissileScene(state.scene,cam,cv,snapshot);
+  updateRwrScene(state.scene,cam,cv,snapshot);
+  updateDatalinkScene(state.scene,cam,cv,snapshot);
   liveFollower?.update(snapshot.units);
-  const unitMarkers=snapshot.units.flatMap(u=>{const p=V3(...u.position).project(cam);return p.z<1?[{x:(p.x*.5+.5)*cv.clientWidth-22,y:(-p.y*.5+.5)*cv.clientHeight-22,w:44,h:44}]:[];});
+  const unitMarkers=snapshot.units.flatMap(u=>{const p=V3(...u.position).project(cam);return p.z<1?[{x:(p.x*.5+.5)*width-22,y:(-p.y*.5+.5)*height-22,w:44,h:44}]:[];});
   const airportObstacles=[...unitMarkers],unitLabelRects=[];
+  const visibleIds=new Set(snapshot.units.map(u=>u.id));
+  for(const [id,obj]of liveUnits){const visible=visibleIds.has(id);obj.vis.im.visible=visible;if(!visible){obj.line.visible=false;obj.label.hidden=true;}}
   const labelOverlap=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
   for(const u of snapshot.units){
     const obj=liveUnits.get(u.id);if(!obj)continue;
+    obj.vis.im.visible=true;obj.label.hidden=false;
+    const labelText=u.callsign+(u.visualState==='memory'?' · 记忆':'');
+    if(obj.label.textContent!==labelText)obj.label.textContent=labelText;
+    if(obj.vis.im.userData.modelId!==aircraftModelId(u)){
+      state.scene.remove(obj.vis.im);disposeAircraft(obj.vis.im);obj.vis.im=buildAircraft(u.color,u);obj.vis.im.userData.unitId=u.id;state.scene.add(obj.vis.im);
+    }
+    const contactOpacity=u.visualOpacity??1;
+    setContactOpacity(obj.vis.im,contactOpacity);
+    obj.label.style.opacity=String(contactOpacity);obj.label.dataset.trackState=u.visualState??'own';
+    obj.line.material.opacity=.65*contactOpacity;
     obj.line.visible=liveDisplay.trails==='all'||(liveDisplay.trails==='selected'&&u.id===snapshot.selectedId);
-    const pos=V3(...u.position),forward=V3(...u.forward).normalize(),up=V3(...u.up).normalize();
-    const right=new THREE.Vector3().crossVectors(forward,up).normalize();
-    up.crossVectors(right,forward).normalize();
-    const rot=new THREE.Matrix4().makeBasis(right,up,forward.negate());
-    const quat=new THREE.Quaternion().setFromRotationMatrix(rot);
-    const scale=aircraftVisualScale(cam,pos,cv.clientHeight);
-    obj.vis.im.position.copy(pos);obj.vis.im.quaternion.copy(quat);obj.vis.im.scale.setScalar(scale);
+    const pos=V3(...u.position);
+    const spec=obj.vis.im.userData.spec,markerScale=aircraftVisualScale(cam,pos,height);
+    const scale=aircraftVisualScale(cam,pos,height,{lengthM:spec.lengthM,wingspanM:spec.wingspanM});
+    obj.vis.im.position.copy(pos);aircraftQuaternion(u.forward,u.up,obj.vis.im.quaternion);obj.vis.im.scale.setScalar(scale);
+    if(u.surface?.grounded&&u.gearDown){const ground=liveTerrain?.heightAt(u.position[0],u.position[1]);if(ground!==null&&ground!==undefined)obj.vis.im.position.y=ground-obj.vis.im.userData.bounds.min[1]*scale;}
     obj.vis.im.userData.gear.visible=u.gearDown===true;
-    const flame=obj.vis.im.userData.flame;flame.visible=u.alive!==false&&u.afterburner>.03;flame.scale.set(1,.4+u.afterburner*.9,1);
+    const flame=obj.vis.im.userData.flame;flame.visible=obj.vis.im.userData.spec.afterburner&&u.alive!==false&&u.afterburner>.03;flame.scale.set(1,1,.4+u.afterburner*.9);
     const crashed=u.alive===false,data=obj.vis.im.userData;
     if(data.crashed!==crashed){data.materials.forEach((mat,i)=>crashed?mat.color.set('#ff5364'):mat.color.copy(data.baseColors[i]));data.crashed=crashed;}
     const arr=obj.line.geometry.attributes.position;
@@ -1935,16 +1955,16 @@ export function renderLive(snapshot,dt=1/60){
     const projected=pos.clone().project(cam);
     obj.label.style.display=projected.z<1?'block':'none';
     if(projected.z<1){
-      const x=(projected.x*.5+.5)*cv.clientWidth,y=(-projected.y*.5+.5)*cv.clientHeight,w=u.callsign.length*7.5+4,h=19;
+      const x=(projected.x*.5+.5)*width,y=(-projected.y*.5+.5)*height,w=labelText.length*7.5+4,h=19;
       const offsets=[[28,-14],[-w/2,-48],[-w-28,-14],[28,28],[-w/2,30],[-w-28,28],[-w/2,-76]],order=[...new Set([obj.labelSlot??0,...offsets.map((_,i)=>i)])];let placement=null;
-      for(const slot of order){const [dx,dy]=offsets[slot],r={x:x+dx,y:y+dy,w,h};if(r.x<0||r.x+w>cv.clientWidth||r.y<0||r.y+h>cv.clientHeight||[...unitMarkers,...unitLabelRects].some(other=>labelOverlap(r,other)))continue;placement=r;obj.labelSlot=slot;break;}
+      for(const slot of order){const [dx,dy]=offsets[slot],r={x:x+dx,y:y+dy,w,h};if(r.x<0||r.x+w>width||r.y<0||r.y+h>height||[...unitMarkers,...unitLabelRects].some(other=>labelOverlap(r,other)))continue;placement=r;obj.labelSlot=slot;break;}
       if(placement){obj.label.style.transform=`translate(${placement.x}px,${placement.y}px)`;unitLabelRects.push(placement);airportObstacles.push(placement);}else obj.label.style.display='none';
     }
     if(u.id===snapshot.selectedId){
       const pilotPreview=snapshot.pilotPreview?.unitId===u.id?snapshot.pilotPreview:null;
       const routeWaypoints=pilotPreview?pilotPreview.points.slice(0,pilotPreview.count):airportRoutePoints(u,liveAirport);
       liveRouteUnit=pilotPreview||u.surface?.grounded?null:u;
-      liveSelection.position.copy(pos);liveSelection.scale.setScalar(scale/25);
+      liveSelection.position.copy(pos);liveSelection.scale.setScalar(markerScale/25);
       liveRoute.material.color.set(pilotPreview?'#ffca77':'#4da6ff');
       liveRoute.material.opacity=.85*(1-livePreviewAlpha*.65);liveWaypoints.material.opacity=1-livePreviewAlpha*.6;liveWaypointDrops.material.opacity=.65*(1-livePreviewAlpha*.65);
       const routeKey=JSON.stringify([u.id,routeWaypoints]);
@@ -1961,10 +1981,10 @@ export function renderLive(snapshot,dt=1/60){
         el.hidden=at.z>1||(liveDisplay.waypointLabels!=='all'&&i!==0&&i!==u.editWaypoint)||(livePreviewActive&&livePreviewKind==='move'&&i===u.editWaypoint);el.style.opacity=String(1-livePreviewAlpha*.45);
         const detail=i===0||i===u.editWaypoint;
         const text=`${pilotPreview?'拟设 ':i===0?'→ ':''}${w.routeLabel??'WP '+(w.number??i+1)} · 目标 ${formatAltitude(w[2])}${detail?'\n目标离地 '+formatAltitude(w[2]-h):''}`;if(el.textContent!==text)el.textContent=text;
-        const x=(at.x*.5+.5)*cv.clientWidth,y=(-at.y*.5+.5)*cv.clientHeight,height=detail?35:22;
+        const x=(at.x*.5+.5)*width,y=(-at.y*.5+.5)*height,labelHeight=detail?35:22;
         let rect;
-        for(const [dx,dy] of [[12,8],[12,-height-8],[-110,8],[-110,-height-8],[12,40],[-110,40]]){
-          rect={x:Math.max(3,Math.min(cv.clientWidth-105,x+dx)),y:Math.max(100,Math.min(cv.clientHeight-95,y+dy)),w:102,h:height};
+        for(const [dx,dy] of [[12,8],[12,-labelHeight-8],[-110,8],[-110,-labelHeight-8],[12,40],[-110,40]]){
+          rect={x:Math.max(3,Math.min(width-105,x+dx)),y:Math.max(100,Math.min(height-95,y+dy)),w:102,h:labelHeight};
           if(!labelRects.some(r=>rect.x<r.x+r.w&&rect.x+rect.w>r.x&&rect.y<r.y+r.h&&rect.y+rect.h>r.y))break;
         }
         labelRects.push(rect);el.style.transform=`translate(${rect.x}px,${rect.y}px)`;
@@ -1989,7 +2009,7 @@ export function renderLive(snapshot,dt=1/60){
     const text=`海拔 ${formatAltitude(livePreviewPoint[2])}\n离地 ${formatAltitude(livePreviewPoint[2]-livePreviewGround)} · ${!livePreviewValid?'不可用':livePreviewPending?'预计 · 校核中':'安全航迹'}`;
     if(liveDraftLabel.textContent!==text)liveDraftLabel.textContent=text;
     liveDraftLabel.dataset.valid=String(livePreviewValid);liveDraftLabel.dataset.pending=String(livePreviewPending);
-    liveDraftLabel.style.transform=`translate(${Math.max(8,Math.min(cv.clientWidth-180,(at.x*.5+.5)*cv.clientWidth+17))}px,${Math.max(100,Math.min(cv.clientHeight-130,(-at.y*.5+.5)*cv.clientHeight-55))}px)`;
+    liveDraftLabel.style.transform=`translate(${Math.max(8,Math.min(width-180,(at.x*.5+.5)*width+17))}px,${Math.max(100,Math.min(height-130,(-at.y*.5+.5)*height-55))}px)`;
   }
   const previewPhase=livePreviewActive?!livePreviewValid?'invalid':livePreviewPending?'pending':'ready':livePreviewAlpha?'handoff':'idle';
   if(cv.dataset.previewPhase!==previewPhase)cv.dataset.previewPhase=previewPhase;
@@ -2004,7 +2024,7 @@ export function renderLive(snapshot,dt=1/60){
       }
     }
     const active=snapshot.units.find(u=>u.id===snapshot.selectedId);
-    liveAirportView.update(cam,{width:cv.clientWidth,height:cv.clientHeight},dt,liveReducedMotion,[...airportObstacles,...liveAirportUiRects],{labelMode:liveDisplay.airportLabels,activeStand:active?.surface?.grounded?active.surface.node:null});
+    liveAirportView.update(cam,{width:width,height:height},dt,liveReducedMotion,[...airportObstacles,...liveAirportUiRects],{labelMode:liveDisplay.airportLabels,activeStand:active?.surface?.grounded?active.surface.node:null});
   }
   state.renderer.render(state.scene,cam);
 }
@@ -2016,12 +2036,16 @@ function liveCameraAnchor(x,y){
 }
 export function pickUnit(x,y){
   setLiveRay(x,y);
-  const hits=liveRay.intersectObjects([...liveUnits.values()].map(o=>o.vis.im),true);
+  const hits=liveRay.intersectObjects([...liveUnits.values()].filter(o=>o.vis.im.visible).map(o=>o.vis.im),true);
   if(hits.length){let object=hits[0].object;while(object&&!object.userData.unitId)object=object.parent;if(object)return object.userData.unitId;}
   // 三角形侧立时仍可点击它的屏幕中心。
   let best=null,d=22;
-  for(const [id,o] of liveUnits){const p=o.vis.im.position.clone().project(state.camera);if(p.z>1)continue;const r=state.canvas.getBoundingClientRect();const dist=Math.hypot((p.x*.5+.5)*r.width+r.left-x,(-p.y*.5+.5)*r.height+r.top-y);if(dist<d){d=dist;best=id;}}
+  for(const [id,o] of liveUnits){if(!o.vis.im.visible)continue;const p=o.vis.im.position.clone().project(state.camera);if(p.z>1)continue;const r=state.canvas.getBoundingClientRect();const dist=Math.hypot((p.x*.5+.5)*r.width+r.left-x,(-p.y*.5+.5)*r.height+r.top-y);if(dist<d){d=dist;best=id;}}
   return best;
+}
+export function pickContact(x,y){
+  const unit=pickUnit(x,y);if(unit)return unit;
+  setLiveRay(x,y);return pickRadarTarget(state.scene,liveRay,state.camera,state.canvas,x,y);
 }
 export function pointOnPlane(x,y,altitude=0){setLiveRay(x,y);const p=new THREE.Vector3();return liveRay.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-altitude),p)?[p.x,-p.z,altitude]:null;}
 export function spaceWaypoint(x,y,distance){setLiveRay(x,y);const p=liveRay.ray.at(distance,new THREE.Vector3());return [p.x,-p.z,p.y];}

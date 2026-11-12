@@ -1,6 +1,6 @@
 import {getUnitSystem} from '../sim/units.js';
 export function plannerUnit(unit,includePath=false){
-  const keys=['id','profile','position','velocity','bank','cl','speed','loadFactor','throttle','afterburner','targetSpeed','targetAltitude','holdAltitude','orbit','flightState','recoveryTime','recoveryCause','control','energy','guidance','navCursor','departurePowerPlan','pilotPowerPlan','stalled','gearDown','flaps','speedBrake'];
+  const keys=['id','profileId','profile','position','velocity','bank','cl','speed','loadFactor','throttle','afterburner','targetSpeed','targetAltitude','holdAltitude','orbit','flightState','recoveryTime','recoveryCause','control','energy','guidance','navCursor','departurePowerPlan','pilotPowerPlan','stalled','gearDown','flaps','speedBrake'];
   const snapshot=Object.fromEntries(keys.map(k=>[k,unit[k]]));
   snapshot.wind=unit.wind;snapshot.groundVelocity=unit.groundVelocity;
   if(unit.pilotExecution?.constraints)snapshot.pilotExecution={constraints:structuredClone(unit.pilotExecution.constraints)};
@@ -10,17 +10,18 @@ export function plannerUnit(unit,includePath=false){
 }
 
 export class PlannerClient{
-  constructor(terrain){
-    this.terrain=terrain;this.queue=new Map();this.serial=0;this.lanes=[this.createLane(false),null];this.worker=this.lanes[0].worker;
+  constructor(terrain,{workerFactory=()=>new Worker(new URL('../sim/planner-worker.js',import.meta.url),{type:'module'})}={}){
+    this.terrain=terrain;this.workerFactory=workerFactory;this.queue=new Map();this.serial=0;this.lanes=[this.createLane(false),null];this.worker=this.lanes[0].worker;
   }
   createLane(commit){
-    const lane={commit,active:null,worker:new Worker(new URL('../sim/planner-worker.js',import.meta.url),{type:'module'})};
-    const buffer=this.terrain.heights.slice().buffer;lane.worker.postMessage({type:'init',meta:this.terrain.meta,buffer},[buffer]);
+    const lane={commit,active:null,worker:this.workerFactory()};
+    const buffer=this.terrain?.heights?.slice().buffer??null;lane.worker.postMessage({type:'init',meta:this.terrain?.meta??null,buffer},buffer?[buffer]:[]);
     lane.worker.onmessage=event=>{const job=lane.active;if(!job||event.data.id!==job.id)return;lane.active=null;job.resolve(event.data.result);this.pump();};
     lane.worker.onerror=()=>{const result={valid:false,reason:'后台航路计算不可用，请刷新页面',points:[],warnings:[]};lane.active?.resolve(result);lane.active=null;for(const job of this.queue.values())job.resolve(result);this.queue.clear();this.failed=true;};
     return lane;
   }
   cancel(channel){const job=this.queue.get(channel);if(job){this.queue.delete(channel);job.resolve(null);}}
+  dispose(){this.failed=true;for(const lane of this.lanes){lane?.active?.resolve(null);lane?.worker.terminate();if(lane)lane.active=null;}for(const job of this.queue.values())job.resolve(null);this.queue.clear();}
   request(channel,unit,route,type='plan'){
     if(this.failed)return Promise.resolve({valid:false,reason:'后台航路计算不可用',points:[],warnings:[]});
     const old=this.queue.get(channel);if(old)old.resolve(null);

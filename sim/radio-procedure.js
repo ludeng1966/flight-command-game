@@ -6,6 +6,7 @@ import {FORMATION_ACTIONS,PROTECTION_MODES} from './formation.js';
 import {FORMATIONS,doctrineLabel} from './formation-doctrine.js';
 import {airportCommandLabel,airportModeLabel} from './airport-language.js';
 import {groundStatusReport} from './ground-radio.js';
+import {atcOrderPhrase} from './atc-command.js';
 
 const ZH='零一二三四五六七八九';
 export function chineseNumber(value){
@@ -36,10 +37,11 @@ export function unitRadioName(unit,index=0,style='pla'){
 }
 const keyFields=['unitId','action','altitudeM','speedMps','headingDeg','eastM','northM','distanceM','append','targetId','formation','side','rangeM','role'];
 export function verifyReadback(command,readback){
-  if(command.length!==readback.length||command.some((t,i)=>keyFields.some(k=>t[k]!==readback[i][k])||JSON.stringify(t.airportOrder)!==JSON.stringify(readback[i].airportOrder)))throw Error('复诵与指挥命令不一致，需要重新复诵');
+  if(command.length!==readback.length||command.some((t,i)=>keyFields.some(k=>t[k]!==readback[i][k])||JSON.stringify(t.airportOrder)!==JSON.stringify(readback[i].airportOrder)||JSON.stringify(t.atcOrder)!==JSON.stringify(readback[i].atcOrder)))throw Error('复诵与指挥命令不一致，需要重新复诵');
   return true;
 }
 function taskPhrase(t,unit,style,system,units){
+  if(t.action==='atc')return atcOrderPhrase(t.atcOrder,units,style==='nato');
   if(t.action==='attack_task'){const en=style==='nato',o=t.attackOrder;return (en?'ATTACK TARGET':'执行攻击任务')+(o.targetRef?' '+o.targetRef:o.targetId?' '+o.targetId:'');}
   if(t.action==='defense')return defensePhrase(t.defenseOrder,style==='nato');
   if(t.action==='sensor_task'){const en=style==='nato',goal=t.sensorTask;return (en?(goal.goal==='search'?'SEARCH THE FORWARD AIRSPACE':'MAINTAIN TARGET TRACK'):(goal.goal==='search'?'搜索前方空域':'持续跟踪目标'))+(goal.targetRef?(en?', TARGET ':'，目标')+goal.targetRef:goal.targetId?(en?', TARGET ':'，目标')+goal.targetId:'');}

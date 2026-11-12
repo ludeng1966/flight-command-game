@@ -1,0 +1,22 @@
+程序指挥接口
+
+游戏加载后提供 window.ACEGame.commander。它调用正式电台的 voiceControl.issue，经过指挥解释、通联、飞行员接令规划、程序装订与实际结果核实。不会直接调用 world.command 或安装攻击任务。
+
+const request = ACEGame.commander.submit('Alpha，搜索前方并攻击发现的目标，最多使用两枚导弹。', {unitId:'blue-1'});
+ACEGame.commander.status(request.commandId, {includeObservation:false});
+ACEGame.commander.status(); // 玩家方态势，包括己方雷达/武器/RWR观测
+ACEGame.commander.cancel(request.commandId);
+ACEGame.commander.setRunning(true);
+ACEGame.commander.setRunning(true, {camera:'tactical'}); // 镜头仅包围本方与已观测目标
+
+submit 立即返回 commandId，不等待云模型、语音和复述。processing 表示仍在解释/通联，committed=true 才表示程序已装订；completed 表示通联处理结束，必须同时检查 committed 与 result.status。clarification/unable 不等于执行成功。取消已装订请求仅停止通话，飞行任务继续执行。每页保留至多 32 条请求，刷新页面会清空。
+
+请求按受令机 unitId 并发；Alpha 的新指令替代 Alpha 尚未完成的旧请求，不会取消 Bravo。status.activeCommandIds 包含所有尚在处理的请求，activeCommandId 是当前选中机对应的请求。每个 issue 的 onCommitted 回调绑定原请求，旧响应不能标记新请求成功。API cancel 也只取消所属受令机的通联。
+
+内部结构化入口为 game/structured-command.js 的 runStructuredCommand：先校验当前阵营控制权和有效观测，再进入与玩家相同的 runCommandSession/preparePilotPlan/commitPilotPlan。duel 红方不再直接安装攻击任务或修改自卫等待时间；defend 转为标准横切规避指令，仍受告警与控制权校验。蓝红攻击和 RWR 请求可用 duel.traceFetch(side) 统一记录；指挥 issued/decision/committed/completed 通过 recordCommand 留痕。
+
+支持 WebMCP 的浏览器会自动发现 issue_commander_order、commander_status、cancel_commander_order、set_simulation_running 四个工具。工具采用异步任务编号，避免调用等待整段语音；查询状态时可传 includeObservation:false 减少输出。优先使用 document.modelContext，同时兼容早期 navigator.modelContext；未支持时普通游戏功能不受影响。注册情况在 ACEGame.commanderTools。WebMCP 并非 HTTP 服务，不支持它的浏览器仍可由页面集成调用上述 JS API。
+
+观测接口仅使用与电台相同的 commandContext，不返回敌方隐藏真值、RWR 辐射源身份或可修改的世界引用。旧 ACEGame.world/command 是开发调试入口，不属于指挥 API。
+
+WebMCP 接口参考：https://developer.chrome.com/docs/modern-web-guidance/guides/webmcp/agentic-javascript-tools

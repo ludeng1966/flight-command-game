@@ -1,0 +1,319 @@
+雷达系统设计 v2
+日期：2026-11-11
+状态：核心链路已接入Web正式入口；具体已实现范围、实测及剩余目标见radar-v2-integration.txt。本文件保留完整目标规格。
+基线说明：当前实现见 radar-system.md。本文定义替换目标及迁移规则。
+适用范围：Web 原型中的空对空机载雷达、观测航迹、武器支持和 RWR；接口需可移植到 Godot。
+
+1. 设计目标与边界
+
+玩家决定警戒区域、重点高度、交战对象及是否保持静默。雷达应让“搜哪里、多久再看一次、掌握得有多准”影响战术。
+程序执行连续扫描、调度、滤波和短时重捕；模型制定、调整持续策略。模型等待、网络失败、播报均不暂停仿真。
+指挥员与飞行员使用同一份观测事实。飞行员依据指挥员实际下发的结构化任务及播报记录判断，不重新执行玩家原文。
+搜索、跟踪、发射授权分别成立。发现未知航迹不等于识别敌机，锁定也不等于允许开火。
+采用波束级抽象，不生成电磁波、逐脉冲采样或真实型号秘密性能。天气强衰减、复杂干扰、旁瓣欺骗、完整 PRF 模糊解算留给后续版本；接口保留损耗项。
+本系统不调用 GPU；不增加逐帧模型推理，不能据此宣称整个游戏或本地模型已经满足 2 GB 显存指标。
+
+2. 模块和权限
+
+世界运动真值 → 实际波束/遮挡/信号质量 → 含误差测量 → 航迹估计 → 态势、火控、模型、界面。
+实际波束调度另产生辐射事件 → RWR 接收与分类 → 告警判断与规避。
+
+拟新增模块（名称为实现目标，不代表文件已存在）：
+  sim/radar-profile.js       型号能力、配置检查、游戏调校版本。
+  sim/sensor-kinematics.js   世界位置、地速、传感器安装姿态及坐标变换。
+  sim/radar-scheduler.js     天线转动、三维扫描、搜索/重访/照射时间调度。
+  sim/radar-measurement.js   遮挡、信号质量、测量误差、可复现检测。
+  sim/radar-tracks.js        测量关联、状态估计、不确定度、航迹生命周期。
+  sim/radar-support.js       针对具体武器的发射、中段、照射支持裁定。
+  sim/radar-coverage.js      三维搜索足迹、覆盖时效和未搜索区域。
+现有 sim/radar.js 保留外部入口，作为以上模块的组装与兼容层。
+
+只有传感器仿真和命中裁定可以访问世界目标真值。模型、显示、威胁评估和发射窗口估计只读观测视图。
+内部 truthEntityId、真实存活、真实型号/RCS、真实掉波原因不得进入观测视图、日志回执或模型错误消息。
+内部执行器可以阻止对失效实体执行动作，对外返回“当前无法完成截获/发射，需重新观测”，不能借错误原因确认击毁。
+传感器模块负责人 xy小宇；运动/天气接口关联奕奕奕奕然；命令与模型上下文关联資本の路灯。
+实现前在项目 Issue/PR 同步本节模块及下述契约；本文不修改共享运行协议，也不代替跨模块评审。
+
+3. 坐标、时间和数值约定
+
+内部统一 ENU 米、秒、弧度或带 Deg 后缀的度数、m/s；时间统一模拟时钟。
+方位以真北为 0°、顺时针增加，正俯仰朝上。所有角度转换集中在运动/姿态接口，禁止按数组下标猜坐标系。
+世界位置外推和多普勒几何使用 groundVelocity；气动、真空速和马赫继续使用空气相对速度。
+若 groundVelocity 缺失，从 velocity + wind 获取；脚本靶需显式标注 velocityFrame=world，不重复加风。
+目标闭合率=(Vown_ground−Vtarget_ground)·LOS；地杂波闭合率=Vown_ground·LOS；杂波分离=−Vtarget_ground·LOS。
+模型接口保持 SI，不按显示单位改变数值。公制显示 km/h、m、km；英制显示 kt、ft、nmi；马赫在两种模式下均可用。
+跨单位高度播报近似到 10 m，速度到 1 km/h 或 1 kt；不将播报舍入值写回仿真。
+暂停冻结扫描、航迹老化、告警保持、显示淡出、搜索计时和武器支持状态；墙钟等待不推进世界。
+倍速按真实流逝的模拟时间计算；实现必须遍历本步经过的波束，不因大 dt 跳过目标或重复抽样。
+
+4. 型号能力 RadarProfileV2
+
+每个飞机配置引用 radarProfileId；同一机族不同雷达版本可以不同。没有雷达的飞机继续没有雷达。
+profile 字段：
+  schemaVersion=2, id, tuningVersion, provenance={kind:game_tuning|public_reference, sources:[]}
+  minInstrumentedRangeM, maxInstrumentedRangeM, referenceRangeM, referenceRcsM2
+  referencePd, referenceDwellSec, snrSlopeDb
+  beamWidthAzDeg, beamWidthElDeg, gimbalAzMin/MaxDeg, gimbalElMin/MaxDeg
+  maxAzRateDegSec, maxElRateDegSec, settleSec, stabilization=body|roll_stabilized|attitude_stabilized
+  waveforms=[pulse,pd] 的受支持子集；scanModes=[rws,stt,tws] 的受支持子集
+  presets：方位宽度、俯仰条数/间隔、驻留、换行等待、波形与参考回扫周期
+  maxStoredTracks, maxScheduledTracks, maxIlluminationChannels, maxDatalinkChannels
+  trackUpdateSec, illuminationMaxGapSec, datalinkMaxGapSec
+  measurementNoise：距离/角度/径向速度的标准差下限和信号质量缩放
+  clutter：notchHalfWidthMps、notchFloor、transitionWidthMps、pulseClutterLossDb
+  transmit：频段、参考功率、可观测信号类别；RWR 识别不读取 profile id。
+
+校验：均有限值；范围上下限有序；速率/驻留/标准差大于零；Pd 在 (0,1)；容量为有界整数；扫描图形必须能由转速和波束实现。
+波形与扫描方式独立：PD/Pulse 决定回波处理，RWS/TWS/STT 决定资源用途，不能用一个 mode 字段混合。
+未获公开依据的参数统一记 game_tuning，不能因为飞机名相同就授予所有批次 TWS 或多目标武器支持。
+
+首个校准配置 test_mechanical_v2（仅用于验收，不自动映射到现有 F-16）：
+  波束宽 6°×6°；方位极限±60°，俯仰极限±30°；方位转速60°/s，俯仰转速60°/s；换行稳定0.05s。
+  广域：120°×4条，条间隔4°，覆盖俯仰总宽18°，整帧约8.4s。
+  重点：40°×2条，条间隔4°，覆盖俯仰总宽10°，整帧约1.5s。
+  以上周期包含转行，准确结果由调度器计算，不能另用固定 sweepSec 覆盖。
+  参考距离40km、参考RCS=1m²、参考驻留0.1s、参考Pd=0.8、曲线斜率3dB；最大仪表距离80km。
+  搜索容量64、TWS调度容量4、数据链2、照射1；TWS仅在测试配置中启用。
+  模式/支持能力映射到真实游戏机型前，分别检查 profile 来源、平衡和所挂武器兼容性。
+
+5. 持续任务 SensorTaskV2
+
+必需字段：schemaVersion=2、taskId、policyRevision、issuedAt、goal、emissionPolicy、scanPolicy、constraints。
+goal=search|track_target|support_engagement|silent。
+emissionPolicy=active|silent；自卫是否允许打破静默必须单独授权，默认 false。
+scanPolicy：frame=world|body；azCenterDeg/azWidthDeg；altitudeBandM=[min,max] 或 elevationBandDeg=[min,max] 二选一；
+rangeBandM=[min,max]；preset=wide|focus|auto；priorityTrackIds=[]；trackPolicy=maintain_coverage|focus_target。
+constraints：allowSearchManeuver、允许防区引用、是否保持航向、minSearchDutyFraction、武器支持可否抢占。
+面向普通玩家默认 world 方位和海拔高度带；未指定时以当前航向前方、型号默认扫描预设开始。
+rangeBand 只定义关注范围，不承诺区间外无辐射；显示量程也不能改变物理探测能力。
+缺省 search 使用 maintain_coverage；track_target 使用 focus_target；silent 立即停止发射并使旧策略失效。
+单条搜索指令即可持续工作；不要求玩家画航点。需要移动载机才能覆盖新区域时，生成独立飞行提案。
+飞行提案走现有导航/地形/飞机包线校验，不暗改明确航向、航路、编队、防区或规避命令。
+
+任务例（公制输入，已通过指挥员编译；示例不是已实现协议）：
+  Alpha守东北侧，重点搜3至9千米，不追出防区。
+  goal=search, frame=world, azCenterDeg=45, azWidthDeg=60, altitudeBandM=[3000,9000],
+  rangeBandM=[1000,60000], preset=auto, trackPolicy=maintain_coverage, allowSearchManeuver=false。
+  防区约束由空域任务保存并通过引用传入，不把禁止追击偷换为禁止天线转动。
+
+6. 扫描与调度
+
+仿真采用0.05s传感器步长，处理步内连续扫过的角度区间；测量事件按 dwell/visit 划分，不能每帧重新抽“是否发现”。
+天线状态包含 az/el、目标角、当前 job、转动/稳定/接收阶段、frameId、barIndex、visitId。
+RWS执行双向栅格：水平扫至边界→垂直换行→反向水平扫；换行和返回有实际耗时。
+高度带在所选距离采样点换算为俯仰需求，包含本机姿态和曲率；不能只转换最近一个距离点。
+用距-高度单元检验覆盖：视锥可达但本轮未照到的单元必须保留未搜索标记。超过仰角范围的任务报告部分可达，不能静默裁掉。
+机体滚转/俯仰与天线稳定依 profile 变换，天线转到预测位置仍需实际测量后才能宣称重获。
+
+调度 job 类型 search_bar、track_revisit、reacquire、illumination；每个有 earliestAt、deadline、costSec 和优先级。
+顺序：明确玩家静默/停止发射→仍获授权的在空武器支持→批准的重点目标→最低搜索覆盖→其余重访。
+防御机动由任务仲裁器裁定；雷达不能为保持支持擅自取消规避，也不能违反明确玩家约束。
+同优先级按最早截止期排序；超载时降低次要航迹更新和搜索覆盖，并发布 support_degraded/coverage_degraded，不能虚报全部满足。
+TWS默认搜索份额下限50%（游戏策略值，可由明确火控任务改变）；剩余时间按截止期安排重访。
+STT只维护指定目标并停止普通搜索；需要切换时提前显示覆盖代价。search任务不得因首次发现未知目标无限进入STT。
+短时重捕在预测误差椭圆对应的搜索窗内执行；窗口随协方差扩大，受天线限制和时间预算约束。
+重新捕获不能读取目标真实位置来瞬时转天线；搜索失败也不能用隐藏位置替模型选新航向。
+
+7. 检测和测量
+
+先做候选空间筛选，再检查仪表距离、实际波束、地平线和地形视线。保留现有零净空视线与曲率检查。
+无遮挡时计算简化质量：
+  marginDb = 40*log10(referenceRange/range) + 10*log10(RcsEffective/referenceRcs)
+             + 10*log10(dwell/referenceDwell) + beamGainDb + clutterLossDb + otherLossDb。
+  Pd = logistic(logit(referencePd) + marginDb/snrSlopeDb)。
+这是一条调校曲线，不声称是实装雷达的检测率。硬遮挡、仪表范围外或无实际照射时 Pd=0。
+RcsEffective来自内部目标类别、粗略朝向和挂载修正；初版允许常数/朝向表，不向模型输出隐藏RCS。
+杂波分离仍用地速。PD在杂波门中心施加强损耗，边缘平滑过渡；Pulse按杂波条件衰减，不能全场景永远下视失明。
+notchFloor由型号决定，可为0；强回波也不保证一定穿过滤波零点。无主瓣地杂波时不套用同一地杂波门。
+首个测试配置：PD门半宽80m/s、过渡宽20m/s、中心功率保留0.01；
+  u=clamp((abs(杂波分离)−60)/40,0,1)，clutterLossDb=10*log10(0.01+0.99*u*u*(3−2*u))。
+该曲线仅在有主瓣地杂波时生效；Pulse的测试杂波损耗为−20dB。它们是可替换调校值，不是所有真实雷达的共同参数。
+测试测量标准差下限：距离50m、角度0.15°、径向速度3m/s；按k=clamp(10^(−marginDb/20),1,8)缩放，R为对应方差对角矩阵。
+独立零均值高斯噪声采用计数随机流生成，rangeRate与closure符号转换必须测试；实际负距离采样拒绝后重采，禁止产生非法观测。
+每个visit对同一目标最多生成一个合成测量；dwell按本次照射时长累计，分帧不能增加独立抽样次数。
+随机键=(worldSeed,sensorId,visitSequence,内部目标键,channel)，使用独立计数随机流；渲染帧率/模型调用不改变序列。
+测量 z=[rangeM,azimuthRad,elevationRad,rangeRateMps]，rangeRate以远离为正；协方差R为4×4，角度噪声在弧度域。
+噪声随信号质量增加，标准差不得小于profile下限；低径向速度质量不能通过加入真实三维速度补齐。
+首版不生成随机假目标；只模拟漏检和测量误差。确认门限仍用于稳定航迹，后续增加虚警使用独立配置和测试。
+
+8. 关联、滤波与航迹质量
+
+内部 TrackStore 与外部 TrackObservationV2 分离，外部trackId本机生成，禁止直接等于实体ID。
+内部状态 x=[E,N,U,V_E,V_N,V_U] 和6×6协方差P；采用常速度EKF，过程噪声按加速度模型离散化。
+首个测量仅初始化位置及径向速度约束；切向速度未知，使用宽速度方差，velocityEstimate可以为null。
+通过径向速度测量和后续位置更新收敛，模型不能把未收敛的速度当事实。过程噪声初版加速度标准差5m/s²，为调校值。
+关联只使用预测测量、S=HPHᵀ+R 和创新的马氏距离；4维初始门限d²≤18.5。
+同一visit按代价排序进行唯一匹配；一个测量不能更新两条航迹，一条航迹不能被同visit重复确认。
+内部实体键仅用于检测采样/裁决诊断，不参与关联选优。目标交叉可能出现歧义，外部标记associationQuality=ambiguous。
+关联歧义或速度误差超过火控阈值时，只允许继续观察，不能为保持命中而偷用真值强制绑定。
+
+状态：tentative、confirmed、coasting、lost。
+确认：最近3次独立有效重访机会至少命中2次；高质量STT也需配置的实际确认时间，不能零耗时确认。
+miss仅在已安排并实际执行了该目标所在预测搜索窗的机会后计数；没扫描那里不记miss，但不确定度仍随时间增长。
+一次应到重访失败或超过expectedRevisitAt进入coasting；恢复门内测量后可回confirmed。
+连续3次有效重访失败，或位置一倍标准差半径超过5km，或最后测量45s后，取先到条件转lost。
+tentative在两次有效重访均未命中或15s无新证据后删除。参数为首版游戏值，质量裁定不依赖“全局新鲜2.25s”。
+lost退出主动航迹列表，最后已知线索另保留至最后测量45s；搜索引导外推最多10s，之后只保留最后位置和扩大误差范围。
+历史保留最近16次独立测量、最长120s；运动趋势报告必须有至少3次有效样本，并同时检查跨度和速度误差。
+切波形保留航迹/任务绑定，标记awaiting_waveform_validation；关机保留记忆，但全部有效发射支持立即失效。
+
+外部 TrackObservationV2 必需字段：
+  schemaVersion, trackId, sourceSensorIds, state, measuredAt, estimatedAt, expectedRevisitAt,
+  measuredPositionM, estimatedPositionM, velocityEstimateMps|null,
+  uncertainty={positionSigmaM:[3],velocitySigmaMps:[3], radialSigmaMps},
+  associationQuality=unique|ambiguous, identity={classification:friendly|unknown|hostile,evidence:[]},
+  usable={acquisition:boolean,fireControl:boolean,midcourse:boolean}, limitations:[]。
+外部不必发送完整矩阵，但误差椭圆显示须由内部P计算，不能把null误差当作零。
+positionSigmaM/velocitySigmaMps为ENU各轴一倍标准差；本设计中的Sigma阈值均以三轴最大值判断。
+usable.acquisition要求未lost、位置Sigma≤5km且预测窗能在授权范围内搜索；并不宣称当前可见或能瞬时锁定。
+usable.fireControl要求confirmed、关联唯一、满足第11节误差/时效以及实际测量质量；midcourse再检查具体数据链兼容与更新要求。
+measuredAt只在新测量时更新；estimatedAt可推进。外推和跨源融合不能改写最后实际测量时间。
+IFF设为独立询问证据与有效期；无应答保持unknown。hostile须有独立规则/识别授权，不能由非友机自动推出。
+友机共享通过显式datalink能力和消息处理，默认传输周期1s、延迟0.5s，配置允许关闭；发送原测量时间与来源而非收包时间。
+本机观测与共享观测分别保存；共享只能提供搜索提示，除非武器明确支持第三方交战，否则不能提供本机照射或发射条件。
+地图可按授权显示全队共享估计；若相关性未知，跨源融合使用保守协方差交集，不重复叠加同源转发来人为减小误差。
+
+9. 覆盖与任务进展
+
+现有search-assessment的方位累计扩展为实际三维足迹：coverage记录frame、az/el范围、range区间、时间、dwell和条件化检测质量。
+报告“已搜过”不报告“确定无人”；覆盖质量是对参考目标/当前条件的评估，不是“没有敌机”的概率。
+采用12方位×6高度带×4距离带的汇总格，上限288格/单位；同格保留时间与有效驻留，禁止保存无限历史波束。
+高度/距离格边界由场景范围配置并随本机移动投影；姿态/航向明显变化后按实际世界足迹累计，不把本机扇区直接贴到新方向。
+已实现的无接触15s、当前航段有效扫描12s可作为请求调整航段的首版条件；有效扫描时间改由实际search job贡献。
+转弯、换行、STT、照射占用不计作广域覆盖；重访不能把所有高度层算为搜索完成。
+优先检查局部未覆盖高度层，再考虑扩大/移动扫描区，最后才提出改变载机航路。
+自卫、在空武器支持、编队和玩家明确航向约束继续限制搜索机动，沿用当前任务仲裁。
+
+10. AI与异步策略
+
+模型输入 SensorContextV2：task、能力摘要、当前波形/扫描方式、实际可达扇区、请求与实际覆盖差异、预计完整回扫周期、
+波束位置、覆盖摘要、最多16条任务相关航迹、武器支持负担、已观测RWR、飞行约束、simTime、policyRevision。
+可见能力为本机已知配置；未知目标信息只能来自观测。超过16条时按任务相关性摘要并给出omittedTrackCount，不伪称没有其他航迹。
+模型输出 SensorPolicyProposalV2：taskId、policyRevision、basedOnSimTime、expiresAtSimTime、
+operation=adjust_scan|prioritize_track|request_stt|release_stt|request_maneuver|hold、参数、reason。
+操作按本机能力和最新状态校验；优先目标必须是本机观测trackId；不能把某个失联实体ID当搜索定位器。
+request_maneuver返回飞行提案，仍由现有规划系统校验，不直接写heading/waypoints。
+
+明确搜索任务接收后，本地控制器先安装默认/上次有效策略，在授权内开始工作，模型异步优化。
+按单位保存active请求，服务器受限并发和优先级排队；某机等待不能阻止其他机扫描或收到默认策略。
+重大事件立即触发调整；普通变化至少3模拟秒合并一次；稳定搜索20模拟秒复核；真实模型请求另设每单位墙钟冷却，默认2s。
+重大事件包括新方向威胁、预计支持无法满足、持续失踪、覆盖无法完成；每帧测量变化不作为调用原因。
+返回提案先验证局次/单位/任务/授权/策略版本，再对最新航迹重验；其他飞机改令不应使本机提案失效。
+默认expiresAt为发出时simTime+max(5s,2*预计回扫周期)，上限30s；过期只重算高层提案，本地已有策略继续运行。
+模型延时用最近调用的墙钟分位数提示；运动补偿使用实际累计模拟时间，不用当前倍速乘整段墙钟时间。
+暂停时预测位移为0，输出耗时无需参与运动推演；暂停/恢复、换局、改任务后沿用现有过期请求作废机制。
+失败保留当前有效策略、按退避重试；不能报告模型建议已经发生。观测中已稳定锁定时丢波答复不得再次取消锁定。
+
+11. 火控和导弹支持
+
+WeaponSupportV2按(sensorId,trackId,weaponModelId,engagementId)查询，字段：
+  launchEligible、launchQualityReasons、illuminationAvailable、lastIlluminationAt、illuminationValidUntil、
+  midcourseAvailable、lastUpdateMeasuredAt、lastPacketAt、updateValidUntil、scheduledNextUpdateAt、channelId。
+所有状态来自真实执行的调度/测量；计划中的照射不能提前置为可用；旧估计可以发数据包，但lastUpdateMeasuredAt不得更新。
+发射需同时检查识别/ROE、授权、库存、载机条件、导引头条件、航迹质量和实际可分配支持通道。
+火控首版基础阈值：确认航迹、关联唯一、位置Sigma≤300m、速度Sigma≤30m/s；具体武器可更严格。
+发射前需有不超过profile/武器规定的测量年龄，不能简单把原0.2s统一放宽为一整帧搜索周期。
+SARH按其照射通道和允许中断间隔裁定；不能因为TrackStore仍有记忆而继续宣称照射。
+ARH中段按兼容数据链更新间隔裁定，不要求同一个STT标记；主动段交接由最后估计和实际导引头搜索能力裁定。
+无更新时导弹可以按其惯导能力预测，但不获得真实新机动。导引头需扫描预测搜索区、产生自己的测量和本地航迹。
+导引头未捕获不得写成已主动跟踪；主动开机、主动捕获、丢失是三个不同事件。
+多目标火控还需修改attack-task的单目标任务结构；仅雷达TWS上线不开放多目标自动发射。
+弹道/发射窗口估计读取估计状态和误差，输出预测时间/末段能量区间及假设，不称为真实命中率。
+首次版本可用均值及正负1σ的有限运动样本做敏感性评估；这些样本不是统计命中概率。
+
+12. 辐射和RWR
+
+内部 EmissionEventV2：sequence、startAt/endAt、emitterPose、beamPath、波束宽度、频段、参考功率、waveformClass、emissionRole。
+role=search|track_update|illumination|missile_seeker；来自实际扫描/照射，不查世界中是否存在已发射导弹来生成发射告警。
+RWR检查视线、频段、接收视场、单程信号强度、实际波束经过和接收机分类能力；不复用雷达双程回波R^-4作为截获损耗。
+可用参考单程R^-2质量曲线和接收阈值，参数为游戏调校。首次版本主瓣有效，旁瓣截获默认禁用。
+照射信号只能报告“疑似导弹照射/发射”，不确认发射；TWS仍有辐射，也不保证一定产生可识别的发射提示。
+主动弹开机后只有实际照到接收机且被接收时才有告警。信号消失可能来自波束转移、遮挡或接收失败，不等于安全。
+外部继续只给本地告警ID、粗方位、信号类别、等级、时间和分类置信档；不增加距离、位置、载机ID、目标ID或命中时间。
+告警保持时间独立于雷达航迹生命周期，按RWR profile和重复照射间隔处理；低频搜索扫描不能因一帧无更新就判解除。
+与已知航迹仅作可能/歧义关联；主动导引头信号不得强行关联到发射载机。
+当前跟踪/发射级告警即时程序规避机制继续由自卫策略控制；玩家明确覆盖指令优先。模型异步评估方向，不阻塞首个动作。
+如任务明确设置等待玩家处置，则本地按其模拟时间期限执行；不能把“默认即时”和“按玩家要求延后”混成隐藏规则。
+RWR提示型敌弹地图标记与传感器观测分层；已有游戏辅助坐标不得进入SensorContext或火控。
+
+13. 显示、播报与证据
+
+主地图展示最后测量、预测位置、误差椭圆、航迹状态；同一数据驱动面板、模型和报告。
+雷达面板显示请求区域、实际可达区域、当前条带、重访倒计时和覆盖空窗；未搜索用阴影，不能画成已确认安全。
+正常等待重访按预计周期保持样式，错过应到重访才变为外推；亮度、误差和是否可火控分开表达。
+通联只播报任务接收、新方向接触、确认、支持降级和重要丢失；不逐次播报每个扫掠命中。
+示例：“东北方向发现一条未识别航迹，约40千米；高度约6000米，速度尚未稳定估计。”
+示例：“目标丢波，按最后观测维持搜索；原因尚不确定。”
+真实内部原因保留在显式开发诊断模式，正常播报/模型不能读。空中状态不得使用机位待命类地面播报。
+已发出的指挥员任务、飞行员核验和实际执行结果各自留时间戳；默认输入先形成待发送内容，确认下达才进入任务链。
+
+14. 世界更新、存档和兼容
+
+固定步顺序：命令/权限→飞控与世界运动→姿态/地速快照→传感器job及辐射→检测/航迹→火控支持→导弹→RWR→自卫与事件→观测快照。
+同一步导弹新产生的辐射也送本步RWR；雷达本步已发射的辐射不能因后续载机毁伤被追溯删除。
+显式时间戳解决子步先后；模块不得读取未来时间的运动状态。暂停不执行固定步，旧请求取消不撤销已发生物理事件。
+保存sensorStateVersion=2、profileId/tuningVersion、antenna/job状态、计数随机种子/序号、TrackStore/P/证据、覆盖摘要、任务策略/版本、支持通道及事件游标。
+加载不生成补扫测量，不重复通联，不恢复网络pending；验证有限数、容量、时间单调及矩阵合法性，P要求对称半正定。
+旧版存档：通过迁移器为旧观测创建legacy_memory，宽误差、未验证，不沿用canIlluminate=true；保留任务意图，在第一轮新测量后再建立支持。
+旧版在空弹保留弹道、惯导及已主动状态，旧照射/数据链标志不提升为v2已验证支持；可能中断须显示迁移提示。
+缺少profile或调校版本不兼容时拒绝静默替换，提示重开场景或明确迁移。
+实现期可选scenario级sensorModelVersion=1|2供回归对照；同一局所有相关模块使用同一版本，禁止v2轨迹接v1万能照射。
+radarContext/parseRadarContext、命令编译、save-state、snapshot必须同时版本化；不以某一个默认sweepSec冒充型号实际重访周期。
+
+15. 性能与移植
+
+设计验收规模32架载机+64目标，每机最多64存储航迹；16/32机分别测基线，不能把目标数字写成实测结果。
+候选先空间索引和波束粗筛；地形射线仅对本次实际visit候选/接收事件计算，不再每帧全实体对做精细采样。
+同一地形视线可短时缓存，键包含双方位置格、地形版本与曲率；位置变动超过格界或遮挡安全裕度不足时重新计算。
+调度过载只能降低非关键诊断/显示频率；不能悄悄跳过照射检测或给未测量目标真值来维持性能。
+性能目标：约定测试机上32机场景传感器+航迹+RWR总耗时p95≤2ms/模拟步、额外内存≤32MB，达不到则记录瓶颈并调整规模；这是目标而非已测指标。
+sim模块禁止依赖DOM、fetch、Node文件系统和墙钟；配置/事件/测试夹具为JSON可表达结构，Godot可重放同一随机种子和指令序列。
+
+16. 实施切片与完成条件
+
+A. 契约与基础：profile/运动接口、任务与观测v2、内部真值隔离、统一质量函数。
+   同步文件：radar.js、radar-task.js、orders.js、military-commands.js、battle-observation.js、save-state.js、server雷达接口。
+B. 三维搜索闭环：scheduler、coverage、track生命周期、search-assessment和显示/模型摘要一起切换；保持旧检测质量函数做短期对照。
+   必须同批消除radar.js编译/执行、radar-task、server枚举、attack-task、shot-quality、threat-assessment、contact-visuals中的固定时效耦合。
+C. 测量与估计：检测曲线、噪声、EKF/关联、IFF证据；视觉也改为独立观测质量，禁止近距视觉回填精确全速度抹去误差。
+D. 支持链：按武器支持契约、TWS能力映射、导引头预测搜索交接、真实辐射驱动RWR；多目标攻击单独验收。
+E. 异步策略与呈现：每机独立请求、本地持续执行、延时/暂停、单位显示、教材/术语与可复现场景。
+各切片在v2场景验收，全部完成才将v2设默认。迁移最终删除v1固定时效和万能canIlluminate依赖。
+
+验收清单（固定种子及参数入夹具，统计项使用固定种子集合）：
+  T01 同方位不同高度：未进入当前俯仰波束的目标不得先出现，记录每个首次检测visit与时间。
+  T02 广域/重点：实际条带覆盖正确；重点重访更快、范围更小；转动和换行都消耗时间。
+  T03 无目标/不可达：未知空域不报告无人；超仰角/遮挡区域显示覆盖缺口，不暗中转机或扩大能力。
+  T04 探测质量：固定1000个种子比较距离/RCS/驻留的检测率，整体单调且置信区间符合配置曲线；非逐次命中强行单调。
+  T05 地速：同风、差风、脚本靶三类闭合率和杂波分离与世界运动差分一致。
+  T06 重访：8s全帧中的正常航迹不因旧2.25/4s阈值丢失；没扫到不记miss，但误差持续增长。
+  T07 初次观测：没有完整精确速度或隐藏呼号；已失联目标机动/毁伤不改变旧测量和模型错误信息。
+  T08 交叉：门内关联只用观测，歧义标记降低火控质量，不用实体ID强制纠错。
+  T09 模式切换/静默：保留旧记忆、需要新模式验证；静默立即停止实际辐射和新支持。
+  T10 搜索/STT/TWS：普通搜索保持覆盖；STT产生可见空窗；TWS按容量/时间预算丢弃低优先任务并报告代价。
+  T11 误差：固定种子集合测位置/速度RMSE与报告误差的一致性；已知匀速和机动分别报告，不能只展示误差增长动画。
+  T12 武器：SARH照射中断、ARH数据链迟到/丢失、主动开机未捕获与已捕获分别裁定；不能以搜索记忆支持发射。
+  T13 RWR：实际搜索波束经过才告警；照射无发射也可能疑似发射；弹体已发射但无可截获辐射不能凭真值告警。
+  T14 并发/延时：首机模型等待10s，其他机照常搜索；旧答复不覆盖新指令；局部改令不误取消其他机；无付费模型参与回归。
+  T15 暂停/倍速：暂停60s观测年龄不变，恢复无补扫；相同固定步序列在不同渲染帧率得到相同测量/随机序号。
+  T16 存档：保存/加载后后续波束、随机、航迹与支持一致；迁移旧档不伪造v2锁定；未来时间/非法矩阵被拒绝。
+  T17 约束：航向/编队/防区/玩家规避要求不被搜索策略覆盖，纯搜索不需要玩家规划航点。
+  T18 表现隔离：显示平滑不改测量；RWR辅助坐标、开发诊断、其他友机未共享信息不得流入模型或火控。
+  T19 单位/播报：公英制仅影响输入输出；马赫两制通用；转换高度近似播报；飞行员检查实际指挥员下发内容。
+  T20 性能：记录测试机、Node版本、种子、固定步长、单位/航迹规模、各阶段p50/p95/max和内存；对比v1基线。
+
+每个切片完成需给出行为变化、对应验收结果和剩余限制。不得用既有测试通过替代T01—T20，也不得以传感器改善直接宣称模型胜率提高。
+模型效果另用相同场景/种子比较默认程序策略和模型策略：首次发现、覆盖空窗、支持中断、任务达成与损失；严格匹配授权和可见信息。
+
+17. 依据与使用方式
+
+项目基线：radar-system.md、ROADMAP.md、search-defense-progress.txt、sensor-visuals.txt；2026-11-11只读审查的radar/weapons/missiles/rwr/search-assessment实现。
+公开资料只用于机制设计，没有复制第三方求解代码或真实型号数据库：
+  War Thunder Airborne radars：https://wiki.warthunder.com/mechanics/198-airborne-radars
+    参考扫描条带、覆盖/重访取舍；战雷机制不等于真实装备完整能力。
+  MathWorks Radar Equation：https://www.mathworks.com/help/radar/ug/radar-equation.html
+    参考回波随距离/RCS的关系；本文Pd曲线与调校参数为本项目设计。
+  MathWorks Introduction to Track Logic：https://www.mathworks.com/help/fusion/ug/introduction-to-track-logic.html
+    参考确认、外推、删除的状态组织；本文门限为游戏设计。
+  War Thunder Updated RWR：https://forum.warthunder.com/t/updated-rwr-more-realism-and-features/26697
+    参考接收机能力差异与辐射分类；不承诺当前战雷具体载机参数完全相同。

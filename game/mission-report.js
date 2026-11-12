@@ -3,15 +3,16 @@ import {formatAltitude,formatSpeed,formatDistance} from '../sim/units.js';
 import {TRAINING_MISSIONS} from '../sim/training-missions.js';
 import {trainingLevel,LEGACY_LEVEL_STEPS} from '../sim/training-levels.js';
 import {selectedAircraftStatus} from '../sim/unit-status.js';
+import {taskFeedback,taskTimeline} from '../sim/task-feedback.js';
 const PHASE={parked:'机位待命',taxi:'滑行',holding:'跑道外等待',lined_up:'跑道对正',lineup_taxi:'进入跑道',takeoff_roll:'起飞滑跑',climb:'空中飞行',approach:'进近',final:'最后进近',rollout:'着陆减速',exit:'脱离跑道',missed:'复飞',waiting_gate:'等待机位'};
 export function missionBrief(world,selectedId){
   const u=world.units.find(u=>u.id===selectedId)??world.units[0];if(!u)return null;
   const safety=u.profile&&u.velocity?selectedAircraftStatus(u):{alert:null},points=u.waypoints??[],phase=safety.alert?safety.phase:PHASE[u.surface?.phase]??'空中飞行';
-  const objective=!u.alive?'飞机损坏，重新安排任务':u.surface?.grounded?(u.surface.phase==='parked'?'在机位等待指挥':u.surface.message??phase):u.headingRoute?`保持航向 ${String(Math.round(u.headingRoute.headingDeg)).padStart(3,'0')}°`:points.length?`飞往航点 ${points[0].number??1}`:u.headingTarget!=null?'保持指定航向':'盘旋待命';
-  return {callsign:u.callsign,phase,objective,position:[...u.position],speed:u.speed,remaining:points.length,completed:u.completedWaypoints??0,
+  const feedback=taskFeedback(world,u),recent=taskTimeline(world,u),objective=!u.alive?'飞机损坏，重新安排任务':feedback.objective??(u.surface?.grounded?(u.surface.phase==='parked'?'在机位等待指挥':u.surface.message??phase):u.headingRoute?`保持航向 ${String(Math.round(u.headingRoute.headingDeg)).padStart(3,'0')}°`:points.length?`飞往航点 ${points[0].number??1}`:u.headingTarget!=null?'保持指定航向':'盘旋待命');
+  return {callsign:u.callsign,phase,objective,feedback,position:[...u.position],speed:u.speed,remaining:points.length,completed:u.completedWaypoints??0,
     destination:points[0]?points[0].slice(0,3):null,rangeM:points[0]?Math.hypot(...points[0].map((v,i)=>v-u.position[i])):null,
     caution:u.navigationBlocked??(!u.alive?'当前飞机无法继续任务':null),airport:world.airportOps?.airport.name??null,runway:u.surface?.runway??null,
-    recent:[...(world.commandLog??[]).map(row=>({time:row.time,summary:row.interpretation?.summary??'指挥任务'})),...(world.airportOps?.airport.events??[]).filter(e=>e.unitId===u.id).map(e=>({time:e.time,summary:e.text}))].sort((a,b)=>b.time-a.time).slice(0,4)};
+    recent};
 }
 export function initMissionReport({getWorld,getSelected,getTraining,openPanel}){
   const stage=document.querySelector('#stage'),toolbar=document.createElement('div');toolbar.id='mission-toolbar';toolbar.setAttribute('aria-label','指挥电台与任务报表');
@@ -36,7 +37,8 @@ export function initMissionReport({getWorld,getSelected,getTraining,openPanel}){
     toggle.textContent=reportKind==='training'&&teaching?.showingMenu?`训练关卡 ${expanded?'▴':'▾'}`:reportKind==='training'&&walk?`${walk.level?'第'+walk.level.number+'关':state==='passed'?'教学报告':'教程'} ${Math.min(count,walk.index+1)} / ${count} ${expanded?'▴':'▾'}`:reportKind==='training'&&session?`综合考核 ${Object.keys(session.completed).length} / 4 ${expanded?'▴':'▾'}`:`${reportKind==='training'?'训练关卡':'任务简报'} ${expanded?'▴':'▾'}`;
     if(panel.hidden)return;
     const brief=missionBrief(getWorld(),getSelected()),key=JSON.stringify(brief);if(brief&&key!==lastKey){lastKey=key;
-      panel.querySelector('#mission-brief-live').innerHTML=`<span class="brief-kicker">CURRENT TASK / 当前选中机</span><h3>${esc(brief.callsign)}</h3><p class="brief-objective">${esc(brief.objective)}</p><dl><dt>执行阶段</dt><dd>${esc(brief.phase)}</dd><dt>实际海拔</dt><dd>${formatAltitude(brief.position[2])}</dd><dt>实际速度</dt><dd>${formatSpeed(brief.speed)}</dd><dt>剩余 / 已通过</dt><dd>${brief.remaining} / ${brief.completed}</dd>${brief.rangeM!==null?`<dt>距下一点</dt><dd>${formatDistance(brief.rangeM)}</dd>`:''}${brief.runway?`<dt>跑道</dt><dd>${esc(brief.runway)}</dd>`:''}</dl>${brief.caution?`<p class="brief-caution">${esc(brief.caution)}</p>`:''}<h4>最近任务</h4>${brief.recent.length?brief.recent.map(r=>`<p class="brief-event">T+${Math.floor(r.time)}s · ${esc(r.summary)}</p>`).join(''):'<p class="brief-empty">尚未下达新的指挥任务。</p>'}`;
+      const timelineOpen=panel.querySelector('#brief-timeline')?.open??false,f=brief.feedback;
+      panel.querySelector('#mission-brief-live').innerHTML=`<span class="brief-kicker">CURRENT TASK / 当前选中机</span><h3>${esc(brief.callsign)}</h3><p class="brief-objective">${esc(brief.objective)}</p><dl><dt>任务阶段</dt><dd>${esc(f.phase)}</dd><dt>当前控制方</dt><dd>${esc(f.controller)}</dd><dt>飞行阶段</dt><dd>${esc(brief.phase)}</dd><dt>实际海拔</dt><dd>${formatAltitude(brief.position[2])}</dd><dt>实际速度</dt><dd>${formatSpeed(brief.speed)}</dd><dt>剩余 / 已通过</dt><dd>${brief.remaining} / ${brief.completed}</dd>${brief.rangeM!==null?`<dt>距下一点</dt><dd>${formatDistance(brief.rangeM)}</dd>`:''}${brief.runway?`<dt>跑道</dt><dd>${esc(brief.runway)}</dd>`:''}</dl>${brief.caution?`<p class="brief-caution">${esc(brief.caution)}</p>`:''}${f.reason?`<p class="brief-event"><b>当前依据</b> · ${esc(f.reason)}</p>`:''}<p class="brief-event"><b>实际结果</b> · ${esc(f.result)}</p><p class="brief-event"><b>下一步</b> · ${esc(f.waiting)}</p><details id="brief-timeline"${timelineOpen?' open':''}><summary>战场事实时间线 · ${brief.recent.length} 条</summary><p class="brief-empty">按本机记录时间排序；判断与实测分别标明。</p>${brief.recent.length?`<ol class="brief-timeline-list">${brief.recent.map(r=>`<li class="brief-event"><span>T+${r.time.toFixed(1)}s · ${esc(r.source)}</span><p>${esc(r.summary)}</p><small>依据：${esc(r.evidence)}</small></li>`).join('')}</ol>`:'<p class="brief-empty">尚无本机任务或观测记录。</p>'}</details>`;
     }
     const results=loadProgress().results.slice().reverse(),resultKey=JSON.stringify(results);if(resultKey!==historyKey){historyKey=resultKey;
       panel.querySelector('#mission-results').innerHTML=results.length?results.map(r=>{

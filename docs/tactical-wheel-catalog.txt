@@ -1,0 +1,75 @@
+轮盘目录与依据（2026-11-12）
+
+每个轮盘10项。R为进攻方案，T为防御方针，C为直接机动。保持同一快捷键按住，鼠标滚轮向下进入同类下一盘、向上返回上一盘，末页循环；换盘清空指向，不立即发令，重新指向后松开原快捷键提交。Tab和页键、屏幕箭头为备用操作。
+
+R / 1（10项）
+1 自主接战
+2 支援后脱离
+3 持续接敌
+4 双机分工交战
+5 双机侧向协同
+6 轮换接战
+7 BANZAI 接敌计划
+8 SKATE 脱离计划
+9 SHORT SKATE
+10 战斗机扫荡 / Fighter sweep
+
+T / 1（10项）
+1 自保优先
+2 保持支援
+3 脱离重整
+4 双机相互掩护
+5 保护对象优先
+6 区域防空 / Area defence
+7 要点防空 / Point defence
+8 高价值飞机保护 / HVAA protection
+9 战斗空中巡逻 / CAP
+10 屏障空中巡逻 / BARCAP
+
+C / 1（10项）
+1 左转机动
+2 右转机动
+3 左偏置支援 / CRANK LEFT
+4 右偏置支援 / CRANK RIGHT
+5 左横切规避 / NOTCH LEFT
+6 右横切规避 / NOTCH RIGHT
+7 背向脱离
+8 复位原任务
+9 爬升机动
+10 下降机动
+
+C / 2（10项）
+1 增速机动
+2 减速机动
+3 BREAK LEFT
+4 BREAK RIGHT
+5 COME OFF LEFT
+6 COME OFF RIGHT
+7 重建双机集合
+8 改平保持
+9 COMMIT 接敌
+10 TERMINATE 中止当前交战
+
+依据与区别
+
+A. NATO APP-7，Joint Brevity Words，Edition F Version 3，April 2020，16 April 2020颁布。已核对原文件封面、颁布页以及具体条目。NATO站点公开索引能检索条目，但本次直接取文件返回403，完整正文从同一北约出版物的公开镜像读取。
+NATO公开索引：
+https://coi.nato.int/EWCOI/EW%20COI%20Shared%20Documents/WGs/NEWWG/EW%20Info%20Exchange%20Requirements%20Panel%20%28IERP%29/01_Governing%20Documents/Publications/APP-07/APP-7%20EDF%20V3%20E.pdf
+已读正文镜像：
+https://www.jedi-sec.us/downloads/MISC_PDF/APP-7%20EDF%20V3%20E.pdf
+核对位置（书内页码）：BANZAI/BARCAP第8页；COMMIT/COME OFF第18页；CRANK第20页；SHORT SKATE第68页；SKATE第69页；TERMINATE第79页。此文件不是2025 ALSSA签署草案，不声称是现役最新完整程序。
+
+保留的语义差别：BANZAI采用launch-and-decide；SKATE与SHORT SKATE均有launch-and-leave含义，但原文件使用不同退出边界术语，不能压成同一个“发射就跑”。CRANK是F/A-pole相关机动，NOTCH不等于CRANK；COME OFF着眼恢复相互支援或解除冲突，TERMINATE停止局部交战而不停止整个训练。COMMIT表达拦截意图，不自动授予武器使用许可。具体数字不从现实作战参数复制到游戏。
+
+B. NATO AJP-3.3，Edition C Version 1，February 2026。用于任务及指挥层级。
+https://www.gov.uk/government/publications/allied-joint-doctrine-for-air-and-space-operations-ajp-33b
+
+C. 加拿大皇家空军B-GA-403-000/FP-001，Chapter 2: Control of the Air。核对Fighter sweep、Area defence、Point defence、HVAA protection及CAP任务。保护对象、区域或巡逻航路从玩家已有任务取得，不能为了填条目而虚构对象。
+https://www.canada.ca/en/air-force/corporate/policies-standards/royal-canadian-air-force-doctrine/ad-b-ga-403-000-fp-001-chapter-2.html
+
+D. 加拿大政府TERMIUM Plus核对BARCAP属于北约标准化名称。BARCAP与普通CAP保留不同保护空间关系。
+https://www.btb.termiumplus.gc.ca/tpv2alpha/alpha-eng.html?i=&index=frr&lang=eng&srchtxt=BARCAP
+
+原表六项进攻和五项防御是本游戏根据这些概念提炼的玩家意图层，全部保留；它们不是北约正式颁布的一张同名菜单。新增任务级方案、标准简语及基础飞行动作保留各自层级和前提。缺少保护对象、有效观测或可用执行能力时应明确无法执行，不能用一个默认机动冒充所有条目。
+
+每个选项的独立含义保存在sim/tactical-guidance.js，当前方案的完整意图与双机分工进入模型上下文；没有将所有方针折叠为同一个关键词。页数由目录长度自动计算，未来新增条目继续按每页10项分页，不减少已有项目。
